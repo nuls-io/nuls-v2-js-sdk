@@ -1,0 +1,25 @@
+{
+  "name": "nulsjs",
+  "version": "1.0.0",
+  "description": "nuls js sdk",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test"
+  },
+  "keywords": [
+    "nulsjs"
+  ],
+  "author": "nuls team",
+  "license": "ISC",
+  "dependencies": {
+    "base-64": "^0.1.0",
+    "bigi": "^1.4.2",
+    "bs58": "^4.0.1",
+    "crypto": "^1.0.1",
+    "crypto-js": "^3.1.9-1",
+    "ecurve": "^1.0.6",
+    "jsrsasign": "^8.0.12",
+    "randombytes": "^2.0.6",
+    "sha256": "^0.2.0"
+  }
+}
