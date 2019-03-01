@@ -5,5 +5,5 @@ for developers
 npm install  
 or yarn
 
-# run all tests
+# run tests
 npm test
