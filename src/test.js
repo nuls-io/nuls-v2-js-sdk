@@ -1,35 +1,36 @@
-# 注意
-nuls-sdk-js  测试网用
-
-# Install
-```bash
-$ npm i nuls-sdk-js
-```
-
-# Usage
-```js
+//import axios from 'axios'
 const nuls = require('./index');
+const utils = require('./utils/utils');
 
 //创建地址
-let passWord = "";
+/*let passWord = '';
 const newAddress = nuls.newAddress(passWord);
-console.log(newAddress);
+console.log(newAddress);*/
 
+//key:2de32308846652eeeaf68e23ef586aecb82f0459d4b520dddf13c7542c2b8f83
+//pub:02a4859a56aa2d4277b1f8a9243a764d9adf8ad5965b772c9278afbed8be059e6b
+//pri:02ecb18a38f396e911a5077794dac1e2d53da326a3d91b2247240ff84a40e0bf701bc8257f0d174b55f920c8a70a73f8
+//address:Nsdtr9G1PpZMyi7G2TafXoHYUfBkaFKz
 //导入地址
-const key ="";
+/*const key ="407d5cd9b5d62ab633c52dfb45542622b06c05004a0314c312390a32b5d06234";
 const importAddress = nuls.importByKey(key);
-console.log(importAddress);
+console.log(importAddress);*/
 
-//转账功能
+/**
+ * from    TTaqFxuD1xc6gpixUiMVQsjMZ5fdYJ2o
+ * to      TTakMrubBXi998CZgaYdTy2Nrqwd2ptq
+ * value   0.8
+ * remark  remark....
+ */
 
-let pri = ''; //转出地址私钥
-let pub = ''; //转出地址公钥
-let fromAddress = ''; //转出地址
-let toAddress = '';   //转入地址
-let amount = ;        //转出金额右移八位
-let remark = '';      //交易备注
+let pri = '407d5cd9b5d62ab633c52dfb45542622b06c05004a0314c312390a32b5d06234';
+let pub = '032dd7aaff8d2c3ae6597877b67f87702f44f5998b3da4459ddeb6eec8d39171c9';
+let fromAddress = 'TTaqFxuD1xc6gpixUiMVQsjMZ5fdYJ2o';
+let toAddress = 'TTakMrubBXi998CZgaYdTy2Nrqwd2ptq';
+let amount = 80000000; //0.8 nuls 转出
+let remark = 'remark....';
 
-//转账功能
+//转账功能 trustUrl
 async function transfer(pri, pub, fromAddress, toAddress, amount, remark) {
   const inputUtxoInfo = await nuls.getInputUtxo(fromAddress, amount);
   let inputOwner = [];
@@ -67,16 +68,10 @@ async function transfer(pri, pub, fromAddress, toAddress, amount, remark) {
   }
 }
 
-//测试转账交易
+//测试开始
 transfer(pri, pub, fromAddress, toAddress, amount, remark).then((response) => {
   console.log(response)
 }).catch((error) => {
   console.log(error)
 });
-
-
-
-```
-
-
 

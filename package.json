@@ -1,25 +1,45 @@
 {
-  "name": "nulsjs",
-  "version": "1.0.0",
-  "description": "nuls js sdk",
+  "name": "nuls-sdk-js",
+  "version": "0.1.7",
+  "description": "nuls nuls-js nuls-sdk nuls-js-sdk",
   "main": "index.js",
   "scripts": {
-    "test": "node test"
+    "cleanLib": "./node_modules/.bin/rimraf lib",
+    "bableBuild": "./node_modules/.bin/babel src --out-dir lib",
+    "prepublish": "npm run cleanLib && npm run bableBuild",
+    "test": "node ./src/test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nuls-io/nuls-js-sdk"
   },
   "keywords": [
-    "nulsjs"
+    "nuls",
+    "nuls-js",
+    "nuls-sdk"
   ],
-  "author": "nuls team",
-  "license": "ISC",
   "dependencies": {
-    "base-64": "^0.1.0",
-    "bigi": "^1.4.2",
-    "bs58": "^4.0.1",
-    "crypto": "^1.0.1",
-    "crypto-js": "^3.1.9-1",
-    "ecurve": "^1.0.6",
-    "jsrsasign": "^8.0.12",
-    "randombytes": "^2.0.6",
+    "axios": "^0.18.0",
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "bitcore-lib": "^0.13.7",
+    "bitcore-mnemonic": "^1.0.1",
+    "bs58": "4.0.1",
+    "buffer": "^5.2.1",
+    "buffer-from": "^1.1.1",
+    "crypto-js": "3.1.9-1",
+    "ecurve": "1.0.6",
+    "jsrsasign": "8.0.12",
+    "randombytes": "2.0.6",
+    "rimraf": "^2.6.3",
     "sha256": "^0.2.0"
-  }
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nuls-io/nuls-js-sdk/issues"
+  },
+  "homepage": "https://github.com/nuls-io/nuls-js-sdk#readme"
 }
