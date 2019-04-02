@@ -26,8 +26,8 @@ module.exports = {
   },
 
   //获取input utxo
-  getInputUtxo(fromAddress, amount) {
-    return axios.post('http://116.62.135.185:8081/', {
+  async getInputUtxo(fromAddress, amount) {
+    return await axios.post('http://116.62.135.185:8081/', {
       "jsonrpc": "2.0",
       "method": "getUTXOS",
       "params": [fromAddress, amount],
@@ -42,8 +42,8 @@ module.exports = {
   },
 
   //验证交易
-  valiTransaction(transactionInfo) {
-    return axios.post('http://114.116.4.109:8001/api/accountledger/transaction/valiTransaction', {"txHex": transactionInfo})
+  async valiTransaction(transactionInfo) {
+    return await axios.post('http://114.116.4.109:8001/api/accountledger/transaction/valiTransaction', {"txHex": transactionInfo})
       .then((response) => {
         return response;
       })
@@ -53,8 +53,8 @@ module.exports = {
   },
 
   //广播交易
-  broadcast(transactionInfo) {
-    return axios.post('http://114.116.4.109:8001/api/accountledger/transaction/broadcast', {txHex: transactionInfo})
+  async broadcast(transactionInfo) {
+    return await axios.post('http://114.116.4.109:8001/api/accountledger/transaction/broadcast', {txHex: transactionInfo})
       .then((response) => {
         return response;
       })

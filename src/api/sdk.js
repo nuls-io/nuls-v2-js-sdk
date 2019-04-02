@@ -1,17 +1,18 @@
-// const randomBytes = require('randombytes');
-// const BigInteger = require('bigi');
-// const ecurve = require('ecurve');
+const randomBytes = require('randombytes');
+const BigInteger = require('bigi');
+const ecurve = require('ecurve');
 const CryptoJS = require('crypto-js');
 const sha256 = require('sha256');
 const rs = require('jsrsasign');
-// const bs58 = require('bs58');
+const bs58 = require('bs58');
 const cryptos = require("crypto");
-// const iv = CryptoJS.enc.Hex.parse('0000000000000000');
+const iv = CryptoJS.enc.Hex.parse('0000000000000000');
 
 const bufferUtils = require("../utils/buffer");
 
 
 const Hash = require("../utils/hash");
+
 //将数字转为6个字节的字节数组
 function toUInt16LE(value) {
   let buf = Buffer.alloc(2);
