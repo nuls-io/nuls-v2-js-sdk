@@ -14,6 +14,7 @@ module.exports = {
             addressInfo = sdk.newEcKey(passWord);
         }
         addressInfo.address = sdk.getStringAddress(chainId, addressInfo.pri, addressInfo.pub);
+        addressInfo.pri = null;
         return addressInfo
     },
 
@@ -21,19 +22,12 @@ module.exports = {
     importByKey(chainId, pri, passWord) {
         let addressInfo = {};
         addressInfo.pri = pri;
-        addressInfo.address = sdk.getStringAddress(chainId, pri);
+        addressInfo.address = sdk.getStringAddress(chainId,pri);
         addressInfo.pub = sdk.getPub(pri);
-
-        /*if(passWord){
-          addressInfo.pri = pri;
-          addressInfo.aesPri = sdk.encrypteByAES(addressInfo.pri,passWord);
-          addressInfo.address = sdk.getStringAddress(pri);
-          addressInfo.pub = sdk.getPub(pri);
-        }else {
-          addressInfo.pri = pri;
-          addressInfo.address = sdk.getStringAddress(pri);
-          addressInfo.pub = sdk.getPub(pri);
-        }*/
+        if (passWord) {
+            addressInfo.aesPri = sdk.encrypteByAES(addressInfo.pri, passWord);
+            addressInfo.pri = null;
+        }
         return addressInfo
     },
 
