@@ -8,7 +8,9 @@ module.exports = {
   newAddress(passWord) {
     let addressInfo = {};
     if (passWord) {
-
+      addressInfo = sdk.newEcKey(passWord);
+      addressInfo.aesPri = sdk.encrypteByAES(addressInfo.pri,passWord);
+      addressInfo.address = sdk.getStringAddress(addressInfo.pri, addressInfo.pub);
     } else {
       addressInfo = sdk.newEcKey(passWord);
       addressInfo.address = sdk.getStringAddress(addressInfo.pri, addressInfo.pub);
@@ -17,12 +19,24 @@ module.exports = {
   },
 
   //私钥导入
-  importByKey(pri) {
+  importByKey(pri,passWord) {
     let addressInfo = {};
-    addressInfo.pri = pri;
-    addressInfo.address = sdk.getStringAddress(pri);
-    addressInfo.pub = sdk.getPub(pri);
+    if(passWord){
+      addressInfo.pri = pri;
+      addressInfo.aesPri = sdk.encrypteByAES(addressInfo.pri,passWord);
+      addressInfo.address = sdk.getStringAddress(pri);
+      addressInfo.pub = sdk.getPub(pri);
+    }else {
+      addressInfo.pri = pri;
+      addressInfo.address = sdk.getStringAddress(pri);
+      addressInfo.pub = sdk.getPub(pri);
+    }
     return addressInfo
+  },
+
+  //解密私钥
+  decrypteOfAES(aesPri,passWord){
+    return sdk.decrypteOfAES(aesPri,passWord);
   },
 
   //获取input utxo
