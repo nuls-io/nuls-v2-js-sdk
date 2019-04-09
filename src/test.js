@@ -2,15 +2,16 @@ const nuls = require('./index');
 const utils = require('./utils/utils');
 
 //创建地址
-let passWord = '';
+let passWord = 'nuls123456';
 const newAddress = nuls.newAddress(2,passWord);
 console.log(newAddress);
 
 //导入地址
+/*const passWord = '';
 const key ="411fa90f7161a20f4624a4f00167fac6d5afd97a7e6815f60e66106c559564a1";
-const importAddress = nuls.importByKey(2,key);
-console.log(importAddress)
-console.log(importAddress.address == 'tNULSeBaMuBCG7NkSyufjE76CVbPQMrZ5Q1v3s');
+const importAddress = nuls.importByKey(2,key,passWord);
+console.log(importAddress);
+console.log(importAddress.address === 'tNULSeBaMuBCG7NkSyufjE76CVbPQMrZ5Q1v3s');*/
 //
 // /**
 //  * from    TTamW5GY7RXwES6JsJwA9UHqTxGKMnKw
