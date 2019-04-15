@@ -41,6 +41,24 @@ module.exports = {
         return publicKey.toString('hex');
     },
 
+    getBytesAddress: function (stringAddress) {
+        if (stringAddress.startsWith('NULS')) {
+            stringAddress = stringAddress.substring(5);
+        } else if (stringAddress.startsWith('tNULS')) {
+            stringAddress = stringAddress.substring(6);
+        }
+        for (var i = 0; i < stringAddress.length; i++) {
+            let val = str.charAt(i);
+            if (val >= 97) {
+                stringAddress = addressString.substring(i + 1);
+                break;
+            }
+        }
+
+        let bytes = bs58.decode(stringAddress);
+        return bytes.slice(0, bytes.length - 1);
+    },
+
     //根据公钥或者私钥获取地址字符串
     getStringAddress: function (chainId, pri, pub) {
         if (!pub) {
@@ -70,7 +88,7 @@ module.exports = {
             prefix = bs58.encode(chainIdBuffer).toUpperCase();
         }
         let constant = ['a', 'b', 'c', 'd', 'e'];
-        return prefix + constant[prefix.length-1] + bs58.encode(tempBuffer)
+        return prefix + constant[prefix.length - 1] + bs58.encode(tempBuffer)
     },
 
     //aes 加密
@@ -104,7 +122,7 @@ module.exports = {
 
     signatureTx: function (tx, pubHex, priHex) {
         let pub = Buffer.from(pubHex, 'hex');
-        let signValue = Buffer.from(this.signature(bufferUtils.bufferToHex(tx.hash.subarray(1)), priHex), 'hex');
+        let signValue = Buffer.from(this.signature(bufferUtils.bufferToHex(tx.hash), priHex), 'hex');
         tx.p2PHKSignatures = [{'pub': pub, signValue: signValue}];
     },
 
@@ -133,7 +151,7 @@ module.exports = {
     getTxHash: function (transaction) {
         let bytes = transaction.serializeForHash();
         let hash = this.getSha256TiwceBuf(bytes);
-        transaction.hash = Buffer.concat([Buffer.from([0x00]), hash], hash.length + 1);
+        transaction.hash = hash;
         return transaction.hash;
     },
 

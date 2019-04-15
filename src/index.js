@@ -81,5 +81,11 @@ module.exports = {
         //签名
         sdk.signatureTx(tx, pub, pri);
         return {hash: hash.toString('hex'), signature: tx.txSerialize().toString('hex')}
-    }
+    },
+    getNulsBalance(address){
+        return {
+            'balance':10000,
+            'nonce':''
+        }
+    },
 };

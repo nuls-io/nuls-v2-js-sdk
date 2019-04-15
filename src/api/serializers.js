@@ -50,6 +50,13 @@ let Serializers = function (bufWriter) {
 
   this.writeUInt64LE = function (value) {
     bufWriter.writeUInt64LEBN(new BN(value));
+  };
+
+  this.writeBigInt = function (value) {
+    let buf = Buffer.alloc();
+    buf.writeUIntLE(value, 0, 6);
+    return buf;
   }
 };
+
 module.exports = Serializers;
