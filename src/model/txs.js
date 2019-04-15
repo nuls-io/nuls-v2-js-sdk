@@ -105,11 +105,54 @@ module.exports = {
         Transaction.call(this);
         this.type = 2;
     },
-    AliasTransaction: function () {
+    AliasTransaction: function (address, alias) {
         this.type = 3;
-        this.setTxData = function (address, alias) {
-            //todo 设置txData的值
+        let bw = new Serializers();
+        bw.writeBytesWithLength(Buffer.from(address, 'hex'));
+        bw.writeString(alias);
+        this.txData = bw.getBufWriter().toBuffer();
+    },
+    CreateAgentTransaction: function (agent) {
+        if (!agent || !agent.agentAddress || !agent.packingAddress || !agent.rewardAddress || !agent.commissionRate || !agent.deposit) {
+            throw "Data wrong!";
         }
-    }
+        this.type = 4;
+        let bw = new Serializers();
+        bw.writeBigInt(agent.deposit);
+        bw.getBufWriter().write(agent.agentAddress);
+        bw.getBufWriter().write(agent.packingAddress);
+        bw.getBufWriter().write(agent.rewardAddress);
+        bw.writeDouble(agent.commissionRate);
+        this.txData = bw.getBufWriter().toBuffer();
+    },
+    DepositTransaction: function (entity) {
+        if (!entity || !entity.address || !entity.agentHash || !entity.deposit) {
+            throw "Data Wrong!";
+        }
+        this.type = 5;
+        let bw = new Serializers();
+        bw.writeBigInt(entity.deposit);
+        bw.getBufWriter().write(entity.address);
+        bw.getBufWriter().write(entity.agentHash);
+        this.txData = bw.getBufWriter().toBuffer();
+
+    },
+    StopAgentTransaction: function (agentHash) {
+        if (!agentHash) {
+            throw "Data wrong!";
+        }
+        this.type = 9;
+        this.txData = Buffer.from(agentHash, 'hex');
+    },
+    WithdrawTransaction: function (depositTxHash) {
+        if (!depositTxHash) {
+            throw "Data wrong!";
+        }
+        this.type = 6;
+        this.txData = Buffer.from(depositTxHash, 'hex');
+    },
+    CreateContractTransaction: function () {
+
+    },
 };
 
