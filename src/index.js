@@ -22,7 +22,7 @@ module.exports = {
     importByKey(chainId, pri, passWord) {
         let addressInfo = {};
         addressInfo.pri = pri;
-        addressInfo.address = sdk.getStringAddress(chainId,pri);
+        addressInfo.address = sdk.getStringAddress(chainId, pri);
         addressInfo.pub = sdk.getPub(pri);
         if (passWord) {
             addressInfo.aesPri = sdk.encrypteByAES(addressInfo.pri, passWord);
@@ -74,6 +74,7 @@ module.exports = {
         let tx = new txs.TransferTransaction();
         tx.remark = remark;
         tx.time = (new Date()).valueOf();
+        tx.txData = null;
         tx.inputs = inputsOwner;
         tx.outputs = outputsOwner;
         //计算hash
@@ -82,10 +83,10 @@ module.exports = {
         sdk.signatureTx(tx, pub, pri);
         return {hash: hash.toString('hex'), signature: tx.txSerialize().toString('hex')}
     },
-    getNulsBalance(address){
+    getNulsBalance(address) {
         return {
-            'balance':10000,
-            'nonce':''
+            'balance': 10000,
+            'nonce': ''
         }
     },
 };

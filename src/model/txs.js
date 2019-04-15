@@ -47,7 +47,7 @@ let Transaction = function () {
         bw.getBufWriter().writeUInt16LE(this.type);
         bw.writeUINT48LE(this.time);
         bw.writeString(this.remark);
-        bw.getBufWriter().write(Buffer.from([0xFF, 0xFF, 0xFF, 0xFF]));//txData
+        bw.writeBytesWithLength(this.txData);//txData
         bw.writeBytesWithLength(this.coinData);
         bw.writeBytesWithLength(this.signatures);
         return bw.getBufWriter().toBuffer();
@@ -59,7 +59,7 @@ let Transaction = function () {
         bw.getBufWriter().writeUInt16LE(this.type);
         bw.writeUINT48LE(this.time);
         bw.writeString(this.remark);
-        bw.getBufWriter().write(Buffer.from([0xFF, 0xFF, 0xFF, 0xFF]));//txData
+        bw.writeBytesWithLength(this.txData);
         bw.writeBytesWithLength(this.coinData);
         return bw.getBufWriter().toBuffer();
     };

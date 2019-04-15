@@ -122,7 +122,7 @@ module.exports = {
 
     signatureTx: function (tx, pubHex, priHex) {
         let pub = Buffer.from(pubHex, 'hex');
-        let signValue = Buffer.from(this.signature(bufferUtils.bufferToHex(tx.hash), priHex), 'hex');
+        let signValue = Buffer.from(this.signature(bufferUtils.bufferToHex(tx.getHash()), priHex), 'hex');
         tx.p2PHKSignatures = [{'pub': pub, signValue: signValue}];
     },
 
