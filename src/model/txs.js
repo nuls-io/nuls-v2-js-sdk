@@ -113,6 +113,7 @@ module.exports = {
         this.txData = bw.getBufWriter().toBuffer();
     },
     CreateAgentTransaction: function (agent) {
+        //对象属性结构
         if (!agent || !agent.agentAddress || !agent.packingAddress || !agent.rewardAddress || !agent.commissionRate || !agent.deposit) {
             throw "Data wrong!";
         }
@@ -126,6 +127,7 @@ module.exports = {
         this.txData = bw.getBufWriter().toBuffer();
     },
     DepositTransaction: function (entity) {
+        //对象属性结构
         if (!entity || !entity.address || !entity.agentHash || !entity.deposit) {
             throw "Data Wrong!";
         }
