@@ -47,7 +47,7 @@ module.exports = {
         } else if (stringAddress.startsWith('tNULS')) {
             stringAddress = stringAddress.substring(6);
         }
-        for (var i = 0; i < stringAddress.length; i++) {
+        for (let i = 0; i < stringAddress.length; i++) {
             let val = str.charAt(i);
             if (val >= 97) {
                 stringAddress = addressString.substring(i + 1);
@@ -66,7 +66,7 @@ module.exports = {
         }
         let pubBuffer = Buffer.from(pub, 'hex');
         let sha = cryptos.createHash('sha256').update(pubBuffer).digest();
-        let pubkeyHash = cryptos.createHash('rmd160').update(sha).digest();
+        let pubkeyHash = cryptos.createHash('ripemd160').update(sha).digest();
         let chainIdBuffer = Buffer.concat([Buffer.from([0xFF & chainId >> 0]), Buffer.from([0xFF & chainId >> 8])]);
         let addrBuffer = Buffer.concat([chainIdBuffer, Buffer.from([1]), pubkeyHash]);
         let xor = 0x00;
