@@ -84,7 +84,7 @@ module.exports = {
         return {hash: hash.toString('hex'), signature: tx.txSerialize().toString('hex')}
     },
     async getNulsBalance(address) {
-        return await axios.post('http://apitn1.nulscan.io/', {
+        return await axios.post('http://192.168.1.192:18003/', {
             "jsonrpc": "2.0",
             "method": "getAccountBalance",
             "params": [2, 1,address],
