@@ -7,11 +7,12 @@ let pri = '94d344417d6faa55e3017709dd6b837bac2bc1769e3a4b516ac9a981465ac03c';
 let pub = '02403cb49ac24ff9555b073ce981e28bed5e81438b2c715a14d06bd248ea1d0091';
 let fromAddress = "tNULSeBaMfwpGBmn8xuKABPWUbdtsM2cMoinnn";
 let toAddress = 'tNULSeBaMp4u8yfeVPSWx1fZoVtfateY1ksNNN';
-let amount = 100000000;
+let amount = 1000000000;
 let remark = 'niels test....';
 
 //转账功能 trustUrl
 async function transfer2(pri, pub, fromAddress, toAddress, assetsChainId, assetsId, amount, remark) {
+
     const balanceInfo = await nuls.getNulsBalance(fromAddress);
     let inputs = [];
     let fee = 100000;
@@ -37,12 +38,14 @@ async function transfer2(pri, pub, fromAddress, toAddress, assetsChainId, assets
     ];
 
     let tt = new txs.TransferTransaction();
+    tt.time = 1234567;
     tt.setCoinData(inputs, outputs);
-    tt.time = new Date().getTime();
     tt.remark = remark;
     sdk.signatureTx(tt, pri, pub);
-    console.log(tt.txSerialize().toString('hex'));
-
+    let txhex = tt.txSerialize().toString('hex');
+    nuls.broadcastTx(txhex);
+    console.log(txhex);
+    return 'done!';
 }
 
 //测试开始

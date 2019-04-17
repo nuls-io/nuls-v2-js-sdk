@@ -77,6 +77,8 @@ let Transaction = function () {
                 bw.getBufWriter().writeUInt16LE(input.assetsChainId);
                 bw.getBufWriter().writeUInt16LE(input.assetsId);
                 bw.writeBigInt(input.amount);
+                bw.writeBytesWithLength(Buffer.from(input.nonce,'hex'));
+                bw.getBufWriter().writeUInt8(0);
             }
         }
         bw.getBufWriter().writeVarintNum(outputs.length);

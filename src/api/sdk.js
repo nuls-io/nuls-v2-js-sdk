@@ -133,7 +133,7 @@ module.exports = {
         return ec.signHex(dataHex, priHex);
     },
 
-    signatureTx: function (tx, pubHex, priHex) {
+    signatureTx: function (tx, priHex,pubHex) {
         let pub = Buffer.from(pubHex, 'hex');
         let hash = tx.getHash();
         let sigHex = this.signature(hash.toString('hex'), priHex);

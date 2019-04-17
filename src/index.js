@@ -4,70 +4,59 @@ const txs = require('./model/txs');
 
 module.exports = {
 
-  //生成地址
-  newAddress(chainId, passWord) {
-    let addressInfo = {};
-    if (passWord) {
-      addressInfo = sdk.newEcKey(passWord);
-      addressInfo.aesPri = sdk.encrypteByAES(addressInfo.pri, passWord);
-    } else {
-      addressInfo = sdk.newEcKey(passWord);
-    }
-    addressInfo.address = sdk.getStringAddress(chainId, addressInfo.pri, addressInfo.pub);
-    addressInfo.pri = null;
-    return addressInfo
-  },
+    //生成地址
+    newAddress(chainId, passWord) {
+        let addressInfo = {};
+        if (passWord) {
+            addressInfo = sdk.newEcKey(passWord);
+            addressInfo.aesPri = sdk.encrypteByAES(addressInfo.pri, passWord);
+        } else {
+            addressInfo = sdk.newEcKey(passWord);
+        }
+        addressInfo.address = sdk.getStringAddress(chainId, addressInfo.pri, addressInfo.pub);
+        addressInfo.pri = null;
+        return addressInfo
+    },
 
-  //私钥导入
-  importByKey(chainId, pri, passWord) {
-    let addressInfo = {};
-    addressInfo.pri = pri;
-    addressInfo.address = sdk.getStringAddress(chainId, pri);
-    addressInfo.pub = sdk.getPub(pri);
-    if (passWord) {
-      addressInfo.aesPri = sdk.encrypteByAES(addressInfo.pri, passWord);
-      addressInfo.pri = null;
-    }
-    return addressInfo
-  },
+    //私钥导入
+    importByKey(chainId, pri, passWord) {
+        let addressInfo = {};
+        addressInfo.pri = pri;
+        addressInfo.address = sdk.getStringAddress(chainId, pri);
+        addressInfo.pub = sdk.getPub(pri);
+        if (passWord) {
+            addressInfo.aesPri = sdk.encrypteByAES(addressInfo.pri, passWord);
+            addressInfo.pri = null;
+        }
+        return addressInfo
+    },
 
-  //获取input utxo
-  async getInputUtxo(fromAddress, amount) {
-    return await axios.post('http://116.62.135.185:8081/', {
-      "jsonrpc": "2.0",
-      "method": "getUTXOS",
-      "params": [fromAddress, amount],
-      "id": 1234
-    })
-      .then((response) => {
-        return response.data.result;
-      })
-      .catch((error) => {
-        return {success: false, data: error};
-      });
-  },
+    //获取input utxo
+    async getInputUtxo(fromAddress, amount) {
+        return await axios.post('http://116.62.135.185:8081/', {
+            "jsonrpc": "2.0",
+            "method": "getUTXOS",
+            "params": [fromAddress, amount],
+            "id": 1234
+        })
+            .then((response) => {
+                return response.data.result;
+            })
+            .catch((error) => {
+                return {success: false, data: error};
+            });
+    },
 
-  //验证交易
-  async valiTransaction(transactionInfo) {
-    return await axios.post('http://114.116.4.109:8001/api/accountledger/transaction/valiTransaction', {"txHex": transactionInfo})
-      .then((response) => {
-        return response;
-      })
-      .catch((error) => {
-        return {success: false, data: error};
-      });
-  },
-
-  //广播交易
-  async broadcast(transactionInfo) {
-    return await axios.post('http://114.116.4.109:8001/api/accountledger/transaction/broadcast', {txHex: transactionInfo})
-      .then((response) => {
-        return response;
-      })
-      .catch((error) => {
-        return {success: false, data: error};
-      });
-  },
+    //验证交易
+    async valiTransaction(transactionInfo) {
+        return await axios.post('http://114.116.4.109:8001/api/accountledger/transaction/valiTransaction', {"txHex": transactionInfo})
+            .then((response) => {
+                return response;
+            })
+            .catch((error) => {
+                return {success: false, data: error};
+            });
+    },
 
     //转账交易
     transferTransaction(pri, pub, inputsOwner, outputsOwner, remark) {
@@ -84,14 +73,27 @@ module.exports = {
         return {hash: hash.toString('hex'), signature: tx.txSerialize().toString('hex')}
     },
     async getNulsBalance(address) {
-        return await axios.post('http://192.168.1.192:18003/', {
+        return await axios.post('http://192.168.1.37:18003/', {
             "jsonrpc": "2.0",
             "method": "getAccountBalance",
-            "params": [2, 1,address],
+            "params": [2, 1, address],
             "id": 1234
         })
             .then((response) => {
-                return {'balance':response.data.result.balance,'nonce':response.data.result.nonce};
+                return {'balance': response.data.result.balance, 'nonce': response.data.result.nonce};
+            })
+            .catch((error) => {
+                return {success: false, data: error};
+            });
+    }, async broadcastTx(txHex) {
+        return await axios.post('http://192.168.1.37:18003/', {
+            "jsonrpc": "2.0",
+            "method": "broadcastTx",
+            "params": [2, txHex],
+            "id": 1234
+        })
+            .then((response) => {
+                return {'balance': response.data.result.balance, 'nonce': response.data.result.nonce};
             })
             .catch((error) => {
                 return {success: false, data: error};
