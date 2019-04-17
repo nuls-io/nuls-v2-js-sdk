@@ -1,5 +1,6 @@
 const BufferWriter = require("../utils/bufferwriter");
 const BN = require("../utils/bn");
+var BigInteger = require("bigi")
 
 //将数字转为6个字节的字节数组
 function toUInt48LE(value) {
@@ -53,9 +54,17 @@ let Serializers = function (bufWriter) {
     };
 
     this.writeBigInt = function (value) {
-        let buf = Buffer.alloc();
-        buf.writeUIntLE(value, 0, 6);
-        bufWriter.write(buf);
+        let bigInt = BigInteger('' + value);
+        let buf = bigInt.toByteArray();
+        if (buf.length > 32) {
+            throw "data error!";
+        }
+        buf = buf.reverse();
+        var arr2 = new Buffer(32);
+        for (var i = 0; i < buf.length; i++) {
+            arr2[i] = buf[i];
+        }
+        bufWriter.write(arr2);
     };
     this.writeDouble = function (value) {
         let buffer = new ArrayBuffer(8); // 初始化6个Byte的二进制数据缓冲区

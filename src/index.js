@@ -83,10 +83,19 @@ module.exports = {
         sdk.signatureTx(tx, pub, pri);
         return {hash: hash.toString('hex'), signature: tx.txSerialize().toString('hex')}
     },
-    getNulsBalance(address) {
-        return {
-            'balance': 10000,
-            'nonce': ''
-        }
+    async getNulsBalance(address) {
+        return await axios.post('http://apitn1.nulscan.io/', {
+            "jsonrpc": "2.0",
+            "method": "getAccountBalance",
+            "params": [2, 1,address],
+            "id": 1234
+        })
+            .then((response) => {
+                return {'balance':response.data.result.balance,'nonce':response.data.result.nonce};
+            })
+            .catch((error) => {
+                return {success: false, data: error};
+            });
     },
+
 };

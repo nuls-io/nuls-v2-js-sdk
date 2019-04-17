@@ -12,6 +12,7 @@ const bufferUtils = require("../utils/buffer");
 
 
 const Hash = require("../utils/hash");
+const Serializers = require("./serializers")
 
 //将数字转为6个字节的字节数组
 function toUInt16LE(value) {
@@ -20,6 +21,17 @@ function toUInt16LE(value) {
     return buf;
 }
 
+String.prototype.startWith = function (str) {
+    if (str == null || str == "" || this.length == 0 || str.length > this.length) {
+        return false;
+    }
+    if (this.substr(0, str.length) == str) {
+        return true;
+    } else {
+        return false;
+    }
+    return true;
+};
 module.exports = {
     //生成公私钥对
     newEcKey: function () {
@@ -42,15 +54,16 @@ module.exports = {
     },
 
     getBytesAddress: function (stringAddress) {
+        stringAddress = '' + stringAddress;
         if (stringAddress.startsWith('NULS')) {
             stringAddress = stringAddress.substring(5);
         } else if (stringAddress.startsWith('tNULS')) {
             stringAddress = stringAddress.substring(6);
         }
         for (var i = 0; i < stringAddress.length; i++) {
-            let val = str.charAt(i);
+            let val = stringAddress.charAt(i);
             if (val >= 97) {
-                stringAddress = addressString.substring(i + 1);
+                stringAddress = stringAddress.substring(i + 1);
                 break;
             }
         }
@@ -122,8 +135,14 @@ module.exports = {
 
     signatureTx: function (tx, pubHex, priHex) {
         let pub = Buffer.from(pubHex, 'hex');
-        let signValue = Buffer.from(this.signature(bufferUtils.bufferToHex(tx.getHash()), priHex), 'hex');
-        tx.p2PHKSignatures = [{'pub': pub, signValue: signValue}];
+        let hash = tx.getHash();
+        let sigHex = this.signature(hash.toString('hex'), priHex);
+        let signValue = Buffer.from(sigHex, 'hex');
+        let bw = new Serializers();
+        bw.writeBytesWithLength(pub)
+        bw.writeBytesWithLength(signValue)
+        tx.signatures = bw.getBufWriter().toBuffer();
+
     },
 
     verifySign: function (dataHex, signHex, pubHex) {

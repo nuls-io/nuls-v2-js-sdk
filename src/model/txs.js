@@ -65,7 +65,7 @@ let Transaction = function () {
     };
 
     this.calcHash = function () {
-        sdk.getTxHash(this);
+        return sdk.getTxHash(this);
     };
     this.setCoinData = function (inputs, outputs) {
         let bw = new Serializers();
@@ -83,11 +83,11 @@ let Transaction = function () {
         if (outputs.length > 0) {
             for (var i = 0; i < outputs.length; i++) {
                 let output = outputs[i];
-                bw.writeBytesWithLength(sdk.getBytesAddress(outputs.address));
-                bw.getBufWriter().writeUInt16LE(outputs.assetsChainId);
-                bw.getBufWriter().writeUInt16LE(outputs.assetsId);
-                bw.writeBigInt(input.amount);
-                bw.getBufWriter().writeVarintNum(outputs.lockTime);
+                bw.writeBytesWithLength(sdk.getBytesAddress(output.address));
+                bw.getBufWriter().writeUInt16LE(output.assetsChainId);
+                bw.getBufWriter().writeUInt16LE(output.assetsId);
+                bw.writeBigInt(output.amount);
+                bw.getBufWriter().writeVarintNum(output.lockTime);
             }
         }
         this.coinData = bw.getBufWriter().toBuffer();
@@ -126,6 +126,7 @@ module.exports = {
         bw.writeDouble(agent.commissionRate);
         this.txData = bw.getBufWriter().toBuffer();
     },
+
     DepositTransaction: function (entity) {
         //对象属性结构
         if (!entity || !entity.address || !entity.agentHash || !entity.deposit) {
@@ -139,6 +140,7 @@ module.exports = {
         this.txData = bw.getBufWriter().toBuffer();
 
     },
+
     StopAgentTransaction: function (agentHash) {
         if (!agentHash) {
             throw "Data wrong!";
@@ -146,6 +148,7 @@ module.exports = {
         this.type = 9;
         this.txData = Buffer.from(agentHash, 'hex');
     },
+
     WithdrawTransaction: function (depositTxHash) {
         if (!depositTxHash) {
             throw "Data wrong!";

@@ -1,10 +1,11 @@
 const nuls = require('./index');
 const utils = require('./utils/utils');
 const sdk = require("./api/sdk");
+const txs = require("./model/txs");
 
-let pri = 'fbaec43dff97f5e72657f22a9fb76bf712595774f6a03208be025a0094a5e85a';
-let pub = '03457c1c44c2c7fdc3503b55a583bc83bf4b2f32f23ad5788d422a7b6d635446cf';
-let fromAddress = 'tNULSeBaMrUCMMVjEjJeHyp9r5NCAbJ3rD3R3S';
+let pri = '94d344417d6faa55e3017709dd6b837bac2bc1769e3a4b516ac9a981465ac03c';
+let pub = '02403cb49ac24ff9555b073ce981e28bed5e81438b2c715a14d06bd248ea1d0091';
+let fromAddress = "tNULSeBaMfwpGBmn8xuKABPWUbdtsM2cMoinnn";
 let toAddress = 'tNULSeBaMp4u8yfeVPSWx1fZoVtfateY1ksNNN';
 let amount = 100000000;
 let remark = 'niels test....';
@@ -35,18 +36,18 @@ async function transfer2(pri, pub, fromAddress, toAddress, assetsChainId, assets
         }
     ];
 
-    let tt = new TransferTransaction();
+    let tt = new txs.TransferTransaction();
     tt.setCoinData(inputs, outputs);
     tt.time = new Date().getTime();
     tt.remark = remark;
-    tt.signatures = sdk.signatureTx(tt, pri, pub);
-
+    sdk.signatureTx(tt, pri, pub);
+    console.log(tt.txSerialize().toString('hex'));
 
 }
 
 //测试开始
 
-transfer2(pri, pub, fromAddress, toAddress, amount, remark).then((response) => {
+transfer2(pri, pub, fromAddress, toAddress, 2, 1, amount, remark).then((response) => {
     console.log(response)
 }).catch((error) => {
     console.log(error)
