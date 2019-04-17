@@ -7,26 +7,24 @@ let passWord = 'nuls123456';
 // console.log(newAddress);
 
 //导入地址
-const key ="411fa90f7161a20f4624a4f00167fac6d5afd97a7e6815f60e66106c559564a1";
-const importAddress = nuls.importByKey(2,key,passWord);
+const key = "411fa90f7161a20f4624a4f00167fac6d5afd97a7e6815f60e66106c559564a1";
+const importAddress = nuls.importByKey(2, key, passWord);
 console.log(importAddress);
 console.log(importAddress.address === 'tNULSeBaMuBCG7NkSyufjE76CVbPQMrZ5Q1v3s');
 
 
-//
-// /**
-//  * from    TTamW5GY7RXwES6JsJwA9UHqTxGKMnKw
-//  * to      TTakMrubBXi998CZgaYdTy2Nrqwd2ptq
-//  * value   0.8
-//  * remark  remark....
-//  */
-//
-// let pri = '683766502db8e219936121170e2906fff6678455a3b0e9afc66bb841e661e8bd';
-// let pub = '0358ded06b4477272fa20a0c70418f9392af40e67ba79c705702b275a5a4d7fc5b';
-// let fromAddress = 'TTamW5GY7RXwES6JsJwA9UHqTxGKMnKw';
-// let toAddress = 'TTakMrubBXi998CZgaYdTy2Nrqwd2ptq';
-// let amount = 8000000;
-// let remark = 'remark....';
+/**
+ * from    TTamW5GY7RXwES6JsJwA9UHqTxGKMnKw
+ * to      TTakMrubBXi998CZgaYdTy2Nrqwd2ptq
+ * value   0.8
+ * remark  remark....
+ */
+let pri = '683766502db8e219936121170e2906fff6678455a3b0e9afc66bb841e661e8bd';
+let pub = '0358ded06b4477272fa20a0c70418f9392af40e67ba79c705702b275a5a4d7fc5b';
+let fromAddress = 'TTamW5GY7RXwES6JsJwA9UHqTxGKMnKw';
+let toAddress = 'TTakMrubBXi998CZgaYdTy2Nrqwd2ptq';
+let amount = 8000000;
+let remark = 'remark....';
 //
 // //转账功能 trustUrl
 async function transfer(pri, pub, fromAddress, toAddress, amount, remark) {
