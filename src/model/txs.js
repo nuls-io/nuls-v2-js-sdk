@@ -77,7 +77,7 @@ let Transaction = function () {
                 bw.getBufWriter().writeUInt16LE(input.assetsChainId);
                 bw.getBufWriter().writeUInt16LE(input.assetsId);
                 bw.writeBigInt(input.amount);
-                bw.writeBytesWithLength(Buffer.from(input.nonce,'hex'));
+                bw.writeBytesWithLength(Buffer.from(input.nonce, 'hex'));
                 bw.getBufWriter().writeUInt8(0);
             }
         }
@@ -108,13 +108,15 @@ module.exports = {
         this.type = 2;
     },
     AliasTransaction: function (address, alias) {
+        Transaction.call(this);
         this.type = 3;
         let bw = new Serializers();
-        bw.writeBytesWithLength(Buffer.from(address, 'hex'));
+        bw.writeBytesWithLength(sdk.getBytesAddress(address));
         bw.writeString(alias);
         this.txData = bw.getBufWriter().toBuffer();
     },
     CreateAgentTransaction: function (agent) {
+        Transaction.call(this);
         //对象属性结构
         if (!agent || !agent.agentAddress || !agent.packingAddress || !agent.rewardAddress || !agent.commissionRate || !agent.deposit) {
             throw "Data wrong!";
@@ -130,6 +132,7 @@ module.exports = {
     },
 
     DepositTransaction: function (entity) {
+        Transaction.call(this);
         //对象属性结构
         if (!entity || !entity.address || !entity.agentHash || !entity.deposit) {
             throw "Data Wrong!";
@@ -144,6 +147,7 @@ module.exports = {
     },
 
     StopAgentTransaction: function (agentHash) {
+        Transaction.call(this);
         if (!agentHash) {
             throw "Data wrong!";
         }
@@ -152,6 +156,7 @@ module.exports = {
     },
 
     WithdrawTransaction: function (depositTxHash) {
+        Transaction.call(this);
         if (!depositTxHash) {
             throw "Data wrong!";
         }
