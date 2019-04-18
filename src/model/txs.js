@@ -145,8 +145,8 @@ module.exports = {
         this.type = 5;
         let bw = new Serializers();
         bw.writeBigInt(entity.deposit);
-        bw.getBufWriter().write(entity.address);
-        bw.getBufWriter().write(entity.agentHash);
+        bw.getBufWriter().write(sdk.getBytesAddress(entity.address));
+        bw.getBufWriter().write(Buffer.from(entity.agentHash,'hex'));
         this.txData = bw.getBufWriter().toBuffer();
 
     },
