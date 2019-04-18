@@ -115,14 +115,15 @@ module.exports = {
             });
     },
     async getAgentDeposistList(agentHash) {
+        //todo 这个接口是临时处理，后面要换一个接口，否则超过100个委托会出问题
         return await axios.post('http://192.168.1.37:18003/', {
             "jsonrpc": "2.0",
-            "method": "validateTx",
+            "method": "getConsensusDeposit",
             "params": [2, 1, 100, agentHash],
             "id": 1234
         })
             .then((response) => {
-                return response.data.result;
+                return response.data.result.list;
             })
             .catch((error) => {
                 return {success: false, data: error};

@@ -27,7 +27,7 @@ async function doit(pri, pub, fromAddress, assetsChainId, assetsId, amount, depo
         assetsId: assetsId,
         amount: amount,
         locked: -1,
-        nonce: 'a629f1f2f5f2b3b7'//这里是hash的最后16个字符
+        nonce: depositHash.substring(depositHash.length-16)//这里是hash的最后16个字符
     });
 
     let outputs = [

@@ -14,29 +14,46 @@ let remark = 'niels test alias....';
 async function doit(pri, pub, fromAddress, assetsChainId, assetsId, amount, agentHash) {
 
     const balanceInfo = await nuls.getNulsBalance(fromAddress);
-    let inputs = [];
     let fee = 100000;
 
     if (balanceInfo.balance < amount + fee) {
         return {success: false, data: "Your balance is not enough."}
     }
     const depositList = await nuls.getAgentDeposistList(agentHash)
-
+    let inputs = new Array();
+    let outputs = new Array();
     inputs.push({
         address: fromAddress,
         assetsChainId: assetsChainId,
         assetsId: assetsId,
         amount: amount,
-        locked: 1,
-        nonce: '692e8ad67367e597'//这里是hash的最后16个字符
+        locked: -1,
+        nonce: agentHash.substring(agentHash.length - 16)//这里是hash的最后16个字符
     });
 
-    let outputs = [
-        {
-            address: fromAddress, assetsChainId: assetsChainId,
-            assetsId: assetsId, amount: amount - fee, lockTime: 0
-        }
-    ];
+    outputs.push({
+        address: fromAddress, assetsChainId: assetsChainId,
+        assetsId: assetsId, amount: amount - fee, lockTime: 0
+    });
+
+
+    for (var i = 0; i < depositList.length; i++) {
+        let dpt = depositList[i];
+        inputs.push({
+            address: dpt.address,
+            assetsChainId: assetsChainId,
+            assetsId: assetsId,
+            amount: dpt.amount,
+            locked: -1,
+            nonce: dpt.txHash.substring(agentHash.length - 16)//这里是hash的最后16个字符
+        });
+
+        outputs.push({
+            address: dpt.address, assetsChainId: assetsChainId,
+            assetsId: assetsId, amount: dpt.amount, lockTime: 0
+        });
+
+    }
 
     let tt = new txs.StopAgentTransaction(agentHash);
     tt.time = 123456789;
@@ -44,7 +61,11 @@ async function doit(pri, pub, fromAddress, assetsChainId, assetsId, amount, agen
     tt.remark = remark;
     sdk.signatureTx(tt, pri, pub);
     let txhex = tt.txSerialize().toString('hex');
-    nuls.broadcastTx(txhex);
+    let result = await nuls.validateTx(txhex);
+    if (result.value) {
+        console.log(result.value)
+        nuls.broadcastTx(txhex);
+    }
     console.log(txhex);
     return 'done!';
 }
