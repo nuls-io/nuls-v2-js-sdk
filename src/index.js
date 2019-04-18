@@ -113,6 +113,20 @@ module.exports = {
             .catch((error) => {
                 return {success: false, data: error};
             });
+    },
+    async getAgentDeposistList(agentHash) {
+        return await axios.post('http://192.168.1.37:18003/', {
+            "jsonrpc": "2.0",
+            "method": "validateTx",
+            "params": [2, 1, 100, agentHash],
+            "id": 1234
+        })
+            .then((response) => {
+                return response.data.result;
+            })
+            .catch((error) => {
+                return {success: false, data: error};
+            });
     }
 
 };

@@ -78,7 +78,7 @@ let Transaction = function () {
                 bw.getBufWriter().writeUInt16LE(input.assetsId);
                 bw.writeBigInt(input.amount);
                 bw.writeBytesWithLength(Buffer.from(input.nonce, 'hex'));
-                bw.getBufWriter().writeUInt8(0);
+                bw.getBufWriter().write(Buffer.from([input.locked]));
             }
         }
         bw.getBufWriter().writeVarintNum(outputs.length);
@@ -146,7 +146,7 @@ module.exports = {
         let bw = new Serializers();
         bw.writeBigInt(entity.deposit);
         bw.getBufWriter().write(sdk.getBytesAddress(entity.address));
-        bw.getBufWriter().write(Buffer.from(entity.agentHash,'hex'));
+        bw.getBufWriter().write(Buffer.from(entity.agentHash, 'hex'));
         this.txData = bw.getBufWriter().toBuffer();
 
     },
