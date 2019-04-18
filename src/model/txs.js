@@ -89,7 +89,12 @@ let Transaction = function () {
                 bw.getBufWriter().writeUInt16LE(output.assetsChainId);
                 bw.getBufWriter().writeUInt16LE(output.assetsId);
                 bw.writeBigInt(output.amount);
-                bw.getBufWriter().writeVarintNum(output.lockTime);
+                if (output.lockTime == -1) {
+                    bw.getBufWriter().write(Buffer.from("ffffffffffffffffff", "hex"));
+
+                } else {
+                    bw.getBufWriter().writeVarintNum(output.lockTime);
+                }
             }
         }
         this.coinData = bw.getBufWriter().toBuffer();
@@ -124,9 +129,9 @@ module.exports = {
         this.type = 4;
         let bw = new Serializers();
         bw.writeBigInt(agent.deposit);
-        bw.getBufWriter().write(agent.agentAddress);
-        bw.getBufWriter().write(agent.packingAddress);
-        bw.getBufWriter().write(agent.rewardAddress);
+        bw.getBufWriter().write(sdk.getBytesAddress(agent.agentAddress));
+        bw.getBufWriter().write(sdk.getBytesAddress(agent.packingAddress));
+        bw.getBufWriter().write(sdk.getBytesAddress(agent.rewardAddress));
         bw.writeDouble(agent.commissionRate);
         this.txData = bw.getBufWriter().toBuffer();
     },

@@ -69,8 +69,13 @@ let Serializers = function (bufWriter) {
     this.writeDouble = function (value) {
         let buffer = new ArrayBuffer(8); // 初始化6个Byte的二进制数据缓冲区
         let dataView = new DataView(buffer);
-        dataView.setFloat64(value);
-        bufWriter.write(buffer);
+        dataView.setFloat64(0, value, true);
+        let buf = Buffer.alloc(8);
+        var view = new Uint8Array(buffer);
+        for (var i = 0; i < 8; i++) {
+            buf[i] = view[i];
+        }
+        bufWriter.write(buf);
     };
 };
 
