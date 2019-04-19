@@ -91,9 +91,8 @@ let Transaction = function () {
                 bw.writeBigInt(output.amount);
                 if (output.lockTime == -1) {
                     bw.getBufWriter().write(Buffer.from("ffffffffffffffffff", "hex"));
-
                 } else {
-                    bw.getBufWriter().writeVarintNum(output.lockTime);
+                    bw.writeUInt64LE(output.lockTime);
                 }
             }
         }

@@ -43,7 +43,11 @@ async function transfer2(pri, pub, fromAddress, toAddress, assetsChainId, assets
     tt.remark = remark;
     sdk.signatureTx(tt, pri, pub);
     let txhex = tt.txSerialize().toString('hex');
-    nuls.broadcastTx(txhex);
+    let result = await nuls.validateTx(txhex);
+    if (result.value) {
+        console.log(result.value)
+        nuls.broadcastTx(txhex);
+    }
     console.log(txhex);
     return 'done!';
 }
