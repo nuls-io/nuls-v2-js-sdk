@@ -62,9 +62,11 @@ async function doit(pri, pub, fromAddress, assetsChainId, assetsId, amount, agen
     sdk.signatureTx(tt, pri, pub);
     let txhex = tt.txSerialize().toString('hex');
     let result = await nuls.validateTx(txhex);
-    if (result.value) {
+    if (result&&result.value) {
         console.log(result.value)
         nuls.broadcastTx(txhex);
+    }else{
+        console.log("opration failed!")
     }
     console.log(txhex);
     return 'done!';

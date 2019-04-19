@@ -131,7 +131,7 @@ module.exports = {
         bw.getBufWriter().write(sdk.getBytesAddress(agent.agentAddress));
         bw.getBufWriter().write(sdk.getBytesAddress(agent.packingAddress));
         bw.getBufWriter().write(sdk.getBytesAddress(agent.rewardAddress));
-        bw.writeDouble(agent.commissionRate);
+        bw.getBufWriter().writeUInt8(agent.commissionRate);
         this.txData = bw.getBufWriter().toBuffer();
     },
 

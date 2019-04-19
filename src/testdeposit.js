@@ -43,7 +43,13 @@ async function doit(pri, pub, fromAddress, assetsChainId, assetsId, amount, depo
     tt.remark = remark;
     sdk.signatureTx(tt, pri, pub);
     let txhex = tt.txSerialize().toString('hex');
-    nuls.broadcastTx(txhex);
+    let result = await nuls.validateTx(txhex);
+    if (result&&result.value) {
+        console.log(result.value)
+        nuls.broadcastTx(txhex);
+    }else{
+        console.log("opration failed!")
+    }
     console.log(txhex);
     return 'done!';
 }
@@ -52,7 +58,7 @@ async function doit(pri, pub, fromAddress, assetsChainId, assetsId, amount, depo
 let deposit = {
     address: fromAddress,
     agentHash: '121d5252544c51204356c61e092d043ec63ef86639e57f2a692e8ad67367e597',
-    deposit:20000100000000
+    deposit: 20000100000000
 }
 doit(pri, pub, fromAddress, 2, 1, amount, deposit).then((response) => {
     console.log(response)
