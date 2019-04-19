@@ -13,49 +13,38 @@ let remark = 'niels test....';
 //转账功能 trustUrl
 async function transfer2(pri, pub, fromAddress, toAddress, assetsChainId, assetsId, amount, remark) {
 
-    const balanceInfo = await nuls.getNulsBalance(fromAddress);
-    let inputs = [];
-    let fee = 100000;
+  const balanceInfo = await nuls.getNulsBalance(fromAddress);
+  let inputs = [];
+  let fee = 100000;
 
-    if (balanceInfo.balance < amount + fee) {
-        return {success: false, data: "Your balance is not enough."}
+  if (balanceInfo.balance < amount + fee) {
+    return {success: false, data: "Your balance is not enough."}
+  }
+
+  inputs.push({
+    address: fromAddress,
+    assetsChainId: assetsChainId,
+    assetsId: assetsId,
+    amount: amount + fee,
+    locked: 0,
+    nonce: balanceInfo.nonce
+  });
+
+  let outputs = [
+    {
+      address: toAddress, assetsChainId: assetsChainId,
+      assetsId: assetsId, amount: amount, lockTime: 0
     }
-
-    inputs.push({
-        address: fromAddress,
-        assetsChainId: assetsChainId,
-        assetsId: assetsId,
-        amount: amount + fee,
-        locked: 0,
-        nonce: balanceInfo.nonce
-    });
-
-    let outputs = [
-        {
-            address: toAddress, assetsChainId: assetsChainId,
-            assetsId: assetsId, amount: amount, lockTime: 0
-        }
-    ];
-
-    let tt = new txs.TransferTransaction();
-    tt.time = 1234567;
-    tt.setCoinData(inputs, outputs);
-    tt.remark = remark;
-    sdk.signatureTx(tt, pri, pub);
-    let txhex = tt.txSerialize().toString('hex');
-    let result = await nuls.validateTx(txhex);
-    if (result.value) {
-        console.log(result.value)
-        nuls.broadcastTx(txhex);
-    }
-    console.log(txhex);
-    return 'done!';
+  ];
+  let txhex = await nuls.transferTransaction(pri, pub,inputs, outputs,remark);
+  console.log(txhex);
+  return 'done!';
 }
 
 //测试开始
 
 transfer2(pri, pub, fromAddress, toAddress, 2, 1, amount, remark).then((response) => {
-    console.log(response)
+  console.log(response)
 }).catch((error) => {
-    console.log(error)
+  console.log(error)
 });
