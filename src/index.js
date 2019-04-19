@@ -59,18 +59,14 @@ module.exports = {
     },
 
     //转账交易
-    transferTransaction(pri, pub, inputsOwner, outputsOwner, remark) {
-        let tx = new txs.TransferTransaction();
-        tx.remark = remark;
-        tx.time = (new Date()).valueOf();
-        tx.txData = null;
-        tx.inputs = inputsOwner;
-        tx.outputs = outputsOwner;
-        //计算hash
-        let hash = sdk.getTxHash(tx);
-        //签名
-        sdk.signatureTx(tx, pub, pri);
-        return {hash: hash.toString('hex'), signature: tx.txSerialize().toString('hex')}
+    transferTransaction(pri, pub, inputs, outputs, remark) {
+      let tt = new txs.TransferTransaction();
+      tt.time =(new Date()).valueOf();
+      tt.setCoinData(inputs, outputs);
+      tt.remark = remark;
+      sdk.signatureTx(tt, pri, pub);
+      let txhex = tt.txSerialize().toString('hex');
+      return txhex
     },
     async getNulsBalance(address) {
         return await axios.post('http://192.168.1.37:18003/', {
