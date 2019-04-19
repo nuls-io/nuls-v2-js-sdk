@@ -57,7 +57,7 @@ async function doit(pri, pub, fromAddress, assetsChainId, assetsId, amount, depo
 //测试开始
 let deposit = {
     address: fromAddress,
-    agentHash: '121d5252544c51204356c61e092d043ec63ef86639e57f2a692e8ad67367e597',
+    agentHash: 'f9e0dd20b97b7cf03967a86417dcdf4d8f3893076dba9b29cb9be076a0c24308',
     deposit: 20000100000000
 }
 doit(pri, pub, fromAddress, 2, 1, amount, deposit).then((response) => {

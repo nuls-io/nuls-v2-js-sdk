@@ -55,7 +55,7 @@ async function doit(pri, pub, fromAddress, assetsChainId, assetsId, amount, depo
 }
 
 //测试开始
-doit(pri, pub, fromAddress, 2, 1, amount, 'b355ec688bf17cf086b450f7d5c90298c5f3f5b3a2c49752a629f1f2f5f2b3b7').then((response) => {
+doit(pri, pub, fromAddress, 2, 1, amount, 'e1d329c9c32bf0c19415db8d854b5b0af100f3798bf81ddb545e42146965c28a').then((response) => {
     console.log(response)
 }).catch((error) => {
     console.log(error)
