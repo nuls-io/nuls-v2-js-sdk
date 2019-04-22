@@ -19,9 +19,9 @@ async function doit(pri, pub, fromAddress, assetsChainId, assetsId, amount, agen
     if (balanceInfo.balance < amount + fee) {
         return {success: false, data: "Your balance is not enough."}
     }
-    const depositList = await nuls.getAgentDeposistList(agentHash)
-    let inputs = new Array();
-    let outputs = new Array();
+    const depositList = await nuls.getAgentDeposistList(agentHash);
+    let inputs = [];
+    let outputs = [];
     inputs.push({
         address: fromAddress,
         assetsChainId: assetsChainId,
@@ -37,7 +37,7 @@ async function doit(pri, pub, fromAddress, assetsChainId, assetsId, amount, agen
     });
 
 
-    for (var i = 0; i < depositList.length; i++) {
+    for (let i = 0; i < depositList.length; i++) {
         let dpt = depositList[i];
         inputs.push({
             address: dpt.address,

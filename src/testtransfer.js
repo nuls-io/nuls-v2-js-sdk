@@ -36,7 +36,14 @@ async function transfer2(pri, pub, fromAddress, toAddress, assetsChainId, assets
       assetsId: assetsId, amount: amount, lockTime: 0
     }
   ];
-  let txhex = await nuls.transferTransaction(pri, pub,inputs, outputs,remark);
+  let txhex = await nuls.transactionSerialize(pri, pub,inputs, outputs,remark,2);
+
+  let result = await nuls.validateTx(txhex);
+  if (result&&result.value) {
+    nuls.broadcastTx(txhex);
+  }else{
+    console.log("opration failed!")
+  }
   console.log(txhex);
   return 'done!';
 }
