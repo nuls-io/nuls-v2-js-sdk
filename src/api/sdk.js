@@ -97,6 +97,7 @@ module.exports = {
             prefix = bs58.encode(chainIdBuffer).toUpperCase();
         }
         let constant = ['a', 'b', 'c', 'd', 'e'];
+        return prefix + constant[prefix.length - 1] + bs58.encode(tempBuffer)
     },
 
     //aes 加密
