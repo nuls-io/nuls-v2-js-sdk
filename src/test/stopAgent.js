@@ -1,8 +1,8 @@
 const nuls = require('../index');
 const {getNulsBalance, countFee, inputsOrOutputs, validateTx, broadcastTx, agentDeposistList} = require('./api/util');
-let pri = '94d344417d6faa55e3017709dd6b837bac2bc1769e3a4b516ac9a981465ac03c';
-let pub = '02403cb49ac24ff9555b073ce981e28bed5e81438b2c715a14d06bd248ea1d0091';
-let fromAddress = "tNULSeBaMfwpGBmn8xuKABPWUbdtsM2cMoinnn";
+let pri = '411fa90f7161a20f4624a4f00167fac6d5afd97a7e6815f60e66106c559564a1';
+let pub = '031c810153d633a5167ec629af771296bad4f26eacfe4034c978afee12b6c4fd44';
+let fromAddress = "tNULSeBaMuBCG7NkSyufjE76CVbPQMrZ5Q1v3s";
 let amount = 2000100000000;
 let remark = 'stop agent....';
 
@@ -63,4 +63,4 @@ async function stopAgent(pri, pub, fromAddress, assetsChainId, assetsId, amount,
 }
 
 //调用注销节点
-stopAgent(pri, pub, fromAddress, 2, 1, amount, 'a06f504e093f1fdc49fde86d04ddb0645b5fa5ee059e2eae5e2d4e93b9d6aaee');
+stopAgent(pri, pub, fromAddress, 2, 1, amount, '1c641f4b6ec42155e6c3e17b4f78db96353776c294a75c1dcca1f77f3f753545');

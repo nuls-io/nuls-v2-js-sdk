@@ -7,12 +7,9 @@ const rs = require('jsrsasign');
 const bs58 = require('bs58');
 const cryptos = require("crypto");
 const iv = CryptoJS.enc.Hex.parse('0000000000000000');
-
 const bufferUtils = require("../utils/buffer");
-
-
 const Hash = require("../utils/hash");
-const Serializers = require("./serializers")
+const Serializers = require("./serializers");
 
 //将数字转为6个字节的字节数组
 function toUInt16LE(value) {
@@ -22,10 +19,10 @@ function toUInt16LE(value) {
 }
 
 String.prototype.startWith = function (str) {
-    if (str == null || str == "" || this.length == 0 || str.length > this.length) {
+    if (str == null || str === "" || this.length === 0 || str.length > this.length) {
         return false;
     }
-    if (this.substr(0, str.length) == str) {
+    if (this.substr(0, str.length) === str) {
         return true;
     } else {
         return false;
@@ -60,14 +57,13 @@ module.exports = {
         } else if (stringAddress.startsWith('tNULS')) {
             stringAddress = stringAddress.substring(6);
         }
-        for (var i = 0; i < stringAddress.length; i++) {
+        for (let i = 0; i < stringAddress.length; i++) {
             let val = stringAddress.charAt(i);
             if (val >= 97) {
                 stringAddress = stringAddress.substring(i + 1);
                 break;
             }
         }
-
         let bytes = bs58.decode(stringAddress);
         return bytes.slice(0, bytes.length - 1);
     },
@@ -79,7 +75,7 @@ module.exports = {
         }
         let pubBuffer = Buffer.from(pub, 'hex');
         let sha = cryptos.createHash('sha256').update(pubBuffer).digest();
-        let pubkeyHash = cryptos.createHash('rmd160').update(sha).digest();
+        let pubkeyHash = cryptos.createHash('ripemd160').update(sha).digest();
         let chainIdBuffer = Buffer.concat([Buffer.from([0xFF & chainId >> 0]), Buffer.from([0xFF & chainId >> 8])]);
         let addrBuffer = Buffer.concat([chainIdBuffer, Buffer.from([1]), pubkeyHash]);
         let xor = 0x00;
@@ -93,15 +89,14 @@ module.exports = {
         }
         tempBuffer[addrBuffer.length] = xor;
         let prefix = '';
-        if (1 == chainId) {
+        if (1 === chainId) {
             prefix = 'NULS';
-        } else if (2 == chainId) {
+        } else if (2 === chainId) {
             prefix = "tNULS";
         } else {
             prefix = bs58.encode(chainIdBuffer).toUpperCase();
         }
         let constant = ['a', 'b', 'c', 'd', 'e'];
-        return prefix + constant[prefix.length - 1] + bs58.encode(tempBuffer)
     },
 
     //aes 加密
@@ -139,10 +134,9 @@ module.exports = {
         let sigHex = this.signature(hash.toString('hex'), priHex);
         let signValue = Buffer.from(sigHex, 'hex');
         let bw = new Serializers();
-        bw.writeBytesWithLength(pub)
-        bw.writeBytesWithLength(signValue)
+        bw.writeBytesWithLength(pub);
+        bw.writeBytesWithLength(signValue);
         tx.signatures = bw.getBufWriter().toBuffer();
-
     },
 
     verifySign: function (dataHex, signHex, pubHex) {

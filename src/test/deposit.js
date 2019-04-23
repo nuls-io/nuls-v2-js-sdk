@@ -1,12 +1,10 @@
 const nuls = require('../index');
 const {getNulsBalance, countFee, inputsOrOutputs, validateTx, broadcastTx} = require('./api/util');
-
-let pri = '94d344417d6faa55e3017709dd6b837bac2bc1769e3a4b516ac9a981465ac03c';
-let pub = '02403cb49ac24ff9555b073ce981e28bed5e81438b2c715a14d06bd248ea1d0091';
-let fromAddress = "tNULSeBaMfwpGBmn8xuKABPWUbdtsM2cMoinnn";
-
+let pri = '411fa90f7161a20f4624a4f00167fac6d5afd97a7e6815f60e66106c559564a1';
+let pub = '031c810153d633a5167ec629af771296bad4f26eacfe4034c978afee12b6c4fd44';
+let fromAddress = "tNULSeBaMuBCG7NkSyufjE76CVbPQMrZ5Q1v3s";
 let amount = 210000000000;
-let remark = 'niels test alias....';
+let remark = 'deposit ....';
 
 //转账功能 trustUrl
 async function doit(pri, pub, fromAddress, assetsChainId, assetsId, amount, deposit) {
@@ -38,7 +36,7 @@ async function doit(pri, pub, fromAddress, assetsChainId, assetsId, amount, depo
 //测试开始
 let deposit = {
   address: fromAddress,
-  agentHash: '716dc8c056e2ac2364d70d0994f8067fde9df172cffd0831a767419022810762',
+  agentHash: 'a8c9b4a5d9b33a79a6bc3a6f78caa2289ff22100de12e31b0009a937814f4899',
   deposit: 210000000000
 };
 //调用加入共识

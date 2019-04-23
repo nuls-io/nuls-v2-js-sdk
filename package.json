@@ -1,6 +1,6 @@
 {
   "name": "nuls-sdk-js",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "nuls nuls-js nuls-sdk nuls-js-sdk",
   "main": "index.js",
   "scripts": {

@@ -56,7 +56,7 @@ module.exports = {
     let tt = [];
     if (type === 2) { //转账交易
       tt = new txs.TransferTransaction();
-    }  if (type === 3) { //转账交易
+    }  if (type === 3) { //设置别名
       tt = new txs.TransferTransaction(info.fromAddress,info.alias);
     } else if (type === 4) { //创建节点
       tt = new txs.CreateAgentTransaction(info);
@@ -66,9 +66,6 @@ module.exports = {
       tt = new txs.WithdrawTransaction(info);
     } else if (type === 9) { //注销节点
       tt = new txs.StopAgentTransaction(info);
-    } else {
-      console.log("没有获取到交易类型");
-      return false
     }
     tt.time = (new Date()).valueOf();
     tt.setCoinData(inputs, outputs);
@@ -76,5 +73,15 @@ module.exports = {
     sdk.signatureTx(tt, pri, pub);
     return tt.txSerialize().toString('hex');
   },
+
+  /**
+   * 解密私钥
+   * @param aesPri
+   * @param password
+   * @returns {*}
+   */
+  decrypteOfAES(aesPri,password){
+    return sdk.decrypteOfAES(aesPri,password)
+  }
 
 };

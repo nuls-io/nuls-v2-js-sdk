@@ -1,7 +1,7 @@
 const axios = require('axios');
 const API_CHAIN_ID = 2;
 axios.defaults.timeout = 8000;
-axios.defaults.baseURL = 'http://192.168.1.37:18003/';
+axios.defaults.baseURL = 'http://192.168.1.192:18003/';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 /**
