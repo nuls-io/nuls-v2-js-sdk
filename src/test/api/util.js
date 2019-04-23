@@ -37,6 +37,11 @@ module.exports = {
       newLocked = -1;
       newNonce = transferInfo.depositHash.substring(transferInfo.depositHash.length - 16);
       newoutputAmount = transferInfo.amount - transferInfo.fee;
+    } else if(type === 9){
+      newAmount = transferInfo.amount;
+      newLocked = -1;
+      newNonce = transferInfo.depositHash.substring(transferInfo.depositHash.length - 16);
+      newoutputAmount = transferInfo.amount - transferInfo.fee;
     } else {
       console.log("没有交易类型")
     }
@@ -111,16 +116,11 @@ module.exports = {
    * @param agentHash
    * @returns {Promise<AxiosResponse<any>>}
    */
-  async getAgentDeposistList(agentHash) {
+  async agentDeposistList(agentHash) {
     //todo 这个接口是临时处理，后面要换一个接口，否则超过100个委托会出问题
-    return await axios.post('http://192.168.1.37:18003/', {
-      "jsonrpc": "2.0",
-      "method": "getConsensusDeposit",
-      "params": [2, 1, 100, agentHash],
-      "id": 1234
-    })
+    return await http.post('/', 'getConsensusDeposit', [1, 100, agentHash])
       .then((response) => {
-        return response.data.result.list;
+        return response.result;
       })
       .catch((error) => {
         return {success: false, data: error};

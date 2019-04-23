@@ -1,10 +1,14 @@
-const axios = require('axios');
 const sdk = require('./api/sdk');
 const txs = require('./model/txs');
 
 module.exports = {
 
-  //生成地址
+  /**
+   * 生成地址
+   * @param chainId
+   * @param passWord
+   * @returns {{}}
+   */
   newAddress(chainId, passWord) {
     let addressInfo = {};
     if (passWord) {
@@ -18,7 +22,13 @@ module.exports = {
     return addressInfo
   },
 
-  //私钥导入
+  /**
+   * 导入地址
+   * @param chainId
+   * @param pri
+   * @param passWord
+   * @returns {{}}
+   */
   importByKey(chainId, pri, passWord) {
     let addressInfo = {};
     addressInfo.pri = pri;
@@ -31,18 +41,17 @@ module.exports = {
     return addressInfo
   },
 
-  //转账交易
-  transferTransaction(pri, pub, inputs, outputs, remark) {
-    let tt = new txs.TransferTransaction();
-    tt.time = (new Date()).valueOf();
-    tt.setCoinData(inputs, outputs);
-    tt.remark = remark;
-    sdk.signatureTx(tt, pri, pub);
-    let txhex = tt.txSerialize().toString('hex');
-    return txhex
-  },
-
-  //交易签名
+  /**
+   * 交易签名
+   * @param pri
+   * @param pub
+   * @param inputs
+   * @param outputs
+   * @param remark
+   * @param type
+   * @param info
+   * @returns {boolean}
+   */
   transactionSerialize(pri, pub, inputs, outputs, remark, type, info) {
     let tt = [];
     if (type === 2) { //转账交易
@@ -56,7 +65,7 @@ module.exports = {
     } else if (type === 6) { //退出共识
       tt = new txs.WithdrawTransaction(info);
     } else if (type === 9) { //注销节点
-
+      tt = new txs.StopAgentTransaction(info);
     } else {
       console.log("没有获取到交易类型");
       return false

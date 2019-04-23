@@ -30,7 +30,7 @@ async function newAgent(pri, pub, fromAddress, assetsChainId, assetsId, amount, 
   };
   let inOrOutputs = await inputsOrOutputs(transferInfo, balanceInfo, 4);
   let txhex = await nuls.transactionSerialize(pri, pub, inOrOutputs.inputs, inOrOutputs.outputs, remark, 4, agent);
-  //console.log(txhex);
+  console.log(txhex);
   let result = await validateTx(txhex);
   if (result) {
     console.log(result.value);
