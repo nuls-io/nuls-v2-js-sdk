@@ -34,11 +34,11 @@ async function setAlias(pri, pub, fromAddress, toAddress, assetsChainId, assetsI
     fromAddress:fromAddress,
     alias:'wave'
   };
-  let txhex = await nuls.transactionSerialize(pri, pub, inOrOutputs.inputs, inOrOutputs.outputs, remark, 3,aliasInfo);
+  let txhex = await nuls.transactionSerialize(pri, pub, inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, 3,aliasInfo);
   //console.log(txhex);
   let result = await validateTx(txhex);
   if (result) {
-    console.log(result.value);
+    console.log(result.data.value);
     let results = await broadcastTx(txhex);
     if (results && result.value) {
       console.log("交易完成")
