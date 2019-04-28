@@ -42,7 +42,7 @@ async function setAlias(pri, pub, fromAddress, toAddress, assetsChainId, assetsI
   if (result) {
     console.log(result.data.value);
     let results = await broadcastTx(txhex);
-    if (results && result.value) {
+    if (results && result.data.value) {
       console.log("交易完成")
     } else {
       console.log("广播交易失败")
