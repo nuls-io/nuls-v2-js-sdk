@@ -4,10 +4,13 @@ module.exports = {
 
   /**
    * 计算手续费
-   */
-  countFee() {
-    //计算手续费 （124 + 50  * inputs.length + 38 * outputs.length + remark.bytes.length ）/1024
-    return 100000;
+   * @param tx
+   * @param signatrueCount 签名数量，默认为1
+   **/
+  countFee(tx, signatrueCount) {
+    let txSize = tx.txSerialize().length;
+    txSize += signatrueCount * 110;
+    return 100000 * Math.ceil(txSize / 1024);
   },
 
   /**
@@ -84,9 +87,9 @@ module.exports = {
   async validateTx(txHex) {
     return await http.post('/', 'validateTx', [txHex])
       .then((response) => {
-        if(response.hasOwnProperty("result")){
+        if (response.hasOwnProperty("result")) {
           return {success: true, data: response.result};
-        }else {
+        } else {
           return {success: false, data: response.error};
         }
       })

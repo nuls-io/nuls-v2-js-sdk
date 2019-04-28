@@ -1,11 +1,11 @@
 const nuls = require('../index');
 const {getNulsBalance, countFee, inputsOrOutputs, validateTx, broadcastTx} = require('./api/util');
-let pri = '411fa90f7161a20f4624a4f00167fac6d5afd97a7e6815f60e66106c559564a1';
-let pub = '031c810153d633a5167ec629af771296bad4f26eacfe4034c978afee12b6c4fd44';
-let fromAddress = "tNULSeBaMuBCG7NkSyufjE76CVbPQMrZ5Q1v3s";
+let pri = '9ce21dad67e0f0af2599b41b515a7f7018059418bab892a7b68f283d489abc4b';
+let pub = '03958b790c331954ed367d37bac901de5c2f06ac8368b37d7bd6cd5ae143c1d7e3';
+let fromAddress = "tNULSeBaMvEtDfvZuukDf2mVyfGo3DdiN8KLRG";
 let toAddress = 'tNULSeBaMp4u8yfeVPSWx1fZoVtfateY1ksNNN';
 let amount = 110000000;
-let remark = 'transfer test....';
+let remark = '首先你得有一个需要配置自动更新功能的 electron 项目。这里我为了测试自动更新功能里我为了测试自动更新功能是否成功搭建使用的是里我为了测试自动更新功能是否成功搭建使用的是里我为了测试自动更新功能是否成功搭建使用的是里我为了测试自动更新功能是否成功搭建使用的是是否成功搭建使用的是 electron-vue 脚手架搭建的项目首先你得有一个需要配置自动更新功能的 electron 项目。这里我为了测试自动更新功能是否成功搭建使用的是 electron-vue 脚手架搭建的项目首先你得有一个需要配置自动更新功能的 electron 项目。这里我为了测试自动更新功能是否成功搭建使用的是 electron-vue 脚手架搭建的项目首先你得有一个需要配置自动更新功能的  electro';
 
 /**
  * 转账交易
@@ -21,18 +21,31 @@ let remark = 'transfer test....';
  */
 async function transferTransaction(pri, pub, fromAddress, toAddress, assetsChainId, assetsId, amount, remark) {
   const balanceInfo = await getNulsBalance(fromAddress);
+
   let transferInfo = {
     fromAddress: fromAddress,
     toAddress: toAddress,
     assetsChainId: assetsChainId,
     assetsId: assetsId,
     amount: amount,
-    fee: countFee()
+    fee: 100000
   };
   let inOrOutputs = await inputsOrOutputs(transferInfo, balanceInfo, 2);
-  let txhex = "";
+  let tAssemble = [];//交易组装
+  let txhex = "";//交易签名
   if (inOrOutputs.success) {
-    txhex = await nuls.transactionSerialize(pri, pub, inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, 2);
+    tAssemble = await nuls.transactionAssemble(inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, 2);
+    //获取手续费
+    let newFee = countFee(tAssemble, 1);
+    //手续费大于0.001的时候重新组装交易及签名
+    if (transferInfo.fee !== newFee) {
+      transferInfo.fee = newFee;
+      inOrOutputs = await inputsOrOutputs(transferInfo, balanceInfo, 2);
+      tAssemble = await nuls.transactionAssemble(inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, 2);
+      txhex = await nuls.transactionSerialize(pri, pub, tAssemble);
+    } else {
+      txhex = await nuls.transactionSerialize(pri, pub, tAssemble);
+    }
   } else {
     console.log(inOrOutputs.data)
   }

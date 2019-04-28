@@ -24,7 +24,7 @@ async function stopAgent(pri, pub, fromAddress, assetsChainId, assetsId, amount,
     assetsChainId: assetsChainId,
     assetsId: assetsId,
     amount: amount,
-    fee: countFee(),
+    fee: 100000,
     depositHash: agentHash,
   };
   let inOrOutputs = await inputsOrOutputs(transferInfo, balanceInfo, 9);
@@ -45,7 +45,35 @@ async function stopAgent(pri, pub, fromAddress, assetsChainId, assetsId, amount,
       assetsId: assetsId, amount: itme.amount, lockTime: 0
     });
   }
-  let txhex = await nuls.transactionSerialize(pri, pub, newInputs, newOutputs, remark, 9, agentHash);
+  let tAssemble = await nuls.transactionAssemble(newInputs, newOutputs, remark, 9, agentHash);
+  let txhex = '';
+  //获取手续费
+  let newFee = countFee(tAssemble, 1);
+  //手续费大于0.001的时候重新组装交易及签名
+  if (transferInfo.fee !== newFee) {
+    transferInfo.fee = newFee;
+    inOrOutputs = await inputsOrOutputs(transferInfo, balanceInfo, 9);
+    newInputs = inOrOutputs.inputs;
+    newOutputs = inOrOutputs.outputs;
+    for (let itme of depositList.list) {
+      newInputs.push({
+        address: itme.address,
+        assetsChainId: assetsChainId,
+        assetsId: assetsId,
+        amount: itme.amount,
+        locked: -1,
+        nonce: itme.txHash.substring(agentHash.length - 16)//这里是hash的最后16个字符
+      });
+      newOutputs.push({
+        address: itme.address, assetsChainId: assetsChainId,
+        assetsId: assetsId, amount: itme.amount, lockTime: 0
+      });
+    }
+    tAssemble = await nuls.transactionAssemble(newInputs, newOutputs, remark, 9, agentHash);
+    txhex = await nuls.transactionSerialize(pri, pub, tAssemble);
+  } else {
+    txhex = await nuls.transactionSerialize(pri, pub, tAssemble);
+  }
   //console.log(txhex);
   let result = await validateTx(txhex);
   if (result) {

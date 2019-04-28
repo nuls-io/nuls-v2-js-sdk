@@ -27,14 +27,15 @@ async function setAlias(pri, pub, fromAddress, toAddress, assetsChainId, assetsI
     assetsChainId: assetsChainId,
     assetsId: assetsId,
     amount: amount,
-    fee: countFee()
+    fee:100000
   };
   let inOrOutputs = await inputsOrOutputs(transferInfo, balanceInfo, 3);
   let aliasInfo = {
     fromAddress:fromAddress,
     alias:'wave'
   };
-  let txhex = await nuls.transactionSerialize(pri, pub, inOrOutputs.inputs, inOrOutputs.outputs, remark, 3,aliasInfo);
+  let tAssemble =  await nuls.transactionAssemble(inOrOutputs.inputs, inOrOutputs.outputs, remark, 3,aliasInfo);
+  let txhex = await nuls.transactionSerialize(pri, pub,tAssemble);
   //console.log(txhex);
   let result = await validateTx(txhex);
   if (result) {

@@ -23,10 +23,11 @@ async function newAgent(pri, pub, fromAddress, assetsChainId, assetsId, amount, 
     assetsChainId: assetsChainId,
     assetsId: assetsId,
     amount: amount,
-    fee: countFee()
+    fee: 100000
   };
   let inOrOutputs = await inputsOrOutputs(transferInfo, balanceInfo, 4);
-  let txhex = await nuls.transactionSerialize(pri, pub, inOrOutputs.inputs, inOrOutputs.outputs, remark, 4, agent);
+  let tAssemble =  await nuls.transactionAssemble(inOrOutputs.inputs, inOrOutputs.outputs, remark, 4, agent);
+  let txhex = await nuls.transactionSerialize(pri, pub,tAssemble);
   //console.log(txhex);
   let result = await validateTx(txhex);
   if (result) {

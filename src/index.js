@@ -42,18 +42,17 @@ module.exports = {
   },
 
   /**
-   * 交易签名
-   * @param pri
-   * @param pub
+   * 组装交易
    * @param inputs
    * @param outputs
    * @param remark
    * @param type
    * @param info
-   * @returns {boolean}
+   * @returns {Array}
    */
-  transactionSerialize(pri, pub, inputs, outputs, remark, type, info) {
+  transactionAssemble(inputs, outputs, remark, type, info) {
     let tt = [];
+
     if (type === 2) { //转账交易
       tt = new txs.TransferTransaction();
     }  if (type === 3) { //设置别名
@@ -70,8 +69,20 @@ module.exports = {
     tt.time = (new Date()).valueOf();
     tt.setCoinData(inputs, outputs);
     tt.remark = remark;
-    sdk.signatureTx(tt, pri, pub);
-    return tt.txSerialize().toString('hex');
+
+    return tt
+  },
+
+  /**
+   * 交易签名
+   * @param pri
+   * @param pub
+   * @param tt
+   * @returns {boolean}
+   */
+  transactionSerialize(pri, pub, tAssemble) {
+    sdk.signatureTx(tAssemble, pri, pub);
+    return tAssemble.txSerialize().toString('hex');
   },
 
   /**

@@ -1,5 +1,5 @@
 const nuls = require('../index');
-const {getNulsBalance, countFee, inputsOrOutputs, validateTx, broadcastTx} = require('./api/util');
+const {getNulsBalance, inputsOrOutputs, validateTx, broadcastTx} = require('./api/util');
 let pri = '94d344417d6faa55e3017709dd6b837bac2bc1769e3a4b516ac9a981465ac03c';
 let pub = '02403cb49ac24ff9555b073ce981e28bed5e81438b2c715a14d06bd248ea1d0091';
 let fromAddress = "tNULSeBaMfwpGBmn8xuKABPWUbdtsM2cMoinnn";
@@ -23,11 +23,12 @@ async function take(pri, pub, fromAddress, assetsChainId, assetsId, amount, depo
     assetsChainId: assetsChainId,
     assetsId: assetsId,
     amount: amount,
-    fee: countFee(),
+    fee: 100000,
     depositHash: depositHash
   };
   let inOrOutputs = await inputsOrOutputs(transferInfo, balanceInfo, 6);
-  let txhex = await nuls.transactionSerialize(pri, pub, inOrOutputs.inputs, inOrOutputs.outputs, remark, 6, depositHash);
+  let tAssemble =  await nuls.transactionAssemble(inOrOutputs.inputs, inOrOutputs.outputs, remark, 6, depositHash);
+  let txhex = await nuls.transactionSerialize(pri, pub,tAssemble);
   //console.log(txhex);
   let result = await validateTx(txhex);
   if (result) {

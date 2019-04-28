@@ -14,10 +14,11 @@ async function doit(pri, pub, fromAddress, assetsChainId, assetsId, amount, depo
     assetsChainId: assetsChainId,
     assetsId: assetsId,
     amount: amount,
-    fee: countFee()
+    fee:100000
   };
   let inOrOutputs = await inputsOrOutputs(transferInfo, balanceInfo, 5);
-  let txhex = await nuls.transactionSerialize(pri, pub, inOrOutputs.inputs, inOrOutputs.outputs, remark, 5, deposit);
+  let tAssemble =  await nuls.transactionAssemble(nOrOutputs.inputs, inOrOutputs.outputs, remark, 5, deposit);
+  let txhex = await nuls.transactionSerialize(pri, pub,tAssemble);
   //console.log(txhex);
   let result = await validateTx(txhex);
   if (result) {
