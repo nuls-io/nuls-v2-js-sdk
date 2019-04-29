@@ -52,11 +52,10 @@ module.exports = {
    */
   transactionAssemble(inputs, outputs, remark, type, info) {
     let tt = [];
-
     if (type === 2) { //转账交易
       tt = new txs.TransferTransaction();
     }  if (type === 3) { //设置别名
-      tt = new txs.TransferTransaction(info.fromAddress,info.alias);
+      tt = new txs.AliasTransaction(info.fromAddress,info.alias);
     } else if (type === 4) { //创建节点
       tt = new txs.CreateAgentTransaction(info);
     } else if (type === 5) { //加入共识
@@ -69,7 +68,6 @@ module.exports = {
     tt.time = (new Date()).valueOf();
     tt.setCoinData(inputs, outputs);
     tt.remark = remark;
-
     return tt
   },
 
@@ -77,7 +75,7 @@ module.exports = {
    * 交易签名
    * @param pri
    * @param pub
-   * @param tt
+   * @param tAssemble
    * @returns {boolean}
    */
   transactionSerialize(pri, pub, tAssemble) {
