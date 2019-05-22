@@ -164,8 +164,91 @@ module.exports = {
     this.type = 6;
     this.txData = Buffer.from(depositTxHash, 'hex');
   },
-  CreateContractTransaction: function () {
+  CreateContractTransaction: function (contractCreate) {
+    Transaction.call(this);
+    if (!contractCreate.chainId || !contractCreate.sender || !contractCreate.contractAddress ||
+        !contractCreate.contractCode || !contractCreate.gasLimit || !contractCreate.price) {
+      throw "Data wrong!";
+    }
 
+    this.type = 15;
+    let bw = new Serializers();
+    bw.getBufWriter().write(sdk.getBytesAddress(contractCreate.sender));
+    bw.getBufWriter().write(sdk.getBytesAddress(contractCreate.contractAddress));
+    bw.writeBytesWithLength(contractCreate.code);
+    bw.writeUInt64LE(contractCreate.gasLimit);
+    bw.writeUInt64LE(contractCreate.price);
+    let args = contractCreate.args;
+    if(args != null) {
+      bw.getBufWriter().write(args.length);
+      let innerArgs;
+      for(let j = 0; j < args.length; j++) {
+        innerArgs = args[j];
+        if(innerArgs == null) {
+          bw.getBufWriter().write(0);
+        } else {
+          bw.getBufWriter().write(innerArgs.length);
+          for(let k = 0; k < innerArgs.length; k++) {
+            bw.writeString(innerArgs[k]);
+          }
+        }
+      }
+    } else {
+      bw.getBufWriter().write(0);
+    }
+
+
+    this.txData = bw.getBufWriter().toBuffer();
+  },
+  CallContractTransaction: function (contractCall) {
+    Transaction.call(this);
+    if (!contractCall.chainId || !contractCall.sender || !contractCall.contractAddress ||
+        !contractCall.value || !contractCall.gasLimit || !contractCall.price ||
+        !contractCall.methodName) {
+      throw "Data wrong!";
+    }
+
+    this.type = 16;
+    let bw = new Serializers();
+    bw.getBufWriter().write(sdk.getBytesAddress(contractCall.sender));
+    bw.getBufWriter().write(sdk.getBytesAddress(contractCall.contractAddress));
+    bw.writeBigInt(contractCall.value);
+    bw.writeUInt64LE(contractCall.gasLimit);
+    bw.writeUInt64LE(contractCall.price);
+    bw.writeString(contractCall.methodName);
+    bw.writeString(contractCall.methodDesc);
+    let args = contractCall.args;
+    if(args != null) {
+      bw.getBufWriter().write(args.length);
+      let innerArgs;
+      for(let j = 0; j < args.length; j++) {
+        innerArgs = args[j];
+        if(innerArgs == null) {
+          bw.getBufWriter().write(0);
+        } else {
+          bw.getBufWriter().write(innerArgs.length);
+          for(let k = 0; k < innerArgs.length; k++) {
+            bw.writeString(innerArgs[k]);
+          }
+        }
+      }
+    } else {
+      bw.getBufWriter().write(0);
+    }
+
+
+    this.txData = bw.getBufWriter().toBuffer();
+  },
+  DeleteContractTransaction: function (contractDelete) {
+    Transaction.call(this);
+    if (!contractCall.chainId || !contractCall.sender || !contractCall.contractAddress) {
+      throw "Data wrong!";
+    }
+    this.type = 17;
+    let bw = new Serializers();
+    bw.getBufWriter().write(sdk.getBytesAddress(contractCall.sender));
+    bw.getBufWriter().write(sdk.getBytesAddress(contractCall.contractAddress));
+    this.txData = bw.getBufWriter().toBuffer();
   },
 };
 

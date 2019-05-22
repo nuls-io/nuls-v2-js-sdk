@@ -11,6 +11,7 @@ const bufferUtils = require("../utils/buffer");
 const Hash = require("../utils/hash");
 const Serializers = require("./serializers");
 
+
 //将数字转为6个字节的字节数组
 function toUInt16LE(value) {
     let buf = Buffer.alloc(2);
@@ -30,6 +31,10 @@ String.prototype.startWith = function (str) {
     return true;
 };
 module.exports = {
+    CONTRACT_CONSTRUCTOR = "<init>",
+    CONTRACT_MAX_GASLIMIT = 10000000,
+    CONTRACT_MINIMUM_PRICE = 25,
+
     //生成公私钥对
     newEcKey: function () {
         let keys = {};
@@ -68,8 +73,19 @@ module.exports = {
         return bytes.slice(0, bytes.length - 1);
     },
 
-    //根据公钥或者私钥获取地址字符串
+    //根据公钥、私钥获取地址字符串
     getStringAddress: function (chainId, pri, pub) {
+        return getStringAddressBase(chainId, 1, pri, pub);
+    },
+
+    //根据公钥、私钥获取智能合约地址字符串
+    getStringContractAddress: function (chainId) {
+        let addressInfo = sdk.newEcKey();
+        return getStringAddressBase(chainId, 2, addressInfo.pri, addressInfo.pub);
+    },
+
+    //根据地址类型、公钥、私钥获取地址字符串
+    getStringAddressBase: function (chainId, type, pri, pub) {
         if (!pub) {
             pub = this.getPub(pri)
         }
@@ -77,7 +93,7 @@ module.exports = {
         let sha = cryptos.createHash('sha256').update(pubBuffer).digest();
         let pubkeyHash = cryptos.createHash('ripemd160').update(sha).digest();
         let chainIdBuffer = Buffer.concat([Buffer.from([0xFF & chainId >> 0]), Buffer.from([0xFF & chainId >> 8])]);
-        let addrBuffer = Buffer.concat([chainIdBuffer, Buffer.from([1]), pubkeyHash]);
+        let addrBuffer = Buffer.concat([chainIdBuffer, Buffer.from([type]), pubkeyHash]);
         let xor = 0x00;
         let temp = "";
         let tempBuffer = Buffer.allocUnsafe(addrBuffer.length + 1);
@@ -97,7 +113,7 @@ module.exports = {
             prefix = bs58.encode(chainIdBuffer).toUpperCase();
         }
         let constant = ['a', 'b', 'c', 'd', 'e'];
-        return prefix + constant[prefix.length - 1] + bs58.encode(tempBuffer)
+        return prefix + constant[prefix.length - 1] + bs58.encode(tempBuffer);
     },
 
     //aes 加密

@@ -79,6 +79,134 @@ module.exports = {
       });
   },
 
+  //TODO 获取合约代码构造函数
+  /**
+   * 获取合约代码构造函数
+   * @param contractCodeHex
+   * @returns {Promise<AxiosResponse<any>>}
+   */
+  async getContractConstructor(chainId, contractCodeHex) {
+    return await http.post('/', 'getContractConstructor', [chainId, contractCodeHex])
+        .then((response) => {
+          if(response.hasOwnProperty("result")){
+            return {success: true, data: response.result};
+          }else {
+            return {success: false, data: response.error};
+          }
+        })
+        .catch((error) => {
+          return {success: false, data: error};
+        });
+  },
+
+  //TODO 获取合约指定函数的参数类型
+  /**
+   * 获取合约指定函数的参数类型
+   * @param chainId, contractAddress, methodName
+   * @returns {Promise<AxiosResponse<any>>}
+   */
+  async getContractMethodArgsTypes(chainId, contractAddress, methodName) {
+    return await http.post('/', 'getContractMethodArgsTypes', [chainId, contractAddress, methodName])
+        .then((response) => {
+          if(response.hasOwnProperty("result")){
+            return {success: true, data: response.result};
+          }else {
+            return {success: false, data: response.error};
+          }
+        })
+        .catch((error) => {
+          return {success: false, data: error};
+        });
+  },
+
+  /**
+   * //TODO 验证创建合约交易
+   */
+  async validateContractCreate(chainId, sender, gasLimit, price, contractCode, args) {
+    return await http.post('/', 'validateContractCreate', [chainId, sender, gasLimit, price, contractCode, args])
+        .then((response) => {
+          if(response.hasOwnProperty("result")){
+            return {success: true, data: response.result};
+          }else {
+            return {success: false, data: response.error};
+          }
+        })
+        .catch((error) => {
+          return {success: false, data: error};
+        });
+  },
+
+  /**
+   * //TODO 预估创建合约交易的gas
+   */
+  async imputedContractCreateGas(chainId, sender, contractCode, args) {
+    return await http.post('/', 'imputedContractCreateGas', [chainId, sender, contractCode, args])
+        .then((response) => {
+          if(response.hasOwnProperty("result")){
+            return {success: true, data: response.result};
+          }else {
+            return {success: false, data: response.error};
+          }
+        })
+        .catch((error) => {
+          return {success: false, data: error};
+        });
+  },
+
+  /**
+   * //TODO 验证调用合约交易
+   */
+  async validateContractCall(chainId, sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args) {
+    return await http.post('/', 'validateContractCall', [chainId, sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args])
+        .then((response) => {
+          if(response.hasOwnProperty("result")){
+            return {success: true, data: response.result};
+          }else {
+            return {success: false, data: response.error};
+          }
+        })
+        .catch((error) => {
+          return {success: false, data: error};
+        });
+  },
+
+
+
+  /**
+   * //TODO 预估调用合约交易的gas
+   */
+  async imputedContractCallGas(chainId, sender, value, contractAddress, methodName, methodDesc, args) {
+    return await http.post('/', 'imputedContractCallGas', [chainId, sender, value, contractAddress, methodName, methodDesc, args])
+        .then((response) => {
+          if(response.hasOwnProperty("result")){
+            return {success: true, data: response.result};
+          }else {
+            return {success: false, data: response.error};
+          }
+        })
+        .catch((error) => {
+          return {success: false, data: error};
+        });
+  },
+
+  /**
+   * //TODO 验证删除合约交易
+   */
+  async validateContractDelete(chainId, sender, contractAddress) {
+      return await http.post('/', 'validateContractDelete', [chainId, sender, contractAddress])
+          .then((response) => {
+              if(response.hasOwnProperty("result")){
+                  return {success: true, data: response.result};
+              }else {
+                  return {success: false, data: response.error};
+              }
+          })
+          .catch((error) => {
+              return {success: false, data: error};
+          });
+  },
+
+
   /**
    * 验证交易
    * @param txHex
