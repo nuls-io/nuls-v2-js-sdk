@@ -31,9 +31,9 @@ String.prototype.startWith = function (str) {
     return true;
 };
 module.exports = {
-    CONTRACT_CONSTRUCTOR = "<init>",
-    CONTRACT_MAX_GASLIMIT = 10000000,
-    CONTRACT_MINIMUM_PRICE = 25,
+    CONTRACT_CONSTRUCTOR : "<init>",
+    CONTRACT_MAX_GASLIMIT : 10000000,
+    CONTRACT_MINIMUM_PRICE : 25,
 
     //生成公私钥对
     newEcKey: function () {
