@@ -3,13 +3,6 @@ const sdk = require("../api/sdk");
 const bs58 = require('bs58');
 const bufferFrom = require('buffer-from');
 
-//将数字转为6个字节的字节数组
-function toUInt48LE(value) {
-  let buf = Buffer.alloc(6);
-  buf.writeUIntLE(value, 0, 6);
-  return buf;
-}
-
 function addressToBytes(address) {
   let bytes = bs58.decode(address);
   return bufferFrom(bytes.subarray(0, 23));
@@ -33,7 +26,7 @@ function bytesToAddress(bytes) {
 let Transaction = function () {
   this.hash = null;
   this.type = 0;//交易类型
-  this.time = Date.now();//交易时间
+  this.time = parseInt(Date.now()/1000);//交易时间
   this.remark = null;//备注
   this.txData = null;//业务数据
   this.coinData = [];//输入输出
@@ -42,7 +35,7 @@ let Transaction = function () {
   this.txSerialize = function () {
     let bw = new Serializers();
     bw.getBufWriter().writeUInt16LE(this.type);
-    bw.writeUINT48LE(this.time);
+    bw.getBufWriter().writeUInt32LE(this.time);
     bw.writeString(this.remark);
     bw.writeBytesWithLength(this.txData);//txData
     bw.writeBytesWithLength(this.coinData);
@@ -54,7 +47,7 @@ let Transaction = function () {
   this.serializeForHash = function () {
     let bw = new Serializers();
     bw.getBufWriter().writeUInt16LE(this.type);
-    bw.writeUINT48LE(this.time);
+    bw.getBufWriter().writeUInt32LE(this.time);
     bw.writeString(this.remark);
     bw.writeBytesWithLength(this.txData);
     bw.writeBytesWithLength(this.coinData);

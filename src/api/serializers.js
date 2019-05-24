@@ -2,21 +2,10 @@ const BufferWriter = require("../utils/bufferwriter");
 const BN = require("../utils/bn");
 var BigInteger = require("bigi")
 
-//将数字转为6个字节的字节数组
-function toUInt48LE(value) {
-    let buf = Buffer.alloc(6);
-    buf.writeUIntLE(value, 0, 6);
-    return buf;
-}
-
 let Serializers = function (bufWriter) {
     if (!bufWriter) {
         bufWriter = new BufferWriter();
     }
-
-    this.writeUINT48LE = function (value) {
-        bufWriter.write(toUInt48LE(value));
-    };
 
     this.writeString = function (value) {
         if (!value || value.length === 0) {
