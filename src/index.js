@@ -71,7 +71,6 @@ module.exports = {
     } else if (type === 17) { //删除合约
       tt = new txs.DeleteContractTransaction(info);
     }
-    tt.time = (new Date()).valueOf();
     tt.setCoinData(inputs, outputs);
     tt.remark = remark;
     return tt
