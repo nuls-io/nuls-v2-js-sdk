@@ -173,21 +173,21 @@ module.exports = {
     bw.writeUInt64LE(contractCreate.price);
     let args = contractCreate.args;
     if(args != null) {
-      bw.getBufWriter().write(args.length);
+      bw.getBufWriter().writeUInt8(args.length);
       let innerArgs;
       for(let j = 0; j < args.length; j++) {
         innerArgs = args[j];
         if(innerArgs == null) {
-          bw.getBufWriter().write(0);
+          bw.getBufWriter().writeUInt8(0);
         } else {
-          bw.getBufWriter().write(innerArgs.length);
+          bw.getBufWriter().writeUInt8(innerArgs.length);
           for(let k = 0; k < innerArgs.length; k++) {
             bw.writeString(innerArgs[k]);
           }
         }
       }
     } else {
-      bw.getBufWriter().write(0);
+      bw.getBufWriter().writeUInt8(0);
     }
 
 
@@ -212,21 +212,21 @@ module.exports = {
     bw.writeString(contractCall.methodDesc);
     let args = contractCall.args;
     if(args != null) {
-      bw.getBufWriter().write(args.length);
+      bw.getBufWriter().writeUInt8(args.length);
       let innerArgs;
       for(let j = 0; j < args.length; j++) {
         innerArgs = args[j];
         if(innerArgs == null) {
-          bw.getBufWriter().write(0);
+          bw.getBufWriter().writeUInt8(0);
         } else {
-          bw.getBufWriter().write(innerArgs.length);
+          bw.getBufWriter().writeUInt8(innerArgs.length);
           for(let k = 0; k < innerArgs.length; k++) {
             bw.writeString(innerArgs[k]);
           }
         }
       }
     } else {
-      bw.getBufWriter().write(0);
+      bw.getBufWriter().writeUInt8(0);
     }
 
 
