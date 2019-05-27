@@ -80,8 +80,8 @@ module.exports = {
 
     //根据公钥、私钥获取智能合约地址字符串
     getStringContractAddress: function (chainId) {
-        let addressInfo = sdk.newEcKey();
-        return getStringAddressBase(chainId, 2, addressInfo.pri, addressInfo.pub);
+        let addressInfo = this.newEcKey();
+        return this.getStringAddressBase(chainId, 2, addressInfo.pri, addressInfo.pub);
     },
 
     //根据地址类型、公钥、私钥获取地址字符串
