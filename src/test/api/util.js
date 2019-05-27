@@ -79,7 +79,6 @@ module.exports = {
       });
   },
 
-  //TODO 获取合约代码构造函数
   /**
    * 获取合约代码构造函数
    * @param contractCodeHex
@@ -99,7 +98,6 @@ module.exports = {
         });
   },
 
-  //TODO 获取合约指定函数的参数类型
   /**
    * 获取合约指定函数的参数类型
    * @param chainId, contractAddress, methodName
@@ -120,7 +118,7 @@ module.exports = {
   },
 
   /**
-   * //TODO 验证创建合约交易
+   * 验证创建合约交易
    */
   async validateContractCreate(chainId, sender, gasLimit, price, contractCode, args) {
     return await http.post('/', 'validateContractCreate', [chainId, sender, gasLimit, price, contractCode, args])
@@ -137,7 +135,7 @@ module.exports = {
   },
 
   /**
-   * //TODO 预估创建合约交易的gas
+   * 预估创建合约交易的gas
    */
   async imputedContractCreateGas(chainId, sender, contractCode, args) {
     return await http.post('/', 'imputedContractCreateGas', [chainId, sender, contractCode, args])
@@ -154,7 +152,7 @@ module.exports = {
   },
 
   /**
-   * //TODO 验证调用合约交易
+   * 验证调用合约交易
    */
   async validateContractCall(chainId, sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args) {
     return await http.post('/', 'validateContractCall', [chainId, sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args])
@@ -173,7 +171,7 @@ module.exports = {
 
 
   /**
-   * //TODO 预估调用合约交易的gas
+   * 预估调用合约交易的gas
    */
   async imputedContractCallGas(chainId, sender, value, contractAddress, methodName, methodDesc, args) {
     return await http.post('/', 'imputedContractCallGas', [chainId, sender, value, contractAddress, methodName, methodDesc, args])
@@ -190,7 +188,7 @@ module.exports = {
   },
 
   /**
-   * //TODO 验证删除合约交易
+   * 验证删除合约交易
    */
   async validateContractDelete(chainId, sender, contractAddress) {
       return await http.post('/', 'validateContractDelete', [chainId, sender, contractAddress])
