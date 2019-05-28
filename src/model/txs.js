@@ -168,7 +168,7 @@ module.exports = {
     let bw = new Serializers();
     bw.getBufWriter().write(sdk.getBytesAddress(contractCreate.sender));
     bw.getBufWriter().write(sdk.getBytesAddress(contractCreate.contractAddress));
-    bw.writeBytesWithLength(Buffer.from(contractCreate.code, 'hex'));
+    bw.getBufWriter().write(Buffer.from(contractCreate.contractCode, 'hex'));
     bw.writeUInt64LE(contractCreate.gasLimit);
     bw.writeUInt64LE(contractCreate.price);
     let args = contractCreate.args;
