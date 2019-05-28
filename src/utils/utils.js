@@ -45,7 +45,7 @@ module.exports = {
           two[i] = [];
           continue;
         }
-        if (typeof (arg) === 'string') {
+        if (typeof (arg) === 'String') {
           let argStr = arg;
           // 非String类型参数，若传参是空字符串，则赋值为空一维数组，避免数字类型转化异常 -> 空字符串转化为数字
           if (types != null && isBlank(argStr) && 'String' !== types[i]) {
