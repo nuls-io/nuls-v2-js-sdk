@@ -26,7 +26,7 @@ function bytesToAddress(bytes) {
 let Transaction = function () {
   this.hash = null;
   this.type = 0;//交易类型
-  this.time = parseInt(Date.now()/1000);//交易时间
+  this.time = Date.now()/1000;//交易时间
   this.remark = null;//备注
   this.txData = null;//业务数据
   this.coinData = [];//输入输出
@@ -189,14 +189,11 @@ module.exports = {
     } else {
       bw.getBufWriter().writeUInt8(0);
     }
-
-
     this.txData = bw.getBufWriter().toBuffer();
   },
   CallContractTransaction: function (contractCall) {
     Transaction.call(this);
-    if (!contractCall.chainId || !contractCall.sender || !contractCall.contractAddress ||
-        !contractCall.value || !contractCall.gasLimit || !contractCall.price ||
+    if (!contractCall.chainId || !contractCall.sender || !contractCall.contractAddress || !contractCall.gasLimit || !contractCall.price ||
         !contractCall.methodName) {
       throw "Data wrong!";
     }
@@ -234,13 +231,13 @@ module.exports = {
   },
   DeleteContractTransaction: function (contractDelete) {
     Transaction.call(this);
-    if (!contractCall.chainId || !contractCall.sender || !contractCall.contractAddress) {
+    if (!contractDelete.chainId || !contractDelete.sender || !contractDelete.contractAddress) {
       throw "Data wrong!";
     }
     this.type = 17;
     let bw = new Serializers();
-    bw.getBufWriter().write(sdk.getBytesAddress(contractCall.sender));
-    bw.getBufWriter().write(sdk.getBytesAddress(contractCall.contractAddress));
+    bw.getBufWriter().write(sdk.getBytesAddress(contractDelete.sender));
+    bw.getBufWriter().write(sdk.getBytesAddress(contractDelete.contractAddress));
     this.txData = bw.getBufWriter().toBuffer();
   },
 };

@@ -2,11 +2,10 @@ const nuls = require('../index');
 const utils = require('../utils/utils');
 const sdk = require('../api/sdk');
 const {getNulsBalance, countFee, inputsOrOutputs, validateContractDelete, validateTx, broadcastTx} = require('./api/util');
-let pri = '411fa90f7161a20f4624a4f00167fac6d5afd97a7e6815f60e66106c559564a1';
-let pub = '031c810153d633a5167ec629af771296bad4f26eacfe4034c978afee12b6c4fd44';
-let fromAddress = "tNULSeBaMuBCG7NkSyufjE76CVbPQMrZ5Q1v3s";
+let pri = '76b7beaa98db863fb680def099af872978209ed9422b7acab8ab57ad95ab218b';
+let pub = '02ec9e957823cd30d809f44830442562ca5bf42530251247b35d9209690f39be67';
+let fromAddress = "tNULSeBaMqywZjfSrKNQKBfuQtVxAHBQ8rB2Zn";
 let remark = 'delete contract...';
-
 
 /**
  * 组装创建合约交易的txData
@@ -36,18 +35,17 @@ async function deleteContract(pri, pub, fromAddress, assetsChainId, assetsId, co
   let deleteValidateResult = await validateContractDelete(assetsChainId, contractDelete.sender, contractDelete.contractAddress);
   if (!deleteValidateResult) {
     //todo throw exception
-    console.log("验证删除合约失败")
+    console.log("验证删除合约失败");
     return;
   }
-
   let inOrOutputs = await inputsOrOutputs(transferInfo, balanceInfo, 17);
   let tAssemble = await nuls.transactionAssemble(inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, 17, contractDelete);
   let txhex = await nuls.transactionSerialize(pri, pub, tAssemble);
-
   let result = await validateTx(txhex);
+  console.log(result);
   if (result) {
     let results = await broadcastTx(txhex);
-    if (results && result.value) {
+    if (results && results.value) {
       console.log("交易完成")
     } else {
       console.log("广播交易失败")
@@ -59,8 +57,8 @@ async function deleteContract(pri, pub, fromAddress, assetsChainId, assetsId, co
 
 let contractDelete = {
   chainId: 2,
-  sender: "",
-  contractAddress: ""
+  sender: fromAddress,
+  contractAddress: "tNULSeBaNA1fArRNjbHrDi3ZTdQiM26harbwnD"
 };
 
 //调用创建合约

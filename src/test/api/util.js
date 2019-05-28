@@ -200,7 +200,7 @@ module.exports = {
    * 验证删除合约交易
    */
   async validateContractDelete(sender, contractAddress) {
-    return await http.post('/', 'validateContractDelete', [chainId, sender, contractAddress])
+    return await http.post('/', 'validateContractDelete', [sender, contractAddress])
       .then((response) => {
         if (response.hasOwnProperty("result")) {
           return {success: true, data: response.result};
