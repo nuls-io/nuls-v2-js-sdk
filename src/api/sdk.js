@@ -75,7 +75,7 @@ module.exports = {
 
     //根据公钥、私钥获取地址字符串
     getStringAddress: function (chainId, pri, pub) {
-        return getStringAddressBase(chainId, 1, pri, pub);
+        return this.getStringAddressBase(chainId, 1, pri, pub);
     },
 
     //根据公钥、私钥获取智能合约地址字符串
