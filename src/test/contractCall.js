@@ -48,7 +48,8 @@ async function callContract(pri, pub, fromAddress, assetsChainId, assetsId, cont
   const balanceInfo = await getNulsBalance(fromAddress);
   let amount = contractCreate.gasLimit * contractCreate.price;
   //todo value转换为数字
-  amount = amount + contractCall.value;
+  let value = contractCall.value;
+  amount = amount + value;
   let transferInfo = {
     fromAddress: fromAddress,
     assetsChainId: assetsChainId,
@@ -56,6 +57,10 @@ async function callContract(pri, pub, fromAddress, assetsChainId, assetsId, cont
     amount: amount,
     fee: 100000
   };
+  if(value.toNumber() > 0) {
+    transferInfo.toAddress = contractCall.contractAddress;
+    transferInfo.value = value;
+  }
 
   let inOrOutputs = await inputsOrOutputs(transferInfo, balanceInfo, 16);
   let tAssemble = await nuls.transactionAssemble(inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, 16, contractCall);
@@ -89,7 +94,7 @@ let contractCall = {
   chainId: 2,
   sender: "",
   contractAddress: "",
-  value : "0",
+  value : 0,//
   gasLimit: 20000,
   price: 25,
   methodName: "",

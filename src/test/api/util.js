@@ -55,8 +55,15 @@ module.exports = {
       nonce: newNonce
     }];
     let outputs = [];
-    if(type === 15) {
+    if(type === 15 || type === 17) {
         return {success: true, data: {inputs: inputs, outputs: outputs}};
+    }
+    if(type === 16) {
+        if(!transferInfo.toAddress) {
+            return {success: true, data: {inputs: inputs, outputs: outputs}};
+        } else {
+            newoutputAmount = transferInfo.value;
+        }
     }
     outputs = [{
         address: transferInfo.toAddress ? transferInfo.toAddress : transferInfo.fromAddress,
