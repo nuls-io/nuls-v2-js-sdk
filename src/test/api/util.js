@@ -54,12 +54,16 @@ module.exports = {
       locked: newLocked,
       nonce: newNonce
     }];
-    let outputs = [{
-      address: transferInfo.toAddress ? transferInfo.toAddress : transferInfo.fromAddress,
-      assetsChainId: transferInfo.assetsChainId,
-      assetsId: transferInfo.assetsId,
-      amount: newoutputAmount,
-      lockTime: newLockTime
+    let outputs = [];
+    if(type === 15) {
+        return {success: true, data: {inputs: inputs, outputs: outputs}};
+    }
+    outputs = [{
+        address: transferInfo.toAddress ? transferInfo.toAddress : transferInfo.fromAddress,
+        assetsChainId: transferInfo.assetsChainId,
+        assetsId: transferInfo.assetsId,
+        amount: newoutputAmount,
+        lockTime: newLockTime
     }];
     return {success: true, data: {inputs: inputs, outputs: outputs}};
   },
