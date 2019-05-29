@@ -112,7 +112,7 @@ module.exports = {
 
   /**
    * 获取合约指定函数的参数类型
-   * @param chainId, contractAddress, methodName
+   * @param contractAddress, methodName
    * @returns {Promise<AxiosResponse<any>>}
    */
   async getContractMethodArgsTypes(contractAddress, methodName) {
