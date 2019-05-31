@@ -26,12 +26,12 @@ async function newAgent(pri, pub, fromAddress, assetsChainId, assetsId, amount, 
     fee: 100000
   };
   let inOrOutputs = await inputsOrOutputs(transferInfo, balanceInfo, 4);
-  let tAssemble =  await nuls.transactionAssemble(inOrOutputs.inputs, inOrOutputs.outputs, remark, 4, agent);
+  let tAssemble =  await nuls.transactionAssemble(inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, 4, agent);
   let txhex = await nuls.transactionSerialize(pri, pub,tAssemble);
   //console.log(txhex);
   let result = await validateTx(txhex);
   if (result) {
-    console.log(result.value);
+    console.log(result.data.value);
     let results = await broadcastTx(txhex);
     if (results && result.value) {
       console.log("交易完成")
