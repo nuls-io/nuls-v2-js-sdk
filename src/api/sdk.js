@@ -64,7 +64,7 @@ module.exports = {
         } else {
             for (let i = 0; i < stringAddress.length; i++) {
                 let val = stringAddress.charAt(i);
-                if (val >= 97) {
+                if (val.charCodeAt(0) >= 97) {
                     stringAddress = stringAddress.substring(i + 1);
                     break;
                 }
@@ -84,7 +84,7 @@ module.exports = {
         } else {
             for (let i = 0; i < stringAddress.length; i++) {
                 let val = stringAddress.charAt(i);
-                if (val >= 97) {
+                if (val.charCodeAt(0) >= 97) {
                     stringAddress = stringAddress.substring(i + 1);
                     break;
                 }
