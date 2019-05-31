@@ -17,14 +17,14 @@ async function doit(pri, pub, fromAddress, assetsChainId, assetsId, amount, depo
     fee:100000
   };
   let inOrOutputs = await inputsOrOutputs(transferInfo, balanceInfo, 5);
-  let tAssemble =  await nuls.transactionAssemble(nOrOutputs.inputs, inOrOutputs.outputs, remark, 5, deposit);
+  let tAssemble =  await nuls.transactionAssemble(inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, 5, deposit);
   let txhex = await nuls.transactionSerialize(pri, pub,tAssemble);
   //console.log(txhex);
   let result = await validateTx(txhex);
   if (result) {
-    console.log(result.value);
+    console.log(result.data.value);
     let results = await broadcastTx(txhex);
-    if (results && result.value) {
+    if (results && result.data.value) {
       console.log("交易完成")
     } else {
       console.log("广播交易失败")
@@ -37,8 +37,8 @@ async function doit(pri, pub, fromAddress, assetsChainId, assetsId, amount, depo
 //测试开始
 let deposit = {
   address: fromAddress,
-  agentHash: 'a8c9b4a5d9b33a79a6bc3a6f78caa2289ff22100de12e31b0009a937814f4899',
-  deposit: 210000000000
+  agentHash: 'd8b31649b8d2ccac2fd258787583017f98fc1e1be579298aae650cb9698845c9',
+  deposit: 2010000000000
 };
 //调用加入共识
 doit(pri, pub, fromAddress, 2, 1, amount, deposit);
