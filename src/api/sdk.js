@@ -31,9 +31,9 @@ String.prototype.startWith = function (str) {
     return true;
 };
 module.exports = {
-    CONTRACT_CONSTRUCTOR : "<init>",
-    CONTRACT_MAX_GASLIMIT : 10000000,
-    CONTRACT_MINIMUM_PRICE : 25,
+    CONTRACT_CONSTRUCTOR: "<init>",
+    CONTRACT_MAX_GASLIMIT: 10000000,
+    CONTRACT_MINIMUM_PRICE: 25,
 
     //生成公私钥对
     newEcKey: function () {
@@ -61,16 +61,51 @@ module.exports = {
             stringAddress = stringAddress.substring(5);
         } else if (stringAddress.startsWith('tNULS')) {
             stringAddress = stringAddress.substring(6);
-        }
-        for (let i = 0; i < stringAddress.length; i++) {
-            let val = stringAddress.charAt(i);
-            if (val >= 97) {
-                stringAddress = stringAddress.substring(i + 1);
-                break;
+        } else {
+            for (let i = 0; i < stringAddress.length; i++) {
+                let val = stringAddress.charAt(i);
+                if (val >= 97) {
+                    stringAddress = stringAddress.substring(i + 1);
+                    break;
+                }
             }
         }
         let bytes = bs58.decode(stringAddress);
         return bytes.slice(0, bytes.length - 1);
+    },
+
+    verifyAddress: function (stringAddress) {
+        let result = {};
+        stringAddress = '' + stringAddress;
+        if (stringAddress.startsWith('NULS')) {
+            stringAddress = stringAddress.substring(5);
+        } else if (stringAddress.startsWith('tNULS')) {
+            stringAddress = stringAddress.substring(6);
+        } else {
+            for (let i = 0; i < stringAddress.length; i++) {
+                let val = stringAddress.charAt(i);
+                if (val >= 97) {
+                    stringAddress = stringAddress.substring(i + 1);
+                    break;
+                }
+            }
+        }
+        let bytes = bs58.decode(stringAddress);
+        result.chainId = bytes.readInt16LE();
+        result.type = bytes.readInt8(2);
+        let temp = '';
+        let xor = 0x00;
+        for (let i = 0; i < bytes.length - 1; i++) {
+            temp = bytes[i];
+            temp = temp > 127 ? temp - 256 : temp;
+            bytes[i] = temp;
+            xor ^= temp
+        }
+        if (xor < 0) {
+            xor = 256 + xor;
+        }
+        result.right = xor == bytes[bytes.length - 1];
+        return result;
     },
 
     //根据公钥、私钥获取地址字符串
@@ -145,7 +180,7 @@ module.exports = {
         return ec.signHex(dataHex, priHex);
     },
 
-    signatureTx: function (tx, priHex,pubHex) {
+    signatureTx: function (tx, priHex, pubHex) {
         let pub = Buffer.from(pubHex, 'hex');
         let hash = tx.getHash();
         let sigHex = this.signature(hash.toString('hex'), priHex);

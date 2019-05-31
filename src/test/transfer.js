@@ -49,10 +49,10 @@ async function transferTransaction(pri, pub, fromAddress, toAddress, assetsChain
   } else {
     console.log(inOrOutputs.data)
   }
-  //console.log(txhex);
+  console.log(txhex);
   let result = await validateTx(txhex);
   if (result.success) {
-    //console.log(result.data.value);
+    console.log(result.data.value);
     let results = await broadcastTx(txhex);
     if (results && results.value) {
       console.log("交易完成")
