@@ -8,22 +8,36 @@ let pub = '02ec9e957823cd30d809f44830442562ca5bf42530251247b35d9209690f39be67';
 let fromAddress = "tNULSeBaMqywZjfSrKNQKBfuQtVxAHBQ8rB2Zn";
 let remark = 'call contract...';
 
-
 /**
  * 预估调用合约的gas
+ * @param chainId
+ * @param sender
+ * @param value
+ * @param contractAddress
+ * @param methodName
+ * @param methodDesc
+ * @param args
+ * @returns {Promise<*>}
  */
 async function imputedCallGas(chainId, sender, value, contractAddress, methodName, methodDesc, args) {
-  let result = await validateContractCall(chainId, sender, value, sdk.CONTRACT_MAX_GASLIMIT, sdk.CONTRACT_MINIMUM_PRICE, contractAddress, methodName, methodDesc, args);
+  let result = await validateContractCall(sender, value, sdk.CONTRACT_MAX_GASLIMIT, sdk.CONTRACT_MINIMUM_PRICE, contractAddress, methodName, methodDesc, args);
   if (result && result.value) {
-    return await imputedContractCallGas(chainId, sender, value, contractAddress, methodName, methodDesc, args);
+    return await imputedContractCallGas(sender, value, contractAddress, methodName, methodDesc, args);
   } else {
-    //todo throw exception
     console.log("调用合约验证失败")
   }
 }
 
 /**
  * 组装创建合约交易的txData
+ * @param chainId
+ * @param sender
+ * @param value
+ * @param contractAddress
+ * @param methodName
+ * @param methodDesc
+ * @param args
+ * @returns {Promise<{}>}
  */
 async function makeCallData(chainId, sender, value, contractAddress, methodName, methodDesc, args) {
   let contractCall = {};
@@ -42,13 +56,19 @@ async function makeCallData(chainId, sender, value, contractAddress, methodName,
 
 /**
  * 调用合约
+ * @param pri
+ * @param pub
+ * @param fromAddress
+ * @param assetsChainId
+ * @param assetsId
+ * @param contractCall
+ * @returns {Promise<void>}
  */
 async function callContract(pri, pub, fromAddress, assetsChainId, assetsId, contractCall) {
   const balanceInfo = await getNulsBalance(fromAddress);
   let newTimes = new BigNumber(contractCall.gasLimit);
   let amount = Number(newTimes.times(contractCall.price));
-  //todo value转换为数字
-  let value = contractCall.value;
+  let value = Number(contractCall.value);
   let newValue = new BigNumber(contractCall.value);
   amount = Number(newValue.plus(amount));
   let transferInfo = {

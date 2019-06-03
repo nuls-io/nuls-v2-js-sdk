@@ -1,7 +1,5 @@
 const nuls = require('../index');
-const utils = require('../utils/utils');
-const sdk = require('../api/sdk');
-const {getNulsBalance, countFee, inputsOrOutputs, validateContractDelete, validateTx, broadcastTx} = require('./api/util');
+const {getNulsBalance, inputsOrOutputs, validateContractDelete, validateTx, broadcastTx} = require('./api/util');
 let pri = '76b7beaa98db863fb680def099af872978209ed9422b7acab8ab57ad95ab218b';
 let pub = '02ec9e957823cd30d809f44830442562ca5bf42530251247b35d9209690f39be67';
 let fromAddress = "tNULSeBaMqywZjfSrKNQKBfuQtVxAHBQ8rB2Zn";
@@ -9,6 +7,10 @@ let remark = 'delete contract...';
 
 /**
  * 组装创建合约交易的txData
+ * @param chainId
+ * @param sender
+ * @param contractAddress
+ * @returns {Promise<{}>}
  */
 async function makeDeleteData(chainId, sender, contractAddress) {
   let contractDelete = {};
@@ -19,7 +21,14 @@ async function makeDeleteData(chainId, sender, contractAddress) {
 }
 
 /**
- * 调用合约
+ * 调用删除合约
+ * @param pri
+ * @param pub
+ * @param fromAddress
+ * @param assetsChainId
+ * @param assetsId
+ * @param contractDelete
+ * @returns {Promise<void>}
  */
 async function deleteContract(pri, pub, fromAddress, assetsChainId, assetsId, contractDelete) {
   const balanceInfo = await getNulsBalance(fromAddress);
@@ -34,7 +43,6 @@ async function deleteContract(pri, pub, fromAddress, assetsChainId, assetsId, co
 
   let deleteValidateResult = await validateContractDelete(assetsChainId, contractDelete.sender, contractDelete.contractAddress);
   if (!deleteValidateResult) {
-    //todo throw exception
     console.log("验证删除合约失败");
     return;
   }

@@ -3,11 +3,21 @@ const sdk = require("../api/sdk");
 const bs58 = require('bs58');
 const bufferFrom = require('buffer-from');
 
+/**
+ *
+ * @param address
+ * @returns {*}
+ */
 function addressToBytes(address) {
   let bytes = bs58.decode(address);
   return bufferFrom(bytes.subarray(0, 23));
 }
 
+/**
+ *
+ * @param bytes
+ * @returns {*}
+ */
 function bytesToAddress(bytes) {
   let xor = 0x00;
   let temp = "";
@@ -22,7 +32,10 @@ function bytesToAddress(bytes) {
   return bs58.encode(tempBuffer)
 }
 
-//所有交易的基础类
+/**
+ * 所有交易的基础类
+ * @constructor
+ */
 let Transaction = function () {
   this.hash = null;
   this.type = 0;//交易类型
@@ -97,10 +110,22 @@ let Transaction = function () {
 };
 
 module.exports = {
+
+  /**
+   * 转账交易
+   * @constructor
+   */
   TransferTransaction: function () {
     Transaction.call(this);
     this.type = 2;
   },
+
+  /**
+   * 设置别名交易
+   * @param address
+   * @param alias
+   * @constructor
+   */
   AliasTransaction: function (address, alias) {
     Transaction.call(this);
     this.type = 3;
@@ -109,6 +134,12 @@ module.exports = {
     bw.writeString(alias);
     this.txData = bw.getBufWriter().toBuffer();
   },
+
+  /**
+   * 创建节点交易
+   * @param agent
+   * @constructor
+   */
   CreateAgentTransaction: function (agent) {
     Transaction.call(this);
     //对象属性结构
@@ -125,6 +156,11 @@ module.exports = {
     this.txData = bw.getBufWriter().toBuffer();
   },
 
+  /**
+   * 委托节点交易
+   * @param entity
+   * @constructor
+   */
   DepositTransaction: function (entity) {
     Transaction.call(this);
     //对象属性结构
@@ -140,6 +176,11 @@ module.exports = {
 
   },
 
+  /**
+   * 注销节点交易
+   * @param agentHash
+   * @constructor
+   */
   StopAgentTransaction: function (agentHash) {
     Transaction.call(this);
     if (!agentHash) {
@@ -149,6 +190,11 @@ module.exports = {
     this.txData = Buffer.from(agentHash, 'hex');
   },
 
+  /**
+   * 撤回交易
+   * @param depositTxHash
+   * @constructor
+   */
   WithdrawTransaction: function (depositTxHash) {
     Transaction.call(this);
     if (!depositTxHash) {
@@ -157,6 +203,12 @@ module.exports = {
     this.type = 6;
     this.txData = Buffer.from(depositTxHash, 'hex');
   },
+
+  /**
+   * 创建合约交易
+   * @param contractCreate
+   * @constructor
+   */
   CreateContractTransaction: function (contractCreate) {
     Transaction.call(this);
     if (!contractCreate.chainId || !contractCreate.sender || !contractCreate.contractAddress ||
@@ -191,6 +243,12 @@ module.exports = {
     }
     this.txData = bw.getBufWriter().toBuffer();
   },
+
+  /**
+   * 调用合约交易
+   * @param contractCall
+   * @constructor
+   */
   CallContractTransaction: function (contractCall) {
     Transaction.call(this);
     if (!contractCall.chainId || !contractCall.sender || !contractCall.contractAddress || !contractCall.gasLimit || !contractCall.price ||
@@ -229,6 +287,12 @@ module.exports = {
 
     this.txData = bw.getBufWriter().toBuffer();
   },
+
+  /**
+   * 删除合约交易
+   * @param contractDelete
+   * @constructor
+   */
   DeleteContractTransaction: function (contractDelete) {
     Transaction.call(this);
     if (!contractDelete.chainId || !contractDelete.sender || !contractDelete.contractAddress) {

@@ -112,7 +112,8 @@ module.exports = {
 
   /**
    * 获取合约指定函数的参数类型
-   * @param contractAddress, methodName
+   * @param contractAddress
+   * @param methodName
    * @returns {Promise<AxiosResponse<any>>}
    */
   async getContractMethodArgsTypes(contractAddress, methodName) {
@@ -131,6 +132,12 @@ module.exports = {
 
   /**
    * 验证创建合约交易
+   * @param sender
+   * @param gasLimit
+   * @param price
+   * @param contractCode
+   * @param args
+   * @returns {Promise<T>}
    */
   async validateContractCreate(sender, gasLimit, price, contractCode, args) {
     return await http.post('/', 'validateContractCreate', [sender, gasLimit, price, contractCode, args])
@@ -145,6 +152,10 @@ module.exports = {
 
   /**
    * 预估创建合约交易的gas
+   * @param sender
+   * @param contractCode
+   * @param args
+   * @returns {Promise<T>}
    */
   async imputedContractCreateGas(sender, contractCode, args) {
     return await http.post('/', 'imputedContractCreateGas', [sender, contractCode, args])
@@ -163,6 +174,15 @@ module.exports = {
 
   /**
    * 验证调用合约交易
+   * @param sender
+   * @param value
+   * @param gasLimit
+   * @param price
+   * @param contractAddress
+   * @param methodName
+   * @param methodDesc
+   * @param args
+   * @returns {Promise<T>}
    */
   async validateContractCall(sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args) {
     return await http.post('/', 'validateContractCall', [sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args])
@@ -178,9 +198,15 @@ module.exports = {
       });
   },
 
-
   /**
    * 预估调用合约交易的gas
+   * @param sender
+   * @param value
+   * @param contractAddress
+   * @param methodName
+   * @param methodDesc
+   * @param args
+   * @returns {Promise<T>}
    */
   async imputedContractCallGas(sender, value, contractAddress, methodName, methodDesc, args) {
     return await http.post('/', 'imputedContractCallGas', [sender, value, contractAddress, methodName, methodDesc, args])
@@ -198,6 +224,9 @@ module.exports = {
 
   /**
    * 验证删除合约交易
+   * @param sender
+   * @param contractAddress
+   * @returns {Promise<T>}
    */
   async validateContractDelete(sender, contractAddress) {
     return await http.post('/', 'validateContractDelete', [sender, contractAddress])
@@ -212,7 +241,6 @@ module.exports = {
         return {success: false, data: error};
       });
   },
-
 
   /**
    * 验证交易

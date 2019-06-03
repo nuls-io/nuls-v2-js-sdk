@@ -5,12 +5,12 @@ const {getNulsBalance, countFee, inputsOrOutputs, getContractConstructor, valida
 let pri = '76b7beaa98db863fb680def099af872978209ed9422b7acab8ab57ad95ab218b';
 let pub = '02ec9e957823cd30d809f44830442562ca5bf42530251247b35d9209690f39be67';
 let createAddress = "tNULSeBaMqywZjfSrKNQKBfuQtVxAHBQ8rB2Zn";
-
 let remark = 'new contract...';
 
 /**
  * 组装构造函数的参数类型
- * @param constructor 调用 getContractConstructor(chainId, contractCodeHex)
+ * @param constructor
+ * @returns {Promise<any[]>}
  */
 async function makeContractConstructorArgsTypes(constructor) {
   let args = constructor.data.constructor.args;
@@ -26,6 +26,10 @@ async function makeContractConstructorArgsTypes(constructor) {
 
 /**
  * 预估创建合约的gas
+ * @param sender
+ * @param contractCode
+ * @param args
+ * @returns {Promise<*>}
  */
 async function imputedCreateGas(sender, contractCode, args) {
   let result = await validateContractCreate(sender, sdk.CONTRACT_MAX_GASLIMIT, sdk.CONTRACT_MINIMUM_PRICE, contractCode, args);
@@ -38,6 +42,11 @@ async function imputedCreateGas(sender, contractCode, args) {
 
 /**
  * 组装创建合约交易的txData
+ * @param chainId
+ * @param sender
+ * @param contractCode
+ * @param args
+ * @returns {Promise<{}>}
  */
 async function makeCreateData(chainId, sender, contractCode, args) {
   let contractCreate = {};
@@ -56,6 +65,12 @@ async function makeCreateData(chainId, sender, contractCode, args) {
 
 /**
  * 创建合约
+ * @param pri
+ * @param pub
+ * @param createAddress
+ * @param assetsChainId
+ * @param assetsId
+ * @returns {Promise<void>}
  */
 async function createContract(pri, pub, createAddress, assetsChainId, assetsId) {
   //1、通过接口获取合约的参数 args
