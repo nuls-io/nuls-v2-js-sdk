@@ -304,5 +304,14 @@ module.exports = {
     bw.getBufWriter().write(sdk.getBytesAddress(contractDelete.contractAddress));
     this.txData = bw.getBufWriter().toBuffer();
   },
+
+  /**
+   * 跨链交易
+   * @constructor
+   */
+  CrossChainTransaction: function () {
+    Transaction.call(this);
+    this.type = 10;
+  },
 };
 

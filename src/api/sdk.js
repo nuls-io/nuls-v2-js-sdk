@@ -256,6 +256,17 @@ module.exports = {
   },
 
   /**
+   * 签名 tx
+   * @param tx
+   * @param priHex
+   */
+  signatureTransaction: function (tx, priHex) {
+    let hash = tx.getHash();
+    let sigHex = this.signature(hash.toString('hex'), priHex);
+    return Buffer.from(sigHex, 'hex');
+  },
+
+  /**
    * 验证签名
    * @param dataHex
    * @param signHex

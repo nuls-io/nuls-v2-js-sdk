@@ -1,7 +1,7 @@
 const axios = require('axios');
-const API_CHAIN_ID = 2;
+const API_CHAIN_ID = 100;
 axios.defaults.timeout = 8000;
-axios.defaults.baseURL = 'http://192.168.1.37:18003/';
+axios.defaults.baseURL = 'http://192.168.1.192:18003/';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 /**
@@ -23,6 +23,18 @@ module.exports = {
         }, err => {
           reject(err)
         })
+    })
+  },
+
+  postComplete(url, methodName, data = []) {
+    return new Promise((resolve, reject) => {
+      const params = {"jsonrpc": "2.0", "method": methodName, "params": data, "id": 5899};
+      axios.post(url, params)
+          .then(response => {
+            resolve(response.data)
+          }, err => {
+            reject(err)
+          })
     })
   }
 };

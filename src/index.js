@@ -80,6 +80,8 @@ module.exports = {
       tt = new txs.CallContractTransaction(info);
     } else if (type === 17) { //删除合约
       tt = new txs.DeleteContractTransaction(info);
+    } else if (type === 10) { //跨链转账
+      tt = new txs.CrossChainTransaction();
     }
     tt.setCoinData(inputs, outputs);
     tt.remark = remark;
@@ -96,6 +98,16 @@ module.exports = {
   transactionSerialize(pri, pub, tAssemble) {
     sdk.signatureTx(tAssemble, pri, pub);
     return tAssemble.txSerialize().toString('hex');
+  },
+
+  /**
+   * 交易签名
+   * @param pri
+   * @param tAssemble
+   * @returns {boolean}
+   */
+  transactionSignature(pri,tAssemble) {
+    return sdk.signatureTransaction(tAssemble, pri);
   },
 
   /**
