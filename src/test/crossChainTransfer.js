@@ -2,8 +2,11 @@ const nuls = require('../index');
 const txs = require('../model/txs');
 const Serializers = require("../api/serializers");
 const {isMainNet,countCtxFee,getBalance, ctxInputsOrOutputs, validateTx, broadcastTx} = require('./api/util');
-let pri = '9ce21dad67e0f0af2599b41b515a7f7018059418bab892a7b68f283d489abc4b';
+let pri = '9ce21dad67e0f0af2599b41b515a7f7018059418bab892a7b68f283d489abc4b';//tNULSeBaMvEtDfvZuukDf2mVyfGo3DdiN8KLRG
 let pub = '03958b790c331954ed367d37bac901de5c2f06ac8368b37d7bd6cd5ae143c1d7e3';
+/*
+let pri = "4eb6def1dc21f3afbc4d3d0892713e6467a91426940d6f00140629d9d64ba908";//8CPcA7kaj56TWAC3Cix64aYCU3XFoNpu1LN1K
+*/
 /*let fromAddress = "tNULSeBaMvEtDfvZuukDf2mVyfGo3DdiN8KLRG";
 let toAddress = '8CPcA7kaXSHbWb3GHP7bd5hRLFu8RZv57rY9w';*/
 let fromAddress = "8CPcA7kaj56TWAC3Cix64aYCU3XFoNpu1LN1K";
