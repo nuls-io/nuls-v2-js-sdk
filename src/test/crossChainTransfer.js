@@ -43,6 +43,7 @@ async function transferTransaction(pri, pub, fromAddress, toAddress, chainId, as
   let bw = new Serializers();
   let mainCtx = new txs.CrossChainTransaction();
   let pubHex = Buffer.from(pub, 'hex');
+  const mainNetBalanceInfo = await getBalance(fromAddress,chainId,2,1);
 
   if(inOrOutputs.success){
     tAssemble = await nuls.transactionAssemble(inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, 10);
@@ -52,7 +53,6 @@ async function transferTransaction(pri, pub, fromAddress, toAddress, chainId, as
       newFee = countCtxFee(tAssemble, 1)
     }else {
       newFee = countCtxFee(tAssemble, 2);
-      const mainNetBalanceInfo = await getBalance(fromAddress,chainId,2,1);
       if(mainNetBalanceInfo.balance < newFee){
         console.log("Your balance is not enough.");
         return
@@ -65,14 +65,14 @@ async function transferTransaction(pri, pub, fromAddress, toAddress, chainId, as
         assetsId: transferInfo.assetsId,
         amount: transferInfo.amount,
         locked: 0,
-        nonce: mainNetBalanceInfo.nonce
+        nonce: balanceInfo.nonce
       },{
         address: transferInfo.fromAddress,
         assetsChainId: 2,
         assetsId: 1,
         amount: newFee,
         locked: 0,
-        nonce: balanceInfo.nonce
+        nonce: mainNetBalanceInfo.nonce
       }];
       let mainNetOutputs = [{
         address: transferInfo.toAddress ? transferInfo.toAddress : transferInfo.fromAddress,
@@ -90,6 +90,16 @@ async function transferTransaction(pri, pub, fromAddress, toAddress, chainId, as
       if(!inOrOutputs.success){
         console.log(inOrOutputs.data);
         return
+      }
+      if(!isMainNet()){
+        inOrOutputs.data.inputs.push({
+          address: transferInfo.fromAddress,
+          assetsChainId: 2,
+          assetsId: 1,
+          amount: newFee,
+          locked: 0,
+          nonce: mainNetBalanceInfo.nonce
+        });
       }
       tAssemble = await nuls.transactionAssemble(inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, 10);
       ctxSign = nuls.transactionSignature(pri,tAssemble);
