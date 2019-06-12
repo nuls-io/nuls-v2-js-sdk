@@ -344,7 +344,6 @@ module.exports = {
   async broadcastTx(txHex) {
     return await http.post('/', 'broadcastTx', [txHex])
       .then((response) => {
-        console.log(response)
         return response.result;
       })
       .catch((error) => {

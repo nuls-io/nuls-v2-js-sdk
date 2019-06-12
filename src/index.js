@@ -63,8 +63,7 @@ module.exports = {
     let tt = [];
     if (type === 2) { //转账交易
       tt = new txs.TransferTransaction();
-    }
-    if (type === 3) { //设置别名
+    } else if (type === 3) { //设置别名
       tt = new txs.AliasTransaction(info.fromAddress, info.alias);
     } else if (type === 4) { //创建节点
       tt = new txs.CreateAgentTransaction(info);
