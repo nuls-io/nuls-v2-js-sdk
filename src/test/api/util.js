@@ -36,7 +36,7 @@ module.exports = {
   },
 
   /**
-   * 获取跨链交易inputs 、 outputs
+   * 获取inputs 、 outputs
    * @param transferInfo
    * @param balanceInfo
    * @param type
@@ -98,7 +98,7 @@ module.exports = {
   },
 
   /**
-   * 获取inputs 、 outputs
+   * 获取跨链交易inputs 、 outputs
    * @param transferInfo
    * @param balanceInfo
    * @returns {*}
@@ -131,7 +131,6 @@ module.exports = {
     return {success: true, data: {inputs: inputs, outputs: outputs}};
   },
 
-
   /**
    * 获取账户的余额及nonce
    * @param address
@@ -150,7 +149,6 @@ module.exports = {
         return {success: false, data: error};
       });
   },
-
 
   /**
    * 获取账户的余额及nonce
