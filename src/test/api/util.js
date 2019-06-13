@@ -101,33 +101,107 @@ module.exports = {
    * 获取跨链交易inputs 、 outputs
    * @param transferInfo
    * @param balanceInfo
+   * @param chainId
    * @returns {*}
    */
-  ctxInputsOrOutputs(transferInfo, balanceInfo) {
-    let newAmount = transferInfo.amount + transferInfo.fee;
-    let newLocked = 0;
-    let newNonce = balanceInfo.nonce;
-    let newoutputAmount = transferInfo.amount;
-    let newLockTime = 0;
-    if (balanceInfo.balance < transferInfo.amount + transferInfo.fee) {
-      return {success: false, data: "Your balance is not enough."}
-    }
-    let inputs = [{
-      address: transferInfo.fromAddress,
-      assetsChainId: transferInfo.assetsChainId,
-      assetsId: transferInfo.assetsId,
-      amount: newAmount,
-      locked: newLocked,
-      nonce: newNonce
-    }];
-    let outputs = [];
-    outputs = [{
+  async ctxInputsOrOutputs(transferInfo, balanceInfo, chainId) {
+    let inputs = [];
+    let outputs = [{
       address: transferInfo.toAddress ? transferInfo.toAddress : transferInfo.fromAddress,
       assetsChainId: transferInfo.assetsChainId,
       assetsId: transferInfo.assetsId,
-      amount: newoutputAmount,
-      lockTime: newLockTime
+      amount: transferInfo.amount,
+      lockTime: 0
     }];
+
+    let mainNetBalanceInfo = await this.getBalance(chainId, 2, 1, transferInfo.fromAddress);
+    let localBalanceInfo;
+    //如果不是主网需要收取NULS手续费
+    if (!isMainNet(chainId)) {
+      if (mainNetBalanceInfo.balance < transferInfo.fee) {
+        console.log("余额不足");
+        return;
+      }
+    }
+
+    //如果转出资产为本链主资产，则直接将手续费加到转出金额上
+    if (chainId === transferInfo.assetsChainId && transferInfo.assetsId === 1) {
+      let newAmount = transferInfo.amount + transferInfo.fee;
+      if (balanceInfo.balance < transferInfo.amount + transferInfo.fee) {
+        console.log("余额不足");
+        return;
+      }
+      //转出的本链资产 = 转出资产amount + 本链手续费
+      inputs.push({
+        address: transferInfo.fromAddress,
+        assetsChainId: transferInfo.assetsChainId,
+        assetsId: transferInfo.assetsId,
+        amount: newAmount,
+        locked: 0,
+        nonce: balanceInfo.nonce
+      });
+      //如果不是主网需收取主网NULS手续费
+      if (!isMainNet(chainId)) {
+        inputs.push({
+          address: transferInfo.fromAddress,
+          assetsChainId: 2,
+          assetsId: 1,
+          amount: transferInfo.fee,
+          locked: 0,
+          nonce: mainNetBalanceInfo.nonce
+        });
+      }
+    } else {
+      localBalanceInfo = await this.getBalance(chainId, chainId, 1, transferInfo.fromAddress);
+      if (localBalanceInfo.balance < transferInfo.fee) {
+        console.log("该账户本链主资产不足够支付手续费！");
+        return;
+      }
+      //如果转出的是NULS，则需要把NULS手续费添加到转出金额上
+      if (transferInfo.assetsChainId === 2 && transferInfo.assetsId === 1) {
+        let newAmount = transferInfo.amount + transferInfo.fee;
+        if (mainNetBalanceInfo.balance < newAmount) {
+          console.log("余额不足");
+          return;
+        }
+        inputs.push({
+          address: transferInfo.fromAddress,
+          assetsChainId: transferInfo.assetsChainId,
+          assetsId: transferInfo.assetsId,
+          amount: newAmount,
+          locked: 0,
+          nonce: mainNetBalanceInfo.nonce
+        });
+      } else {
+        inputs.push({
+          address: transferInfo.fromAddress,
+          assetsChainId: transferInfo.assetsChainId,
+          assetsId: transferInfo.assetsId,
+          amount: transferInfo.amount,
+          locked: 0,
+          nonce: balanceInfo.nonce
+        });
+        inputs.push({
+          address: transferInfo.fromAddress,
+          assetsChainId: 2,
+          assetsId: 1,
+          amount: transferInfo.fee,
+          locked: 0,
+          nonce: mainNetBalanceInfo.nonce
+        });
+      }
+      //本链主资产手续费
+      if (!isMainNet(chainId)) {
+        inputs.push({
+          address: transferInfo.fromAddress,
+          assetsChainId: chainId,
+          assetsId: 1,
+          amount: transferInfo.fee,
+          locked: 0,
+          nonce: localBalanceInfo.nonce
+        });
+      }
+    }
     return {success: true, data: {inputs: inputs, outputs: outputs}};
   },
 
