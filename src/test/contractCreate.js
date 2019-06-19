@@ -48,10 +48,11 @@ async function imputedCreateGas(sender, contractCode, args) {
  * @param args
  * @returns {Promise<{}>}
  */
-async function makeCreateData(chainId, sender, contractCode, args) {
+async function makeCreateData(chainId, sender, alias, contractCode, args) {
   let contractCreate = {};
   contractCreate.chainId = chainId;
   contractCreate.sender = sender;
+  contractCreate.alias = alias;
   contractCreate.gasLimit = await imputedCreateGas(sender, contractCode, args);
   contractCreate.price = sdk.CONTRACT_MINIMUM_PRICE;
   contractCreate.contractCode = contractCode;
@@ -81,7 +82,7 @@ async function createContract(pri, pub, createAddress, assetsChainId, assetsId) 
 
   //2、给每个参数复制 获取contractCreateTxData
   let newArgs = ['waves', 'waves', 100000000, 8];
-  const contractCreateTxData = await makeCreateData(2, createAddress, hex, newArgs);
+  const contractCreateTxData = await makeCreateData(2, createAddress, 'testAlias', hex, newArgs);
   //3、序列化
 
   const balanceInfo = await getNulsBalance(createAddress);

@@ -212,7 +212,7 @@ module.exports = {
   CreateContractTransaction: function (contractCreate) {
     Transaction.call(this);
     if (!contractCreate.chainId || !contractCreate.sender || !contractCreate.contractAddress ||
-        !contractCreate.contractCode || !contractCreate.gasLimit || !contractCreate.price) {
+        !contractCreate.contractCode || !contractCreate.alias || !contractCreate.gasLimit || !contractCreate.price) {
       throw "Data wrong!";
     }
 
@@ -221,6 +221,7 @@ module.exports = {
     bw.getBufWriter().write(sdk.getBytesAddress(contractCreate.sender));
     bw.getBufWriter().write(sdk.getBytesAddress(contractCreate.contractAddress));
     bw.writeBytesWithLength(Buffer.from(contractCreate.contractCode, 'hex'));
+    bw.writeString(contractCreate.alias);
     bw.writeUInt64LE(contractCreate.gasLimit);
     bw.writeUInt64LE(contractCreate.price);
     let args = contractCreate.args;
