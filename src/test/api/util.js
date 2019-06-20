@@ -213,10 +213,10 @@ module.exports = {
    * @param assetId
    * @returns {Promise<AxiosResponse<any>>}
    */
-  async getBalance(chainId, assetChainId, assetId, address) {
-    return await http.postComplete('/', 'getAccountBalance', [chainId, assetChainId, assetId, address])
+  async getBalance(address, assetChainId = 2, assetId = 1,) {
+    return await http.postComplete('/', 'getAccountBalance', [assetChainId, assetId, address])
       .then((response) => {
-        //console.log(response);
+        console.log(response);
         return {'balance': response.result.balance, 'nonce': response.result.nonce};
       })
       .catch((error) => {
@@ -230,7 +230,7 @@ module.exports = {
    * @returns {Promise<AxiosResponse<any>>}
    */
   async getNulsBalance(address) {
-    return await http.post('/', 'getAccountBalance', [1, address])
+    return await http.post('/', 'getAccountBalance', [2,1, address])
       .then((response) => {
         return {'balance': response.result.balance, 'nonce': response.result.nonce};
       })
@@ -399,6 +399,7 @@ module.exports = {
   async validateTx(txHex) {
     return await http.post('/', 'validateTx', [txHex])
       .then((response) => {
+        console.log(response);
         if (response.hasOwnProperty("result")) {
           return {success: true, data: response.result};
         } else {
