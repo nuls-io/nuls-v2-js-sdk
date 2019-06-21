@@ -23,6 +23,17 @@ module.exports = {
   },
 
   /**
+   * 根据公钥获取地址
+   * @param chainId
+   * @param assetId
+   * @param pub
+   * @returns {*|string}
+   */
+  getAddressByPub(chainId, assetId, pub) {
+    return sdk.getStringAddressBase(chainId, assetId, '', pub);
+  },
+
+  /**
    * 验证地址
    * @param address
    * @returns {*}
@@ -105,7 +116,7 @@ module.exports = {
    * @param tAssemble
    * @returns {boolean}
    */
-  transactionSignature(pri,tAssemble) {
+  transactionSignature(pri, tAssemble) {
     return sdk.signatureTransaction(tAssemble, pri);
   },
 
