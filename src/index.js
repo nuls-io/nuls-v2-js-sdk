@@ -1,5 +1,6 @@
 const sdk = require('./api/sdk');
 const txs = require('./model/txs');
+const crypto = require("./crypto/eciesCrypto");
 
 module.exports = {
 
@@ -128,6 +129,18 @@ module.exports = {
    */
   decrypteOfAES(aesPri, password) {
     return sdk.decrypteOfAES(aesPri, password)
+  },
+
+  async encryptOfECIES(pub, data) {
+    let bufferData = Buffer.from(data);
+    let encrypted = await eccrypto.encrypt(pub, bufferData);
+    return encrypted.toString("hex");
+  },
+
+  async decryptOfECIES(pri, encrypted) {
+    let bufferEncrypted = Buffer.from(encrypted, "hex");
+    let decrypted = await eccrypto.decrypt(pri, bufferData);
+    return decrypted.toString();
   }
 
 };
