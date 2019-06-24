@@ -1,3 +1,4 @@
+var expect = require('chai').expect;
 var eccrypto = require("../crypto/eciesCrypto");
 
 var userPrivateKey = Buffer.from("1523eb8a85e8bb6641f8ae53c429811ede7ea588c4b8933fed796c667c203c06", "hex");
@@ -20,6 +21,5 @@ describe("crypto", function() {
             console.info("decryptd data :", plaintext.toString());
         });
     });
-
 
 });
