@@ -33,7 +33,7 @@ module.exports = {
   },
 
   twoDimensionalArray(args, types) {
-    if (args == null) {
+    if (args.length === 0) {
       return null;
     } else {
       let length = args.length;
