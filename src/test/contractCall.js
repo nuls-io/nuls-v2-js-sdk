@@ -80,7 +80,7 @@ async function callContract(pri, pub, fromAddress, assetsChainId, assetsId, cont
   };
   if (value > 0) {
     transferInfo.toAddress = contractCall.contractAddress;
-    transferInfo.value = value;
+    transferInfo.amount = value + amount;
   }
 
   let inOrOutputs = await inputsOrOutputs(transferInfo, balanceInfo, 16);
