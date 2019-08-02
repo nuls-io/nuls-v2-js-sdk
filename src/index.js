@@ -50,10 +50,10 @@ module.exports = {
      * @param passWord
      * @returns {{}}
      */
-    importByKey(chainId, pri, passWord) {
+    importByKey(chainId, pri, passWord, prefix) {
         let addressInfo = {};
         addressInfo.pri = pri;
-        addressInfo.address = sdk.getStringAddress(chainId, pri);
+        addressInfo.address = sdk.getStringAddress(chainId, pri, null, prefix);
         addressInfo.pub = sdk.getPub(pri);
         if (passWord) {
             addressInfo.aesPri = sdk.encrypteByAES(addressInfo.pri, passWord);

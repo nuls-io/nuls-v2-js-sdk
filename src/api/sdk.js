@@ -137,10 +137,11 @@ module.exports = {
      * @param chainId
      * @param pri
      * @param pub
+     * @param prefix
      * @returns {*}
      */
-    getStringAddress: function (chainId, pri, pub, prifix) {
-        return this.getStringAddressBase(chainId, 1, pri, pub, prifix);
+    getStringAddress: function (chainId, pri, pub, prefix) {
+        return this.getStringAddressBase(chainId, 1, pri, pub, prefix);
     },
 
     /**
