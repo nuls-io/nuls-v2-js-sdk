@@ -1,6 +1,6 @@
 {
   "name": "nuls-sdk-js",
-  "version": "2.2.4",
+  "version": "2.2.5",
   "description": "nuls nuls-js nuls-sdk nuls-js-sdk",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/nuls-io/nuls-js-sdk"
+    "url": "https://github.com/nuls-io/nuls-v2-js-sdk"
   },
   "keywords": [
     "nuls",
@@ -62,7 +62,7 @@
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/nuls-io/nuls-js-sdk/issues"
+    "url": "https://github.com/nuls-io/nuls-v2-js-sdk"
   },
-  "homepage": "https://github.com/nuls-io/nuls-js-sdk#readme"
+  "homepage": "https://github.com/nuls-io/nuls-v2-js-sdk"
 }
