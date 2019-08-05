@@ -325,4 +325,12 @@ module.exports = {
         return transaction.hash;
     },
 
+    addressEquals: function (addressV1, addressV2) {
+        let bytesV1 = bs58.decode(addressV1);
+        bytesV1 = bytesV1.slice(2,bytesV1.length-1);
+        let bytesV2 = this.getBytesAddress(addressV2);
+        bytesV2 = bytesV2.slice(2,bytesV2.length)
+        return bytesV1.equals(bytesV2);
+    }
+
 };

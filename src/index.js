@@ -22,6 +22,9 @@ module.exports = {
         addressInfo.address = sdk.getStringAddress(chainId, addressInfo.pri, addressInfo.pub, prefix);
         return addressInfo
     },
+    addressEquals(addressV1, addressV2) {
+        return sdk.addressEquals(addressV1, addressV2);
+    },
 
     /**
      * 根据公钥获取地址
