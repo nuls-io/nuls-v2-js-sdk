@@ -9,6 +9,6 @@ console.log(result);
 let address = nuls.getAddressByPub(100, 1, '0298f88c3cae67385ce3cbee00f78816db3e56e566b62bd0f4c5b45f205d3021c3', "semo");
 console.log(address);
 
-
-let rest = nuls.addressEquals("TTarYnUfsftmm7DrStandCEdd4SNiELS", "tNULSeBaMoG1oaW1JZnh6Ly65Ttp6raeTFBfCG")
-console.log(rest)
+//1.0与2.0私钥或公钥生成的地址是否相同
+let rest = nuls.addressEquals("TTarYnUfsftmm7DrStandCEdd4SNiELS", "tNULSeBaMoG1oaW1JZnh6Ly65Ttp6raeTFBfCG");
+console.log(rest);
