@@ -1,8 +1,12 @@
 {
   "name": "nuls-sdk-js",
-  "version": "2.2.5",
+  "version": "2.2.7",
   "description": "nuls nuls-js nuls-sdk nuls-js-sdk",
   "main": "index.js",
+  "files": [
+    "lib",
+    "src"
+  ],
   "scripts": {
     "cleanLib": "./node_modules/.bin/rimraf lib",
     "bableBuild": "./node_modules/.bin/babel src --out-dir lib",
