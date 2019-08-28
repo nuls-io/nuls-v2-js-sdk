@@ -195,6 +195,39 @@ module.exports = {
         return prefix + constant[prefix.length - 1] + bs58.encode(tempBuffer);
     },
 
+    addressV1ToV2: function (addressV1,chainId,prefix) {
+        if (!addressV1) {
+            return;
+        }
+        let bytesV1 = bs58.decode(addressV1);
+        let pubkeyHash = Buffer.alloc(20);
+        bytesV1.copy(pubkeyHash,0,3,23)
+        let chainIdBuffer = Buffer.concat([Buffer.from([0xFF & chainId >> 0]), Buffer.from([0xFF & chainId >> 8])]);
+        let addrBuffer = Buffer.concat([chainIdBuffer, Buffer.from([1]), pubkeyHash]);
+        let xor = 0x00;
+        let temp = "";
+        let tempBuffer = Buffer.allocUnsafe(addrBuffer.length + 1);
+        for (let i = 0; i < addrBuffer.length; i++) {
+            temp = addrBuffer[i];
+            temp = temp > 127 ? temp - 256 : temp;
+            tempBuffer[i] = temp;
+            xor ^= temp
+        }
+        tempBuffer[addrBuffer.length] = xor;
+        if (1 === chainId) {
+            prefix = 'NULS';
+        } else if (2 === chainId) {
+            prefix = "tNULS";
+        } else if (prefix) {
+            prefix = prefix.toUpperCase();
+        } else {
+            prefix = bs58.encode(chainIdBuffer).toUpperCase();
+        }
+        let constant = ['a', 'b', 'c', 'd', 'e'];
+        return prefix + constant[prefix.length - 1] + bs58.encode(tempBuffer);
+
+    },
+
     /**
      * AES 加密
      * @param value
@@ -327,9 +360,9 @@ module.exports = {
 
     addressEquals: function (addressV1, addressV2) {
         let bytesV1 = bs58.decode(addressV1);
-        bytesV1 = bytesV1.slice(2,bytesV1.length-1);
+        bytesV1 = bytesV1.slice(2, bytesV1.length - 1);
         let bytesV2 = this.getBytesAddress(addressV2);
-        bytesV2 = bytesV2.slice(2,bytesV2.length)
+        bytesV2 = bytesV2.slice(2, bytesV2.length)
         return bytesV1.equals(bytesV2);
     }
 
