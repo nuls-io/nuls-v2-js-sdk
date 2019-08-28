@@ -195,13 +195,13 @@ module.exports = {
         return prefix + constant[prefix.length - 1] + bs58.encode(tempBuffer);
     },
 
-    addressV1ToV2: function (addressV1,chainId,prefix) {
+    addressV1ToV2: function (addressV1, chainId) {
         if (!addressV1) {
             return;
         }
         let bytesV1 = bs58.decode(addressV1);
         let pubkeyHash = Buffer.alloc(20);
-        bytesV1.copy(pubkeyHash,0,3,23)
+        bytesV1.copy(pubkeyHash, 0, 3, 23)
         let chainIdBuffer = Buffer.concat([Buffer.from([0xFF & chainId >> 0]), Buffer.from([0xFF & chainId >> 8])]);
         let addrBuffer = Buffer.concat([chainIdBuffer, Buffer.from([1]), pubkeyHash]);
         let xor = 0x00;
@@ -214,14 +214,11 @@ module.exports = {
             xor ^= temp
         }
         tempBuffer[addrBuffer.length] = xor;
+        let prefix = 'NULS';
         if (1 === chainId) {
             prefix = 'NULS';
         } else if (2 === chainId) {
             prefix = "tNULS";
-        } else if (prefix) {
-            prefix = prefix.toUpperCase();
-        } else {
-            prefix = bs58.encode(chainIdBuffer).toUpperCase();
         }
         let constant = ['a', 'b', 'c', 'd', 'e'];
         return prefix + constant[prefix.length - 1] + bs58.encode(tempBuffer);
