@@ -21,10 +21,11 @@ let remark = 'call contract...';
  */
 async function imputedCallGas(chainId, sender, value, contractAddress, methodName, methodDesc, args) {
   let result = await validateContractCall(sender, value, sdk.CONTRACT_MAX_GASLIMIT, sdk.CONTRACT_MINIMUM_PRICE, contractAddress, methodName, methodDesc, args);
-  if (result && result.value) {
-    return await imputedContractCallGas(sender, value, contractAddress, methodName, methodDesc, args);
+  if (result.success) {
+    let gasResult = await imputedContractCallGas(sender, value, contractAddress, methodName, methodDesc, args);
+    return Number(gasResult.data.gasLimit);
   } else {
-    console.log("调用合约验证失败")
+    console.log("调用合约验证失败\n", result)
   }
 }
 
@@ -45,11 +46,18 @@ async function makeCallData(chainId, sender, value, contractAddress, methodName,
   contractCall.sender = sender;
   contractCall.contractAddress = contractAddress;
   contractCall.value = value;
-  contractCall.gasLimit = imputedCallGas(chainId, sender, value, contractAddress, methodName, methodDesc, args);
+  contractCall.gasLimit = await imputedCallGas(chainId, sender, value, contractAddress, methodName, methodDesc, args);
   contractCall.price = sdk.CONTRACT_MINIMUM_PRICE;
   contractCall.methodName = methodName;
   contractCall.methodDesc = methodDesc;
-  let contractConstructorArgsTypes = getContractMethodArgsTypes(contractAddress, methodName);
+  let argsTypesResult = await getContractMethodArgsTypes(contractAddress, methodName);
+  let contractConstructorArgsTypes;
+  if(argsTypesResult.success) {
+    contractConstructorArgsTypes = argsTypesResult.data;
+  } else {
+    console.log("获取参数数组失败\n", argsTypesResult.data);
+    throw "query data failed";
+  }
   contractCall.args = utils.twoDimensionalArray(args, contractConstructorArgsTypes);
   return contractCall;
 }
@@ -66,11 +74,13 @@ async function makeCallData(chainId, sender, value, contractAddress, methodName,
  */
 async function callContract(pri, pub, fromAddress, assetsChainId, assetsId, contractCall) {
   const balanceInfo = await getNulsBalance(fromAddress);
+  let contractAddress = contractCall.contractAddress;
   let newTimes = new BigNumber(contractCall.gasLimit);
   let amount = Number(newTimes.times(contractCall.price));
   let value = Number(contractCall.value);
   let newValue = new BigNumber(contractCall.value);
   amount = Number(newValue.plus(amount));
+  const contractCallTxData = await makeCallData(2, fromAddress, value, contractAddress, contractCall.methodName, contractCall.methodDesc, contractCall.args);
   let transferInfo = {
     fromAddress: fromAddress,
     assetsChainId: assetsChainId,
@@ -79,12 +89,12 @@ async function callContract(pri, pub, fromAddress, assetsChainId, assetsId, cont
     fee: 100000
   };
   if (value > 0) {
-    transferInfo.toAddress = contractCall.contractAddress;
+    transferInfo.toAddress = contractAddress;
     transferInfo.amount = value + amount;
   }
 
   let inOrOutputs = await inputsOrOutputs(transferInfo, balanceInfo, 16);
-  let tAssemble = await nuls.transactionAssemble(inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, 16, contractCall);
+  let tAssemble = await nuls.transactionAssemble(inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, 16, contractCallTxData);
   let txhex;
   //获取手续费
   let newFee = countFee(tAssemble, 1);
@@ -92,7 +102,7 @@ async function callContract(pri, pub, fromAddress, assetsChainId, assetsId, cont
   if (transferInfo.fee !== newFee) {
     transferInfo.fee = newFee;
     inOrOutputs = await inputsOrOutputs(transferInfo, balanceInfo, 16);
-    tAssemble = await nuls.transactionAssemble(inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, 16, contractCall);
+    tAssemble = await nuls.transactionAssemble(inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, 16, contractCallTxData);
     txhex = await nuls.transactionSerialize(pri, pub, tAssemble);
   } else {
     txhex = await nuls.transactionSerialize(pri, pub, tAssemble);
@@ -105,7 +115,7 @@ async function callContract(pri, pub, fromAddress, assetsChainId, assetsId, cont
     if (results && results.value) {
       console.log("交易完成")
     } else {
-      console.log("广播交易失败")
+      console.log("广播交易失败\n", results)
     }
   } else {
     console.log("验证交易失败")
@@ -115,13 +125,13 @@ async function callContract(pri, pub, fromAddress, assetsChainId, assetsId, cont
 let contractCall = {
   chainId: 2,
   sender: fromAddress,
-  contractAddress: "tNULSeBaN1NjSD1qF6Mj6z5XiGLSxaX8fQtg2G",
+  contractAddress: "tNULSeBaMz6WgGAQgyhGyMwdUDs879f6SAu3vT",
   value: 0,//
   gasLimit: 20000,
   price: 25,
   methodName: "approve",
   methodDesc: "",
-  args: ['tNULSeBaNA1fArRNjbHrDi3ZTdQiM26harbwnD', 88]
+  args: ["tNULSeBaNA1fArRNjbHrDi3ZTdQiM26harbwnD", 88]
 };
 
 //调用创建合约

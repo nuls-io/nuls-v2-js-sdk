@@ -36,7 +36,7 @@ async function imputedCreateGas(sender, contractCode, args) {
   if (result.success) {
     return await imputedContractCreateGas(sender, contractCode, args);
   } else {
-    console.log("创建合约验证失44败")
+    console.log("创建合约验证失败")
   }
 }
 

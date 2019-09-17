@@ -449,7 +449,11 @@ module.exports = {
   async broadcastTx(txHex) {
     return await http.post('/', 'broadcastTx', [txHex])
       .then((response) => {
-        return response.result;
+        if (response.hasOwnProperty("result")) {
+          return response.result;
+        } else {
+          return response.error;
+        }
       })
       .catch((error) => {
         return {success: false, data: error};
