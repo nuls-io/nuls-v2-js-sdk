@@ -39,7 +39,8 @@ function bytesToAddress(bytes) {
 let Transaction = function () {
   this.hash = null;
   this.type = 0;//交易类型
-  this.time = Date.now()/1000;//交易时间
+  let times = (new Date()).valueOf();
+  this.time = Number(times.toString().substr(0, times.toString().length - 3)); //交易时间
   this.remark = null;//备注
   this.txData = null;//业务数据
   this.coinData = [];//输入输出
@@ -181,12 +182,13 @@ module.exports = {
    * @param agentHash
    * @constructor
    */
-  StopAgentTransaction: function (agentHash) {
+  StopAgentTransaction: function (agentHash, lockTime) {
     Transaction.call(this);
     if (!agentHash) {
       throw "Data wrong!";
     }
     this.type = 9;
+    this.time = lockTime;
     this.txData = Buffer.from(agentHash, 'hex');
   },
 
@@ -212,7 +214,7 @@ module.exports = {
   CreateContractTransaction: function (contractCreate) {
     Transaction.call(this);
     if (!contractCreate.chainId || !contractCreate.sender || !contractCreate.contractAddress ||
-        !contractCreate.contractCode || !contractCreate.alias || !contractCreate.gasLimit || !contractCreate.price) {
+      !contractCreate.contractCode || !contractCreate.alias || !contractCreate.gasLimit || !contractCreate.price) {
       throw "Data wrong!";
     }
 
@@ -225,16 +227,16 @@ module.exports = {
     bw.writeUInt64LE(contractCreate.gasLimit);
     bw.writeUInt64LE(contractCreate.price);
     let args = contractCreate.args;
-    if(args != null) {
+    if (args != null) {
       bw.getBufWriter().writeUInt8(args.length);
       let innerArgs;
-      for(let j = 0; j < args.length; j++) {
+      for (let j = 0; j < args.length; j++) {
         innerArgs = args[j];
-        if(innerArgs == null) {
+        if (innerArgs == null) {
           bw.getBufWriter().writeUInt8(0);
         } else {
           bw.getBufWriter().writeUInt8(innerArgs.length);
-          for(let k = 0; k < innerArgs.length; k++) {
+          for (let k = 0; k < innerArgs.length; k++) {
             bw.writeString(innerArgs[k]);
           }
         }
@@ -253,7 +255,7 @@ module.exports = {
   CallContractTransaction: function (contractCall) {
     Transaction.call(this);
     if (!contractCall.chainId || !contractCall.sender || !contractCall.contractAddress || !contractCall.gasLimit || !contractCall.price ||
-        !contractCall.methodName) {
+      !contractCall.methodName) {
       throw "Data wrong!";
     }
 
@@ -267,16 +269,16 @@ module.exports = {
     bw.writeString(contractCall.methodName);
     bw.writeString(contractCall.methodDesc);
     let args = contractCall.args;
-    if(args != null) {
+    if (args != null) {
       bw.getBufWriter().writeUInt8(args.length);
       let innerArgs;
-      for(let j = 0; j < args.length; j++) {
+      for (let j = 0; j < args.length; j++) {
         innerArgs = args[j];
-        if(innerArgs == null) {
+        if (innerArgs == null) {
           bw.getBufWriter().writeUInt8(0);
         } else {
           bw.getBufWriter().writeUInt8(innerArgs.length);
-          for(let k = 0; k < innerArgs.length; k++) {
+          for (let k = 0; k < innerArgs.length; k++) {
             bw.writeString(innerArgs[k]);
           }
         }

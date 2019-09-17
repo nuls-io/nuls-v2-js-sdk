@@ -160,6 +160,7 @@ module.exports = {
      * @param type
      * @param pri
      * @param pub
+     * @param prefix
      * @returns {string}
      */
     getStringAddressBase: function (chainId, type, pri, pub, prefix) {

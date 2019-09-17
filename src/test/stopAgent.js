@@ -1,9 +1,9 @@
 const nuls = require('../index');
 const {getNulsBalance, countFee, inputsOrOutputs, validateTx, broadcastTx, agentDeposistList} = require('./api/util');
-let pri = '411fa90f7161a20f4624a4f00167fac6d5afd97a7e6815f60e66106c559564a1';
-let pub = '031c810153d633a5167ec629af771296bad4f26eacfe4034c978afee12b6c4fd44';
-let fromAddress = "tNULSeBaMuBCG7NkSyufjE76CVbPQMrZ5Q1v3s";
-let amount = 2000100000000;
+let pri = '777e333556edb17564ea45f84dce0f5fbea884123924575213c7a30cb3c9375410';
+let pub = '027d8d404b0aaa834491999a0212ef7e432da69c6462857566f80a2c81e259e7b2';
+let fromAddress = "NULSd6HgfzPGhFsZX16hHgneY25YKs6v6LvmX";
+let amount = 2000000000000;
 let remark = 'stop agent....';
 
 /**
@@ -19,6 +19,7 @@ let remark = 'stop agent....';
  */
 async function stopAgent(pri, pub, fromAddress, assetsChainId, assetsId, amount, agentHash) {
   const balanceInfo = await getNulsBalance(fromAddress);
+  //console.log(balanceInfo);
   let transferInfo = {
     fromAddress: fromAddress,
     assetsChainId: assetsChainId,
@@ -28,9 +29,14 @@ async function stopAgent(pri, pub, fromAddress, assetsChainId, assetsId, amount,
     depositHash: agentHash,
   };
   let inOrOutputs = await inputsOrOutputs(transferInfo, balanceInfo, 9);
-  let newInputs = inOrOutputs.inputs;
-  let newOutputs = inOrOutputs.outputs;
+  //console.log(inOrOutputs);
+  let newInputs = inOrOutputs.data.inputs;
+  //console.log(newInputs);
+  let newOutputs = [];
+  //console.log(newOutputs);
   const depositList = await agentDeposistList(agentHash);
+  //console.log(depositList);
+  //console.log(depositList);
   for (let itme of depositList.list) {
     newInputs.push({
       address: itme.address,
@@ -45,7 +51,31 @@ async function stopAgent(pri, pub, fromAddress, assetsChainId, assetsId, amount,
       assetsId: assetsId, amount: itme.amount, lockTime: 0
     });
   }
-  let tAssemble = await nuls.transactionAssemble(newInputs, newOutputs, remark, 9, agentHash);
+  let addressArr = [];
+  let newOutputss = [];
+  newOutputs.forEach(function (item) {
+    let i;
+    if ((i = addressArr.indexOf(item.address)) > -1) {
+      //console.log(result, i);
+      newOutputss[i].amount = Number(newOutputss[i].amount) + Number(item.amount);
+    } else {
+      addressArr.push(item.address);
+      newOutputss.push({
+        address: item.address,
+        amount: item.amount,
+        assetsChainId: item.assetsChainId,
+        assetsId: item.assetsId,
+        lockTime: item.lockTime,
+      })
+    }
+  });
+  newOutputss.unshift(inOrOutputs.data.outputs[0]);
+
+  //console.log(newInputs);
+  //console.log(newOutputss);
+
+  let tAssemble = await nuls.transactionAssemble(newInputs, newOutputss, remark, 9, agentHash);
+  //console.log(tAssemble);
   let txhex = '';
   //获取手续费
   let newFee = countFee(tAssemble, 1);
@@ -53,8 +83,8 @@ async function stopAgent(pri, pub, fromAddress, assetsChainId, assetsId, amount,
   if (transferInfo.fee !== newFee) {
     transferInfo.fee = newFee;
     inOrOutputs = await inputsOrOutputs(transferInfo, balanceInfo, 9);
-    newInputs = inOrOutputs.inputs;
-    newOutputs = inOrOutputs.outputs;
+    newInputs = inOrOutputs.data.inputs;
+    newOutputs = inOrOutputs.data.outputs;
     for (let itme of depositList.list) {
       newInputs.push({
         address: itme.address,
@@ -76,9 +106,10 @@ async function stopAgent(pri, pub, fromAddress, assetsChainId, assetsId, amount,
   }
   //console.log(txhex);
   let result = await validateTx(txhex);
+  //console.log(result);
   if (result) {
-    console.log(result.value);
     let results = await broadcastTx(txhex);
+    //console.log(results);
     if (results && result.value) {
       console.log("交易完成")
     } else {
@@ -87,8 +118,7 @@ async function stopAgent(pri, pub, fromAddress, assetsChainId, assetsId, amount,
   } else {
     console.log("验证交易失败")
   }
-
 }
 
 //调用注销节点
-stopAgent(pri, pub, fromAddress, 2, 1, amount, '1c641f4b6ec42155e6c3e17b4f78db96353776c294a75c1dcca1f77f3f753545');
+stopAgent(pri, pub, fromAddress, 1, 1, amount, '7018c41307132d3e4709c3f50bae235e6f028a267b291930520bdb25f9d24195');

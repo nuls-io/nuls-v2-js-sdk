@@ -65,6 +65,9 @@ module.exports = {
       newLocked = -1;
       newNonce = transferInfo.depositHash.substring(transferInfo.depositHash.length - 16);
       newoutputAmount = transferInfo.amount - transferInfo.fee;
+      //锁定三天
+      let times = (new Date()).valueOf() + 3600000 * 72;
+      newLockTime = Number(times.toString().substr(0, times.toString().length - 3));
     } else {
       //return {success: false, data: "No transaction type"}
     }
@@ -94,6 +97,8 @@ module.exports = {
       amount: newoutputAmount,
       lockTime: newLockTime
     }];
+    /*console.log(inputs);
+    console.log(outputs);*/
     return {success: true, data: {inputs: inputs, outputs: outputs}};
   },
 
@@ -230,7 +235,7 @@ module.exports = {
    * @returns {Promise<AxiosResponse<any>>}
    */
   async getNulsBalance(address) {
-    return await http.post('/', 'getAccountBalance', [2, 1, address])
+    return await http.post('/', 'getAccountBalance', [1, 1, address])
       .then((response) => {
         return {'balance': response.result.balance, 'nonce': response.result.nonce};
       })
@@ -399,7 +404,7 @@ module.exports = {
   async validateTx(txHex) {
     return await http.post('/', 'validateTx', [txHex])
       .then((response) => {
-        console.log(response);
+        //console.log(response);
         if (response.hasOwnProperty("result")) {
           return {success: true, data: response.result};
         } else {
@@ -457,7 +462,7 @@ module.exports = {
    * @returns {Promise<AxiosResponse<any>>}
    */
   async sendCrossTx(txHex) {
-    return await http.post('/', 'sendCrossTx', [8,txHex])
+    return await http.post('/', 'sendCrossTx', [8, txHex])
       .then((response) => {
         console.log(response);
         return response.result;
