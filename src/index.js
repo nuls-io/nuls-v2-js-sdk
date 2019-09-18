@@ -97,7 +97,7 @@ module.exports = {
     } else if (type === 6) { //退出共识
       tt = new txs.WithdrawTransaction(info);
     } else if (type === 9) { //注销节点
-      tt = new txs.StopAgentTransaction(info, outputs[0].lockTime - 3600000 * 72);
+      tt = new txs.StopAgentTransaction(info, outputs[0].lockTime - 86400 * 3);
     } else if (type === 15) { //创建合约
       tt = new txs.CreateContractTransaction(info);
     } else if (type === 16) { //调用合约
