@@ -75,11 +75,11 @@ async function makeCallData(chainId, sender, value, contractAddress, methodName,
 async function callContract(pri, pub, fromAddress, assetsChainId, assetsId, contractCall) {
   const balanceInfo = await getNulsBalance(fromAddress);
   let contractAddress = contractCall.contractAddress;
-  let newTimes = new BigNumber(contractCall.gasLimit);
-  let amount = Number(newTimes.times(contractCall.price));
+  let gasLimit = new BigNumber(contractCall.gasLimit);
+  let gasFee = Number(gasLimit.times(contractCall.price));
   let value = Number(contractCall.value);
   let newValue = new BigNumber(contractCall.value);
-  amount = Number(newValue.plus(amount));
+  let amount = Number(newValue.plus(gasFee));
   const contractCallTxData = await makeCallData(2, fromAddress, value, contractAddress, contractCall.methodName, contractCall.methodDesc, contractCall.args);
   let transferInfo = {
     fromAddress: fromAddress,
@@ -90,7 +90,7 @@ async function callContract(pri, pub, fromAddress, assetsChainId, assetsId, cont
   };
   if (value > 0) {
     transferInfo.toAddress = contractAddress;
-    transferInfo.amount = value + amount;
+    transferInfo.value = contractCall.value;
   }
 
   let inOrOutputs = await inputsOrOutputs(transferInfo, balanceInfo, 16);
