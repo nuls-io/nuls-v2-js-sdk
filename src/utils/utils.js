@@ -1,10 +1,4 @@
-function valueOfstring(obj) {
-  return (obj === null) ? null : obj.toString();
-}
 
-function isBlank(str) {
-  return null === str || str.trim.length === 0;
-}
 
 module.exports = {
   stringToByte(str) {
