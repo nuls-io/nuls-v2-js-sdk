@@ -5,11 +5,11 @@ const {getNulsBalance, countFee, inputsOrOutputs, validateTx, broadcastTx, mutiI
 
 async function registerChainAndAsset(pri, address, chainInfo, assetInfo) {
     const balanceInfo = await getNulsBalance(address);
-    if (!balanceInfo.success) {
+    if (!balanceInfo.nonce) {
         console.log("get balance failed!");
         return;
     }
-
+    let pub = sdk.getPub(pri);
     let transferInfo = {
 
         assetsChainId: 2,

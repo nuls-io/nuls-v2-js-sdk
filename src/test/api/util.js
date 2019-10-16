@@ -269,7 +269,7 @@ module.exports = {
      * @returns {Promise<AxiosResponse<any>>}
      */
     async getNulsBalance(address) {
-        return await http.post('/', 'getAccountBalance', [1, 1, address])
+        return await http.post('/', 'getAccountBalance', [2, 1, address])
             .then((response) => {
                 return {'balance': response.result.balance, 'nonce': response.result.nonce};
             })
