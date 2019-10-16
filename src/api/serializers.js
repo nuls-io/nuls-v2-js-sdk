@@ -33,9 +33,9 @@ let Serializers = function (bufWriter) {
 
   this.writeBoolean = function (value) {
     if (value) {
-      bufWriter.write(1);
+      bufWriter.writeUInt8(1);
     } else {
-      bufWriter.write(0);
+      bufWriter.writeUInt8(0);
     }
   };
 
