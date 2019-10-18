@@ -1,10 +1,29 @@
 const nuls = require('../index');
 const {getNulsBalance, countFee, inputsOrOutputs, validateTx, broadcastTx} = require('./api/util');
+
+/**
+ * @disc: 创建节点 dome
+ * @date: 2019-10-18 10:37
+ * @author: Wave
+ */
+
 let pri = '411fa90f7161a20f4624a4f00167fac6d5afd97a7e6815f60e66106c559564a1';
 let pub = '031c810153d633a5167ec629af771296bad4f26eacfe4034c978afee12b6c4fd44';
 let fromAddress = "tNULSeBaMuBCG7NkSyufjE76CVbPQMrZ5Q1v3s";
 let amount = 2000100000000;
 let remark = 'new agent...';
+
+let agent = {
+  agentAddress: fromAddress,
+  packingAddress: "tNULSeBaMvEtDfvZuukDf2mVyfGo3DdiN8KLRG",
+  rewardAddress: fromAddress,
+  commissionRate: 12,
+  deposit: 2000100000000
+};
+
+//调用新建节点
+newAgent(pri, pub, fromAddress, 2, 1, amount, agent);
+
 /**
  * 新建节点
  * @param pri
@@ -42,12 +61,4 @@ async function newAgent(pri, pub, fromAddress, assetsChainId, assetsId, amount, 
     console.log("验证交易失败")
   }
 }
-let agent = {
-  agentAddress: fromAddress,
-  packingAddress: "tNULSeBaMvEtDfvZuukDf2mVyfGo3DdiN8KLRG",
-  rewardAddress: fromAddress,
-  commissionRate: 12,
-  deposit: 2000100000000
-};
-//调用新建节点
-newAgent(pri, pub, fromAddress, 2, 1, amount, agent);
+

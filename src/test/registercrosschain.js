@@ -2,6 +2,38 @@ const nuls = require('../index');
 const sdk = require('../api/sdk');
 const {getNulsBalance, countFee, validateTx, broadcastTx, mutiInputsOrOutputs} = require('./api/util');
 
+/**
+ * @disc:注册跨链交易
+ * @date: 2019-10-17 15:50
+ * @author: Wave
+ */
+
+let chain = {
+  chainId: 100,
+  addressType: "1",//1 使用NULS框架构建的链 生态内，2生态外"
+  chainName: "test",
+  addressPrefix: "XXX",
+  magicNumber: 10096,
+  supportInflowAsset: true,
+  verifierList: ["XXXcA7kaeQMPaiRNPpQSEP8S8tNXDFeC5vnEy", "XXXcA7kaiK3YhCdSxfXaaffHupBDPjm3veiEE", "XXXcA7kaYY2QrRFX7Le9YdwtzQ9JvtRUU37bx"],
+  minAvailableNodeNum: 3,
+  maxSignatureCount: 200,
+  signatureBFTRatio: 66
+};
+let asset = {
+  assetId: 1,
+  symbol: "XXX",
+  assetName: "XXX",
+  initNumber: 10000000000000,
+  decimalPlaces: 8
+};
+
+let fromAddress = "tNULSeBaMpVdwtAD2k33tiCbEsPXhpV3E6Zvgp";
+let pri = '4776e429194e9a1c0669a962df4b9f46745a19b2b6fa04e02304ce3ad54ad791';
+
+//注册跨链交易
+registerChainAndAsset(pri, fromAddress, chain, asset);
+
 async function registerChainAndAsset(pri, address, chainInfo, assetInfo) {
   const balanceInfo = await getNulsBalance(address);
   if (!balanceInfo.nonce) {
@@ -66,28 +98,4 @@ async function registerChainAndAsset(pri, address, chainInfo, assetInfo) {
   }
 }
 
-let chain = {
-  chainId: 100,
-  addressType: "1",//1 使用NULS框架构建的链 生态内，2生态外"
-  chainName: "test",
-  addressPrefix: "XXX",
-  magicNumber: 10096,
-  supportInflowAsset: true,
-  verifierList: ["XXXcA7kaeQMPaiRNPpQSEP8S8tNXDFeC5vnEy", "XXXcA7kaiK3YhCdSxfXaaffHupBDPjm3veiEE", "XXXcA7kaYY2QrRFX7Le9YdwtzQ9JvtRUU37bx"],
-  minAvailableNodeNum: 3,
-  maxSignatureCount: 200,
-  signatureBFTRatio: 66
-};
-let asset = {
-  assetId: 1,
-  symbol: "XXX",
-  assetName: "XXX",
-  initNumber: 10000000000000,
-  decimalPlaces: 8
-};
 
-let fromAddress = "tNULSeBaMpVdwtAD2k33tiCbEsPXhpV3E6Zvgp";
-let pri = '4776e429194e9a1c0669a962df4b9f46745a19b2b6fa04e02304ce3ad54ad791';
-
-//注册跨链交易
-registerChainAndAsset(pri, fromAddress, chain, asset);

@@ -1,10 +1,20 @@
 const nuls = require('../index');
 const {getNulsBalance, countFee, inputsOrOutputs, validateTx, broadcastTx, agentDeposistList} = require('./api/util');
+
+/**
+ * @disc: 注销节点 dome
+ * @date: 2019-10-18 10:38
+ * @author: Wave
+ */
+
 let pri = '777e333556edb17564ea45f84dce0f5fbea884123924575213c7a30cb3c9375410';
 let pub = '027d8d404b0aaa834491999a0212ef7e432da69c6462857566f80a2c81e259e7b2';
 let fromAddress = "NULSd6HgfzPGhFsZX16hHgneY25YKs6v6LvmX";
 let amount = 2000000000000;
 let remark = 'stop agent....';
+
+//调用注销节点
+stopAgent(pri, pub, fromAddress, 1, 1, amount, '7018c41307132d3e4709c3f50bae235e6f028a267b291930520bdb25f9d24195');
 
 /**
  * 注销节点
@@ -120,5 +130,4 @@ async function stopAgent(pri, pub, fromAddress, assetsChainId, assetsId, amount,
   }
 }
 
-//调用注销节点
-stopAgent(pri, pub, fromAddress, 1, 1, amount, '7018c41307132d3e4709c3f50bae235e6f028a267b291930520bdb25f9d24195');
+
