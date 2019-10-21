@@ -235,7 +235,7 @@ module.exports = {
         //     stream.writeString(verifier);
         // }
         for (let i = 0; i < txDataInfo.chainInfo.verifierList.length; i++) {
-            bw.writeBytesWithLength(sdk.getBytesAddress(txDataInfo.chainInfo.verifierList[i]));
+            bw.writeBytesWithLength(sdk.getBytesAddress(txDataInfo.chainInfo.verifierList[i].address));
         }
         // stream.writeUint16(signatureByzantineRatio);
         bw.getBufWriter().writeUInt16LE(txDataInfo.chainInfo.signatureBFTRatio);

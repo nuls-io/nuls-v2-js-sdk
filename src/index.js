@@ -98,7 +98,7 @@ module.exports = {
             tt = new txs.WithdrawTransaction(info);
         } else if (type === 9) { //注销节点
             tt = new txs.StopAgentTransaction(info, outputs[0].lockTime - 86400 * 3);
-        } else if (type === 11) { //注销节点
+        } else if (type === 11) { //注册跨链交易
             tt = new txs.RegisterChainAndAssetTransaction(info);
         } else if (type === 15) { //创建合约
             tt = new txs.CreateContractTransaction(info);
