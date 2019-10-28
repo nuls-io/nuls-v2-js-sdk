@@ -6,7 +6,7 @@ const nuls = require('../index');
  * @author: Wave
  */
 
-let passWord = 'nuls123456';//密码为空 私钥会返回
+let passWord = '';//密码为空 私钥会返回
 const newAddress = nuls.newAddress(100, passWord, 'XXX');
 console.log(newAddress);
 

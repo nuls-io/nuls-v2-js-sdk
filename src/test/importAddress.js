@@ -6,8 +6,8 @@ const nuls = require('../index');
  * @author: Wave
  */
 
-let passWord = '123456asd';
-const key = "411fa90f7161a20f4624a4f00167fac6d5afd97a7e6815f60e66106c559564a1";
-const importAddress = nuls.importByKey(3, key, passWord, "help");
+let passWord = '';
+const key = "30bfde504d8ff3c269d0a0816034c3eeceb2eaa04c1f0d36ee724527b0e3a25d";
+const importAddress = nuls.importByKey(100, key, passWord, "XXX");
 console.log(importAddress);
 console.log(importAddress.address === 'tNULSeBaMuBCG7NkSyufjE76CVbPQMrZ5Q1v3s');
