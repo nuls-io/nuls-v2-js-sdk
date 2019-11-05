@@ -41,22 +41,23 @@ async function registerChainAndAsset(pri, address, chainInfo, assetInfo) {
     return;
   }
   let pub = sdk.getPub(pri);
+  //跨链交易消耗3000nuls=1600转账+800锁定+600销毁
   let transferInfo = {
     assetsChainId: 2,
     assetsId: 1,
     fee: 100000,
     from: {
       fromAddress: address,
-      amount: 100000000000
+      amount: 300000000000
     },
-    to: [{
-      toAddress: address,
-      amount: 80000000000,
-      loctTime: -1
-    }, {
-      toAddress: sdk.getStringAddress(2, null, "000000000000000000000000000000000000000000000000000000000000000000", "tNULS"),
-      amount: 20000000000
-    }]
+    to: [
+      {toAddress: "tNULSeBaMpQTyMygD2DLtW8pPBxHRqjjZqfyMh", amount: 160000000000,},
+      {toAddress: address, amount: 80000000000, lockTime: -1},
+      {
+        toAddress: sdk.getStringAddress(2, null, "000000000000000000000000000000000000000000000000000000000000000000", "tNULS"),
+        amount: 60000000000
+      }
+    ]
   };
   let inOrOutputs = await mutiInputsOrOutputs(transferInfo, balanceInfo, 11);
   let tAssemble = [];//交易组装
@@ -79,6 +80,7 @@ async function registerChainAndAsset(pri, address, chainInfo, assetInfo) {
     } else {
       txhex = await nuls.transactionSerialize(pri, pub, tAssemble);
     }
+    console.log(inOrOutputs);
   } else {
     console.log(inOrOutputs.data);
     return;
