@@ -9,11 +9,11 @@ const {getNulsBalance, countFee, validateTx, broadcastTx, mutiInputsOrOutputs} =
  */
 
 let chain = {
-  chainId: 100,
+  chainId: 99,
   addressType: "1",//1 使用NULS框架构建的链 生态内，2生态外"
-  chainName: "test",
-  addressPrefix: "XXX",
-  magicNumber: 10096,
+  chainName: "test1",
+  addressPrefix: "XXXX",
+  magicNumber: 10066,
   supportInflowAsset: true,
   verifierList: ["XXXcA7kaeQMPaiRNPpQSEP8S8tNXDFeC5vnEy", "XXXcA7kaiK3YhCdSxfXaaffHupBDPjm3veiEE", "XXXcA7kaYY2QrRFX7Le9YdwtzQ9JvtRUU37bx"],
   minAvailableNodeNum: 3,
@@ -51,7 +51,7 @@ async function registerChainAndAsset(pri, address, chainInfo, assetInfo) {
       amount: 300000000000
     },
     to: [
-      {toAddress: "tNULSeBaMpQTyMygD2DLtW8pPBxHRqjjZqfyMh", amount: 160000000000,},
+      {toAddress: "tNULSeBaMpQTyMygD2DLtW8pPBxHRqjjZqfyMh", amount: 160000000000},
       {toAddress: address, amount: 80000000000, lockTime: -1},
       {
         toAddress: sdk.getStringAddress(2, null, "000000000000000000000000000000000000000000000000000000000000000000", "tNULS"),

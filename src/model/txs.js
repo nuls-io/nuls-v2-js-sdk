@@ -94,7 +94,7 @@ let Transaction = function () {
                 bw.getBufWriter().writeUInt16LE(output.assetsId);
                 bw.writeBigInt(output.amount);
                 if (output.lockTime === -1) {
-                    bw.getBufWriter().write(Buffer.from("ffffffffffffffffff", "hex"));
+                    bw.getBufWriter().write(Buffer.from("ffffffffffffffff", "hex"));
                 } else {
                     bw.writeUInt64LE(output.lockTime);
                 }
@@ -252,7 +252,7 @@ module.exports = {
         // stream.writeBigInteger(depositNuls);
         bw.writeBigInt(80000000000);
         // stream.writeBigInteger(destroyNuls);
-        bw.writeBigInt(20000000000);
+        bw.writeBigInt(60000000000);
         // stream.writeBigInteger(initNumber);
         bw.writeBigInt(txDataInfo.assetInfo.initNumber);
         // stream.writeShort(decimalPlaces);
