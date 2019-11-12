@@ -80,13 +80,15 @@ async function registerChainAndAsset(pri, address, chainInfo, assetInfo) {
     } else {
       txhex = await nuls.transactionSerialize(pri, pub, tAssemble);
     }
-    console.log(inOrOutputs);
+    console.log(inOrOutputs.data.inputs);
+    console.log(inOrOutputs.data.outputs);
   } else {
     console.log(inOrOutputs.data);
     return;
   }
   console.log(txhex);
   let result = await validateTx(txhex);
+  console.log(result);
   if (result.success) {
     console.log(result.data.value);
     let results = await broadcastTx(txhex);
