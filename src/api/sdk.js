@@ -303,10 +303,10 @@ module.exports = {
      * @param signValue
      * @param pubHex
      */
-    appSplicingPub: function appSplicingPub(signValue, pubHex) {
+    appSplicingPub: function appSplicingPub(signValue) {
         let bw = new Serializers();
-        bw.writeBytesWithLength(Buffer.from(pubHex, 'hex'));
-        bw.writeBytesWithLength(Buffer.from(signValue, 'hex'));
+        bw.writeBytesWithLength(Buffer.from(signValue.pub, 'hex'));
+        bw.writeBytesWithLength(Buffer.from(signValue.signValue, 'hex'));
         return bw.getBufWriter().toBuffer();
     },
 
