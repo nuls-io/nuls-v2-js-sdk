@@ -290,7 +290,7 @@ module.exports = {
     },
 
     getSignData: function (hashHex, priHex) {
-        let pub = this.getPub(priHex)
+        let pub = this.getPub(priHex);
         let sigHex = this.signature(hashHex, priHex);
         return {
             "pub": pub.toString('hex'),

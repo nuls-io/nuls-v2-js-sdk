@@ -1,4 +1,5 @@
 const nuls = require('../index');
+const sdk = require('../api/sdk')
 const {getNulsBalance, countFee, inputsOrOutputs, validateTx, broadcastTx} = require('./api/util');
 
 /**
@@ -14,7 +15,7 @@ let fromAddress = "tNULSeBaMu38g1vnJsSZUCwTDU9GsE5TVNUtpD";
 //黑洞地址
 let toAddress = 'tNULSeBaMkqeHbTxwKqyquFcbewVTUDHPkF11o';
 let amount = 100000000;
-let remark = 'niels test alias....';
+let remark = 'set alias....';
 
 //调用设置别名
 setAlias(pri, pub, fromAddress, toAddress, 2, 1, amount, remark);
@@ -48,11 +49,15 @@ async function setAlias(pri, pub, fromAddress, toAddress, assetsChainId, assetsI
   };
   //交易组装
   let tAssemble = await nuls.transactionAssemble(inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, 3, aliasInfo);
+  console.log(tAssemble);
+  //获取hash
+  let hash = await tAssemble.getHash();
+  console.log(hash);
   //交易签名
-  let txSignature = await nuls.transactionSignature(pri, tAssemble);
+  let txSignature = await sdk.getSignData(hash, pri);
   console.log(txSignature);
   //通过拼接签名、公钥获取HEX
-  let getHex = await  nuls.appSplicingPub(txSignature, pub);
+  let getHex = await  sdk.appSplicingPub(txSignature, pub);
   console.log(getHex);
   //let txhex = await nuls.transactionSerialize(pri, pub,tAssemble);
 
