@@ -57,8 +57,12 @@ async function setAlias(pri, pub, fromAddress, toAddress, assetsChainId, assetsI
   let txSignature = await sdk.getSignData(hash.toString('hex'), pri);
   console.log(txSignature);
   //通过拼接签名、公钥获取HEX
+<<<<<<< HEAD
   let getHex = await sdk.appSplicingPub(txSignature.signValue, pub);
   console.log(getHex.toString('hex'));*/
+
+  let getHex = await  sdk.appSplicingPub(txSignature);
+  console.log(getHex);
 
   let txhex = await nuls.transactionSerialize(pri, pub, tAssemble);
   console.log(txhex);

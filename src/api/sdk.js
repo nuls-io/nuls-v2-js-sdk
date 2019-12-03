@@ -308,10 +308,11 @@ module.exports = {
    */
   appSplicingPub: function appSplicingPub(signValue, pubHex) {
     let bw = new Serializers();
-    bw.writeBytesWithLength(Buffer.from(pubHex, 'hex'));
     bw.writeBytesWithLength(Buffer.from(signValue, 'hex'));
+    bw.writeBytesWithLength(Buffer.from(pubHex, 'hex'));
     return bw.getBufWriter().toBuffer();
   },
+
 
   /**
    * 签名 tx
