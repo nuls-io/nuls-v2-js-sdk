@@ -6,5 +6,5 @@ const nuls = require('../index');
  * @author: Wave
  */
 
-let address = '8CPcA7kaYf1NAeuKoACEMVzeNSpMP5WFdTZg6';
+let address = 'NULSd6Hgam8YajetEDnCoJBdEFkMNP41PfH7y';
 console.log(nuls.verifyAddress(address));
