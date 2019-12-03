@@ -8,9 +8,9 @@ const {getNulsBalance, countFee, inputsOrOutputs, validateTx, broadcastTx} = req
  * @author: Wave
  */
 
-let pri = '94d344417d6faa55e3017709dd6b837bac2bc1769e3a4b516ac9a981465ac03c';
-let pub = '02403cb49ac24ff9555b073ce981e28bed5e81438b2c715a14d06bd248ea1d0091';
-let fromAddress = "tNULSeBaMfwpGBmn8xuKABPWUbdtsM2cMoinnn";
+let pri = '4100e2f88c3dba08e5000ed3e8da1ae4f1e0041b856c09d35a26fb399550f530';
+let pub = '020e19418ed26700b0dba720dcc95483cb4adb1b5f8a103818dab17d5b05231854';
+let fromAddress = "tNULSeBaMu38g1vnJsSZUCwTDU9GsE5TVNUtpD";
 //黑洞地址
 let toAddress = 'tNULSeBaMkqeHbTxwKqyquFcbewVTUDHPkF11o';
 let amount = 100000000;
@@ -39,18 +39,25 @@ async function setAlias(pri, pub, fromAddress, toAddress, assetsChainId, assetsI
     assetsChainId: assetsChainId,
     assetsId: assetsId,
     amount: amount,
-    fee:100000
+    fee: 100000
   };
   let inOrOutputs = await inputsOrOutputs(transferInfo, balanceInfo, 3);
   let aliasInfo = {
-    fromAddress:fromAddress,
-    alias:'wave'
+    fromAddress: fromAddress,
+    alias: 'wave'
   };
-  let tAssemble =  await nuls.transactionAssemble(inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, 3,aliasInfo);
-  let txhex = await nuls.transactionSerialize(pri, pub,tAssemble);
+  //交易组装
+  let tAssemble = await nuls.transactionAssemble(inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, 3, aliasInfo);
+  //交易签名
+  let txSignature = await nuls.transactionSignature(pri, tAssemble);
+  console.log(txSignature);
+  //通过拼接签名、公钥获取HEX
+  let getHex = await  nuls.appSplicingPub(txSignature, pub);
+  console.log(getHex);
+  //let txhex = await nuls.transactionSerialize(pri, pub,tAssemble);
 
   //console.log(txhex);
-  let result = await validateTx(txhex);
+  /*let result = await validateTx(txhex);
   if (result) {
     console.log(result.data.value);
     let results = await broadcastTx(txhex);
@@ -61,7 +68,7 @@ async function setAlias(pri, pub, fromAddress, toAddress, assetsChainId, assetsI
     }
   } else {
     console.log("验证交易失败")
-  }
+  }*/
 }
 
 

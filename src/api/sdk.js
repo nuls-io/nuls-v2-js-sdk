@@ -290,6 +290,18 @@ module.exports = {
   },
 
   /**
+   * App签名，拼接公钥
+   * @param signValue
+   * @param pubHex
+   */
+  appSplicingPub: function appSplicingPub(signValue, pubHex) {
+    let bw = new Serializers();
+    bw.writeBytesWithLength(pubHex);
+    bw.writeBytesWithLength(signValue);
+    return bw.getBufWriter().toBuffer();
+  },
+
+  /**
    * 签名 tx
    * @param tx
    * @param priHex
