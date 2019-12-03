@@ -50,19 +50,19 @@ async function setAlias(pri, pub, fromAddress, toAddress, assetsChainId, assetsI
   //交易组装
   let tAssemble = await nuls.transactionAssemble(inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, 3, aliasInfo);
   console.log(tAssemble);
-  //获取hash
+  /*//获取hash
   let hash = await tAssemble.getHash();
   console.log(hash);
   //交易签名
   let txSignature = await sdk.getSignData(hash.toString('hex'), pri);
   console.log(txSignature);
   //通过拼接签名、公钥获取HEX
-  let getHex = await  sdk.appSplicingPub(txSignature, pub);
-  console.log(getHex);
-  //let txhex = await nuls.transactionSerialize(pri, pub,tAssemble);
+  let getHex = await sdk.appSplicingPub(txSignature.signValue, pub);
+  console.log(getHex.toString('hex'));*/
 
-  //console.log(txhex);
-  /*let result = await validateTx(txhex);
+  let txhex = await nuls.transactionSerialize(pri, pub, tAssemble);
+  console.log(txhex);
+  let result = await validateTx(txhex);
   if (result) {
     console.log(result.data.value);
     let results = await broadcastTx(txhex);
@@ -73,7 +73,7 @@ async function setAlias(pri, pub, fromAddress, toAddress, assetsChainId, assetsI
     }
   } else {
     console.log("验证交易失败")
-  }*/
+  }
 }
 
 
