@@ -50,23 +50,23 @@ async function setAlias(pri, pub, fromAddress, toAddress, assetsChainId, assetsI
   //交易组装
   let tAssemble = await nuls.transactionAssemble(inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, 3, aliasInfo);
   console.log(tAssemble);
-  /*//获取hash
+  //获取hash
   let hash = await tAssemble.getHash();
   console.log(hash);
   //交易签名
   let txSignature = await sdk.getSignData(hash.toString('hex'), pri);
   console.log(txSignature);
   //通过拼接签名、公钥获取HEX
-<<<<<<< HEAD
-  let getHex = await sdk.appSplicingPub(txSignature.signValue, pub);
-  console.log(getHex.toString('hex'));*/
+  let txhex = await sdk.appSplicingPub(txSignature.signValue, pub);
+  console.log(txhex.toString('hex'));
 
-  let getHex = await  sdk.appSplicingPub(txSignature);
+  /*let getHex = await  sdk.appSplicingPub(txSignature);
   console.log(getHex);
 
   let txhex = await nuls.transactionSerialize(pri, pub, tAssemble);
-  console.log(txhex);
-  let result = await validateTx(txhex);
+  console.log(txhex);*/
+  let result = await validateTx(txhex.toString('hex'));
+  console.log(result);
   if (result) {
     console.log(result.data.value);
     let results = await broadcastTx(txhex);
