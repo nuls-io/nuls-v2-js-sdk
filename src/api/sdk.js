@@ -10,6 +10,7 @@ const iv = CryptoJS.enc.Hex.parse('0000000000000000');
 const bufferUtils = require("../utils/buffer");
 const Hash = require("../utils/hash");
 const Serializers = require("./serializers");
+const secp256k1 = require("secp256k1")
 
 /**
  * 将数字转为6个字节的字节数组
@@ -334,7 +335,8 @@ module.exports = {
    */
   verifySign: function (dataHex, signHex, pubHex) {
     let ec = new rs.KJUR.crypto.ECDSA({'curve': 'secp256k1'});
-    return ec.verifyHex(dataHex, signHex, pubHex);
+    let publicKey = secp256k1.publicKeyConvert(Buffer.from(pubHex, "hex"), false).toString("hex");
+    return ec.verifyHex(dataHex, signHex, publicKey);
   },
 
   /**
