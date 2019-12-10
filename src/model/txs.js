@@ -95,6 +95,8 @@ let Transaction = function () {
                 bw.writeBigInt(output.amount);
                 if (output.lockTime === -1) {
                     bw.getBufWriter().write(Buffer.from("ffffffffffffffff", "hex"));
+                } else if (output.lockTime === -2) {
+                    bw.getBufWriter().write(Buffer.from("feffffffffffffff", "hex"));
                 } else {
                     bw.writeUInt64LE(output.lockTime);
                 }
@@ -371,6 +373,35 @@ module.exports = {
     CrossChainTransaction: function () {
         Transaction.call(this);
         this.type = 10;
+    },
+
+    CoinTradingTransaction: function (coinTrading) {
+        Transaction.call(this);
+        this.type = 28;
+        let bw = new Serializers();
+        bw.getBufWriter().writeUInt16LE(coinTrading.baseAssetChainId);
+        bw.getBufWriter().writeUInt16LE(coinTrading.baseAssetId);
+        bw.getBufWriter().writeUInt8(coinTrading.baseMinDecimal);
+        bw.writeBigInt(coinTrading.baseMinSize);
+
+        bw.getBufWriter().writeUInt16LE(coinTrading.quoteAssetChainId);
+        bw.getBufWriter().writeUInt16LE(coinTrading.quoteAssetId);
+        bw.getBufWriter().writeUInt8(coinTrading.quoteMinDecimal);
+        bw.writeBigInt(coinTrading.quoteMinSize);
+
+        this.txData = bw.getBufWriter().toBuffer();
+    },
+
+    TradingOrderTransaction: function (tradingOrder) {
+        Transaction.call(this);
+        this.type = 29;
+        let bw = new Serializers();
+        let hash = Buffer.from(tradingOrder.tradingHash, 'hex');
+        bw.getBufWriter().write(hash);
+        bw.getBufWriter().writeUInt8(tradingOrder.orderType);
+        bw.writeBigInt(tradingOrder.amount);
+        bw.writeBigInt(tradingOrder.price);
+        this.txData = bw.getBufWriter().toBuffer();
     },
 };
 
