@@ -128,7 +128,7 @@ async function makeCreateData(chainId, sender, alias, contractCode, args) {
   contractCreate.contractCode = contractCode;
 
   let constructor = await getContractConstructor(contractCode);
-  let contractConstructorArgsTypes = makeContractConstructorArgsTypes(constructor);
+  let contractConstructorArgsTypes = await makeContractConstructorArgsTypes(constructor);
   contractCreate.args = await utils.twoDimensionalArray(args, contractConstructorArgsTypes);
   contractCreate.contractAddress = sdk.getStringContractAddress(chainId);
   return contractCreate;
