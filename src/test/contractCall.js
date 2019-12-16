@@ -15,16 +15,16 @@ let pub = '02ec9e957823cd30d809f44830442562ca5bf42530251247b35d9209690f39be67';
 let fromAddress = "tNULSeBaMqywZjfSrKNQKBfuQtVxAHBQ8rB2Zn";
 let remark = 'call contract...';
 
-let contractCall = {
-  chainId: 2,
-  sender: fromAddress,
-  contractAddress: "tNULSeBaMz6WgGAQgyhGyMwdUDs879f6SAu3vT",
-  value: 0,//
-  gasLimit: 20000,
-  price: 25,
-  methodName: "approve",
-  methodDesc: "",
-  args: ["tNULSeBaNA1fArRNjbHrDi3ZTdQiM26harbwnD", 88]
+var contractCall = {
+    chainId: 2,
+    sender: fromAddress,
+    contractAddress: "tNULSeBaN6GoEavdatSmFy6mzb88oNupqosF91",
+    value: 0, //
+    gasLimit: 20000,
+    price: 25,
+    methodName: "arrayParametersTest2",
+    methodDesc: "",
+    args: [333, "[111,222,999]", "['ooo',\"xxx\"]"]
 };
 
 //调用创建合约
@@ -132,7 +132,7 @@ async function makeCallData(chainId, sender, value, contractAddress, methodName,
   contractCall.price = sdk.CONTRACT_MINIMUM_PRICE;
   contractCall.methodName = methodName;
   contractCall.methodDesc = methodDesc;
-  let argsTypesResult = await getContractMethodArgsTypes(contractAddress, methodName);
+  let argsTypesResult = await getContractMethodArgsTypes(contractAddress, methodName, methodDesc);
   let contractConstructorArgsTypes;
   if (argsTypesResult.success) {
     contractConstructorArgsTypes = argsTypesResult.data;

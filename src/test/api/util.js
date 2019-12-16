@@ -308,8 +308,8 @@ module.exports = {
      * @param methodName
      * @returns {Promise<AxiosResponse<any>>}
      */
-    async getContractMethodArgsTypes(contractAddress, methodName) {
-        return await http.post('/', 'getContractMethodArgsTypes', [contractAddress, methodName])
+    async getContractMethodArgsTypes(contractAddress, methodName, methodDesc) {
+        return await http.post('/', 'getContractMethodArgsTypes', [contractAddress, methodName, methodDesc])
             .then((response) => {
                 if (response.hasOwnProperty("result")) {
                     return {success: true, data: response.result};
