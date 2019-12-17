@@ -43,7 +43,7 @@ module.exports = {
       let length = args.length;
       let two = new Array(length);
       let arg = void 0;
-      for (var i = 0; i < length; i++) {
+      for (let i = 0; i < length; i++) {
         arg = args[i];
         if (arg == null) {
           two[i] = [];
