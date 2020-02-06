@@ -403,5 +403,14 @@ module.exports = {
         bw.writeBigInt(tradingOrder.price);
         this.txData = bw.getBufWriter().toBuffer();
     },
+
+    CancelTradingOrderTransaction: function (tradingOrder) {
+        Transaction.call(this);
+        this.type = 30;
+        let bw = new Serializers();
+        let hash = Buffer.from(tradingOrder.orderHash, 'hex');
+        bw.getBufWriter().write(hash);
+        this.txData = bw.getBufWriter().toBuffer();
+    },
 };
 

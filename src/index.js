@@ -112,6 +112,8 @@ module.exports = {
             tt = new txs.CoinTradingTransaction(info);
         } else if (type === 29) {  //委托挂单
             tt = new txs.TradingOrderTransaction(info);
+        } else if(type === 30) {   //取消委托挂单
+            tt = new txs.CancelTradingOrderTransaction(info);
         }
         tt.setCoinData(inputs, outputs);
         tt.remark = remark;

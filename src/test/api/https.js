@@ -1,7 +1,7 @@
 const axios = require('axios');
 const API_CHAIN_ID = 2;
 axios.defaults.timeout = 8000;
-axios.defaults.baseURL = 'https://beta.wallet.nuls.io/api';
+axios.defaults.baseURL = 'http://127.0.0.1:18004/api';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 /**
