@@ -1,10 +1,8 @@
 const nuls = require('../index');
 const sdk = require('../api/sdk');
-const {getBalance} = require('./api/util');
 
 /**
- * @disc: 委托挂单(买、卖)交易对 dome
- * @params:
+ * @disc: 撤销委托挂单 dome
  * @date: 2019-12-9 10:38
  * @author: vivi
  */
@@ -20,22 +18,21 @@ let defaultAsset = {assetsChainId: 2, assetsId: 1};
 
 //正常情况，这个数据是通过查询orderHash的nonce值接口查询到
 let tradingOrderInfo = {
-    orderHash: 'f4ef24c225cc2af33902a3f7d147760d21407039ee98ec6dd74303f969171a5d',    //委托挂单hash
-    address: address,        //撤销挂单委托人
-    orderType: 1,            //委托挂单类型 1:买单，2:卖单
-    nonce: "69db314e5fd02b6b",
-    leftAmount: 88700391787
+  orderHash: 'f4ef24c225cc2af33902a3f7d147760d21407039ee98ec6dd74303f969171a5d',    //委托挂单hash
+  address: address,        //撤销挂单委托人
+  orderType: 1,            //委托挂单类型 1:买单，2:卖单
+  nonce: "69db314e5fd02b6b",//通过解决接口查询nonce
+  leftAmount: 88700391787  //撤销金额
 
 };
 
 //正常情况，这个数据是通过交易对详情接口查询出来的
 let coinTrading = {
-    tradingHash: '5b64f23f20fdbefcbf6d3873324de099ccb76ae792b7ab51dea22f3e562debc7',
-    baseAssetChainId: 2,
-    baseAssetId: 2,
-    quoteAssetChainId: 2,
-    quoteAssetId: 1
-}
+  baseAssetChainId: 2,
+  baseAssetId: 2,
+  quoteAssetChainId: 2,
+  quoteAssetId: 1
+};
 
 //调用委托挂单
 tradingOrderCancel(tradingOrderInfo);
@@ -46,78 +43,74 @@ tradingOrderCancel(tradingOrderInfo);
  * @returns {Promise<void>}
  */
 async function tradingOrderCancel(tradingOrderInfo) {
-    let inOrOutputs = await createCoinData(tradingOrderInfo, coinTrading);
-    //交易组装
-    let tAssemble = await nuls.transactionAssemble(inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, txType, tradingOrderInfo);
-    console.log(tAssemble);
-    //获取hash
-    let hash = await tAssemble.getHash();
-    console.log(hash);
-    //交易签名
-    let txSignature = await sdk.getSignData(hash.toString('hex'), pri);
-    console.log(txSignature);
-    //通过拼接签名、公钥获取HEX
-    let signData = await sdk.appSplicingPub(txSignature.signValue, pub);
-    tAssemble.signatures = signData;
-    let txhex = tAssemble.txSerialize().toString("hex");
-    console.log(txhex.toString('hex'));
+  let inOrOutputs = await createCoinData(tradingOrderInfo, coinTrading);
+  //交易组装
+  let tAssemble = await nuls.transactionAssemble(inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, txType, tradingOrderInfo);
+  console.log(tAssemble);
+  //获取hash
+  let hash = await tAssemble.getHash();
+  console.log(hash);
+  //交易签名
+  let txSignature = await sdk.getSignData(hash.toString('hex'), pri);
+  console.log(txSignature);
+  //通过拼接签名、公钥获取HEX
+  let signData = await sdk.appSplicingPub(txSignature.signValue, pub);
+  tAssemble.signatures = signData;
+  let txhex = tAssemble.txSerialize().toString("hex");
+  console.log(txhex.toString('hex'));
 }
 
 async function createCoinData(tradingOrderInfo, coinTrading) {
-    let inputs = [], outputs = [];
-    //首先通过订单信息组装解锁from
-    let orderInput = {
-        address: tradingOrderInfo.address,
-        assetsChainId: coinTrading.baseAssetChainId,
-        assetsId: coinTrading.baseAssetId,
-        amount: tradingOrderInfo.leftAmount,
-        locked: -1,
-        nonce: tradingOrderInfo.nonce
-    };
-    if (tradingOrderInfo.type == 1) {
-        orderInput.assetsChainId = coinTrading.quoteAssetChainId;
-        orderInput.assetsId = coinTrading.quoteAssetId;
-    }
-    inputs.push(orderInput);
+  let inputs = [], outputs = [];
+  //首先通过订单信息组装解锁from
+  let orderInput = {
+    address: tradingOrderInfo.address,
+    assetsChainId: coinTrading.baseAssetChainId,
+    assetsId: coinTrading.baseAssetId,
+    amount: tradingOrderInfo.leftAmount,
+    locked: -1,
+    nonce: tradingOrderInfo.nonce
+  };
+  if (tradingOrderInfo.type === 1) {
+    orderInput.assetsChainId = coinTrading.quoteAssetChainId;
+    orderInput.assetsId = coinTrading.quoteAssetId;
+  }
+  inputs.push(orderInput);
 
-    //如果手续费不足，需要添加手续费
-    if (orderInput.assetsChainId != defaultAsset.assetsChainId ||
-        orderInput.assetsId != defaultAsset.assetsId ||
-        orderInput.amount < fee) {
-        //通过获取用户当前余额组装手续费from
-       // const balanceInfo = await getBalance(defaultAsset.assetsChainId, defaultAsset.assetsChainId, defaultAsset.assetsId, tradingOrderInfo.address);
-        inputs.push({
-            address: tradingOrderInfo.address,
-            assetsChainId: defaultAsset.assetsChainId,
-            assetsId: defaultAsset.assetsId,
-            amount: fee,
-            locked: 0,
-            nonce: "85e00519bbb5f5d8"
-        });
-    }
+  //如果手续费不足，需要添加手续费
+  if (orderInput.assetsChainId !== defaultAsset.assetsChainId || orderInput.assetsId !== defaultAsset.assetsId || orderInput.amount < fee) {
+    //通过获取用户当前余额组装手续费from
+    // const balanceInfo = await getBalance(defaultAsset.assetsChainId, defaultAsset.assetsChainId, defaultAsset.assetsId, tradingOrderInfo.address);
+    inputs.push({
+      address: tradingOrderInfo.address,
+      assetsChainId: defaultAsset.assetsChainId,
+      assetsId: defaultAsset.assetsId,
+      amount: fee,
+      locked: 0,
+      nonce: "85e00519bbb5f5d8"
+    });
+  }
 
-    //组装to
-    if (orderInput.assetsChainId != defaultAsset.assetsChainId ||
-        orderInput.assetsId != defaultAsset.assetsId ||
-        orderInput.amount < fee) {
-      outputs.push({
-        address: tradingOrderInfo.address,
-        assetsChainId: orderInput.assetsChainId,
-        assetsId: orderInput.assetsId,
-        amount: orderInput.amount,
-        lockTime: 0
-      });
-    } else {
-      outputs.push({
-        address: tradingOrderInfo.address,
-        assetsChainId: orderInput.assetsChainId,
-        assetsId: orderInput.assetsId,
-        amount: orderInput.amount - fee,
-        lockTime: 0
-      });
-    }
+  //组装to
+  if (orderInput.assetsChainId !== defaultAsset.assetsChainId || orderInput.assetsId !== defaultAsset.assetsId || orderInput.amount < fee) {
+    outputs.push({
+      address: tradingOrderInfo.address,
+      assetsChainId: orderInput.assetsChainId,
+      assetsId: orderInput.assetsId,
+      amount: orderInput.amount,
+      lockTime: 0
+    });
+  } else {
+    outputs.push({
+      address: tradingOrderInfo.address,
+      assetsChainId: orderInput.assetsChainId,
+      assetsId: orderInput.assetsId,
+      amount: orderInput.amount - fee,
+      lockTime: 0
+    });
+  }
 
-    return {success: true, data: {inputs: inputs, outputs: outputs}};
+  return {success: true, data: {inputs: inputs, outputs: outputs}};
 }
 
 
