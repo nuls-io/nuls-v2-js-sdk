@@ -16,6 +16,10 @@ let fromAddress = "tNULSeBaMshNPEnuqiDhMdSA4iNs6LMgjY6tcL";
 let busContractAddress = "tNULSeBaN8WmLXPfq5kHLY5MUSVogWt2bQ1bfw";
 // 要转入的NULS数量，如果没有请填入0，如转入200个NULS，则填入20000000000，此处填入的值要乘以10的8次幂，如200个NULS，则`value = 200 * (10 ^ 8)`
 let nulsAmount = 14400000000;
+// 资产链ID
+let assetChainId = 2;
+// 资产ID
+let assetId = 1;
 // 交易备注
 let remark = 'call contract...';
 
@@ -29,4 +33,4 @@ let contractCall = {
     args: []
 };
 //调用合约
-call.callContract(pri, pub, fromAddress, 2, 1, contractCall, remark);
+call.callContract(pri, pub, fromAddress, assetChainId, assetId, contractCall, remark);

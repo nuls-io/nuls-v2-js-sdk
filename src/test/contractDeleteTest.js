@@ -11,6 +11,10 @@ let pub = '02ec9e957823cd30d809f44830442562ca5bf42530251247b35d9209690f39be67';
 let fromAddress = "tNULSeBaMqywZjfSrKNQKBfuQtVxAHBQ8rB2Zn";
 // 业务合约地址
 let busContractAddress = "tNULSeBaNA3RADUR6CJCzxdPSevKJKDM4ULAqz";
+// 资产链ID
+let assetChainId = 2;
+// 资产ID
+let assetId = 1;
 let remark = 'delete contract...';
 
 let contractDelete = {
@@ -20,5 +24,5 @@ let contractDelete = {
 };
 
 //合约删除
-deleted.deleteContract(pri, pub, fromAddress, 2, 1, contractDelete, remark);
+deleted.deleteContract(pri, pub, fromAddress, assetChainId, assetId, contractDelete, remark);
 

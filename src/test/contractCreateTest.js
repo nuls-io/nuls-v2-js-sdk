@@ -10,6 +10,10 @@ let pri = '76b7beaa98db863fb680def099af872978209ed9422b7acab8ab57ad95ab218b';
 let pub = '02ec9e957823cd30d809f44830442562ca5bf42530251247b35d9209690f39be67';
 let fromAddress = "tNULSeBaMqywZjfSrKNQKBfuQtVxAHBQ8rB2Zn";
 let alias = "test_alias";
+// 资产链ID
+let assetChainId = 2;
+// 资产ID
+let assetId = 1;
 let remark = 'new contract...';
 
 let contractCreate = {
@@ -20,4 +24,4 @@ let contractCreate = {
   args: ['waves', 'waves', 100000000, 8]
 };
 
-create.createContract(pri, pub, fromAddress, 2, 1, contractCreate, remark);
+create.createContract(pri, pub, fromAddress, assetChainId, assetId, contractCreate, remark);
