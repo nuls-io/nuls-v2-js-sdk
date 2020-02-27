@@ -108,11 +108,11 @@ module.exports = {
             tt = new txs.DeleteContractTransaction(info);
         } else if (type === 10) { //跨链转账
             tt = new txs.CrossChainTransaction();
-        } else if (type === 28) {  //创建交易对
+        } else if (type === 228) {  //创建交易对
             tt = new txs.CoinTradingTransaction(info);
-        } else if (type === 29) {  //委托挂单
+        } else if (type === 229) {  //委托挂单
             tt = new txs.TradingOrderTransaction(info);
-        } else if(type === 30) {   //取消委托挂单
+        } else if(type === 230) {   //取消委托挂单
             tt = new txs.CancelTradingOrderTransaction(info);
         }
         tt.setCoinData(inputs, outputs);

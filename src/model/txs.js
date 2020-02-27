@@ -377,7 +377,7 @@ module.exports = {
 
     CoinTradingTransaction: function (coinTrading) {
         Transaction.call(this);
-        this.type = 28;
+        this.type = 228;
         let bw = new Serializers();
         bw.getBufWriter().writeUInt16LE(coinTrading.baseAssetChainId);
         bw.getBufWriter().writeUInt16LE(coinTrading.baseAssetId);
@@ -394,7 +394,7 @@ module.exports = {
 
     TradingOrderTransaction: function (tradingOrder) {
         Transaction.call(this);
-        this.type = 29;
+        this.type = 229;
         let bw = new Serializers();
         let hash = Buffer.from(tradingOrder.tradingHash, 'hex');
         bw.getBufWriter().write(hash);
@@ -406,7 +406,7 @@ module.exports = {
 
     CancelTradingOrderTransaction: function (tradingOrder) {
         Transaction.call(this);
-        this.type = 30;
+        this.type = 230;
         let bw = new Serializers();
         let hash = Buffer.from(tradingOrder.orderHash, 'hex');
         bw.getBufWriter().write(hash);
