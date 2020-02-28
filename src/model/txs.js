@@ -1,4 +1,7 @@
 const Serializers = require("../api/serializers");
+const BufferReader = require("../utils/bufferreader");
+const TxSignatures = require("./signatures")
+const CoinData = require("./coindata")
 const sdk = require("../api/sdk");
 const bs58 = require('bs58');
 const bufferFrom = require('buffer-from');
@@ -32,6 +35,35 @@ function bytesToAddress(bytes) {
     return bs58.encode(tempBuffer)
 }
 
+let typeMap = {
+    1: "共识奖励",
+    2: "转账交易",
+    3: "设置别名",
+    4: "创建节点",
+    5: "参与共识",
+    6: "退出共识",
+    7: "黄牌惩罚",
+    8: "红牌惩罚",
+    9: "注销节点",
+    10: "跨链转账",
+    11: "注册链",
+    12: "注销链",
+    13: "增加跨链资产",
+    14: "注销跨链资产",
+    15: "部署合约",
+    16: "调用合约",
+    17: "删除合约",
+    18: "合约内部转账",
+    19: "合约退费",
+    20: "合约创建节点",
+    21: "合约参与共识",
+    22: "合约退出共识",
+    23: "合约注销节点",
+    24: "验证人变更",
+    25: "验证人初始化",
+    26: "合约转账",
+    27: "链内资产注册"
+}
 /**
  * 所有交易的基础类
  * @constructor
@@ -45,6 +77,36 @@ let Transaction = function () {
     this.txData = null;//业务数据
     this.coinData = [];//输入输出
     this.signatures = [];//签名列表
+
+    this.parse = function (bufferReader) {
+        this.type = bufferReader.readUInt16LE();
+        this.time = bufferReader.readUInt32LE();
+        this.remark = bufferReader.readBytesByLength();
+        this.txData = bufferReader.readBytesByLength();
+        this.coinData = bufferReader.readBytesByLength();
+        this.signatures = bufferReader.readBytesByLength();
+    };
+
+    this.printInfo = function () {
+
+        console.log("  {");
+        console.log("      type : " + this.type + "(" + typeMap[this.type] + "),");
+        console.log("      time : " + this.time + "(" + new Date(this.time * 1000).toLocaleString() + ")")
+        console.log("    remark : " + this.remark.toString())
+        console.log("    txData : " + this.getTxDataStr());
+
+        var signatures = new TxSignatures(new BufferReader(this.signatures, 0));
+        console.log("signatures :" + signatures.getPrintInfo());
+        var coinData = new CoinData(new BufferReader(this.coinData, 0));
+        console.log("  coinData : " + coinData.getPrintInfo());
+        console.log(" }");
+    };
+    this.getTxDataStr = function () {
+        if (!this.txData || 0 == this.txData.length) {
+            return "--";
+        }
+        return this.txData.toString('hex');
+    };
 
     this.txSerialize = function () {
         let bw = new Serializers();
@@ -113,7 +175,7 @@ let Transaction = function () {
 };
 
 module.exports = {
-
+    Transaction,
     /**
      * 转账交易
      * @constructor

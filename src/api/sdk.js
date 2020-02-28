@@ -93,6 +93,36 @@ module.exports = {
         let bytes = bs58.decode(stringAddress);
         return bytes.slice(0, bytes.length - 1);
     },
+    /**
+     * 根据byte[] 获取 地址字符串
+     * @param stringAddress
+     */
+    getStringAddressByBytes: function (bytes) {
+        var chainId = (bytes[0] & 0xff) |
+            ((bytes[1] & 0xff) << 8);
+        let tempBuffer = Buffer.allocUnsafe(bytes.length + 1);
+        let xor = 0x00;
+        let temp = "";
+        for (let i = 0; i < bytes.length; i++) {
+            temp = bytes[i];
+            temp = temp > 127 ? temp - 256 : temp;
+            tempBuffer[i] = temp;
+            xor ^= temp
+        }
+        tempBuffer[bytes.length] = xor;
+
+        if (1 === chainId) {
+            prefix = 'NULS';
+        } else if (2 === chainId) {
+            prefix = "tNULS";
+        } else if (prefix) {
+            prefix = prefix.toUpperCase();
+        } else {
+            prefix = bs58.encode(chainIdBuffer).toUpperCase();
+        }
+        let constant = ['a', 'b', 'c', 'd', 'e'];
+        return prefix + constant[prefix.length - 1] + bs58.encode(tempBuffer);
+    },
 
     /**
      * 验证地址
@@ -405,8 +435,8 @@ module.exports = {
         }
         return 9;
     },
-    bufferReadBytesByLength : function (buffer,cursor) {
-        
+    bufferReadBytesByLength: function (buffer, cursor) {
+
     }
 
 };

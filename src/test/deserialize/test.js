@@ -1,4 +1,4 @@
-const BlockHeader = require("../../model/blockheader")
+const Block = require("../../model/block")
 const BufferReader = require("../../utils/bufferreader")
 
 //共识奖励+转账,1453110
@@ -9,9 +9,9 @@ const blockhex = "4ab91a7d320b0b07b29536ec58c076ea7d3169d2c8592662f179f358c70036
 
 let reader = new BufferReader(Buffer.from(blockhex, "hex"), 0);
 
-let header = new BlockHeader(reader);
+let block = new Block(reader);
 
-header.printInfo();
+block.printInfo();
 
 
 console.log('---------------------------------------------------------------------')

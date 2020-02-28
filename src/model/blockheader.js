@@ -16,15 +16,15 @@ var BlockHeader = function (bufferReader) {
 }
 
 BlockHeader.prototype.printInfo = function () {
-    console.log('preHash   :: ' + this.preHash.toString("hex"));
-    console.log('merkleHash:: ' + this.merkleHash.toString("hex"));
-    console.log('createTime:: ' + this.createTime);
-    console.log('height    :: ' + this.height);
-    console.log('txCount   :: ' + this.txCount);
-    console.log('extend    :: ' + this.extend.toString("hex"));
-    console.log('publicKey :: ' + this.publicKey.toString('hex'))
-    console.log('packer    :: ' + this.packer);
-    console.log('signature :: ' + this.signature.toString('hex'));
+    console.log('    preHash   :: ' + this.preHash.toString("hex"));
+    console.log('    merkleHash:: ' + this.merkleHash.toString("hex"));
+    console.log('    createTime:: ' + this.createTime + "(" + new Date(this.createTime * 1000).toLocaleString() + ")");
+    console.log('    height    :: ' + this.height);
+    console.log('    txCount   :: ' + this.txCount);
+    console.log('    extend    :: ' + this.extend.toString("hex"));
+    console.log('    publicKey :: ' + this.publicKey.toString('hex'))
+    console.log('    packer    :: ' + this.packer);
+    console.log('    signature :: ' + this.signature.toString('hex'));
 }
 
 module.exports = BlockHeader;
