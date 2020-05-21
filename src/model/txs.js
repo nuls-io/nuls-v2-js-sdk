@@ -465,6 +465,8 @@ module.exports = {
     bw.getBufWriter().writeUInt8(tradingOrder.orderType);
     bw.writeBigInt(tradingOrder.amount);
     bw.writeBigInt(tradingOrder.price);
+    bw.writeBytesWithLength(sdk.getBytesAddress(tradingOrder.feeAddress));
+    bw.getBufWriter().writeUInt8(tradingOrder.feeScale);
     this.txData = bw.getBufWriter().toBuffer();
   },
 
