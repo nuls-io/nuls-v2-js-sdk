@@ -65,8 +65,13 @@ module.exports = {
      */
     getPub: function (randombytes) {
         let privateKey = Buffer.from(randombytes, 'hex');
+        let val = BigInteger.fromBuffer(privateKey);
+
+        if (val.compareTo(BigInteger.valueOf(1)) <= 0) {
+            throw "private key is wrong!";
+        }
         let ecparams = ecurve.getCurveByName('secp256k1');
-        let curvePt = ecparams.G.multiply(BigInteger.fromBuffer(privateKey));
+        let curvePt = ecparams.G.multiply(val);
         let publicKey = curvePt.getEncoded(true);
         return publicKey.toString('hex');
     },
@@ -198,7 +203,13 @@ module.exports = {
         if (!pub) {
             pub = this.getPub(pri)
         }
+
         let pubBuffer = Buffer.from(pub, 'hex');
+        let val = BigInteger.fromBuffer(pubBuffer);
+        if (val.compareTo(BigInteger.valueOf(1)) <= 0) {
+            throw "public key is wrong!";
+        }
+
         let sha = cryptos.createHash('sha256').update(pubBuffer).digest();
         let pubkeyHash = cryptos.createHash('ripemd160').update(sha).digest();
         let chainIdBuffer = Buffer.concat([Buffer.from([0xFF & chainId >> 0]), Buffer.from([0xFF & chainId >> 8])]);
