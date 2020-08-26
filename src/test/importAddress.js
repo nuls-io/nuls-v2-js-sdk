@@ -7,7 +7,7 @@ const nuls = require('../index');
  */
 
 let passWord = '';
-const key = "ddddb7cb859a467fbe05d5034735de9e62ad06db6557b64d7c139b6db856b200";
+const key = "00db591ead0fd6a43dbff1d8e996288572f92563117c81548d4e3428a5fa503af2";
 try {
   const importAddress = nuls.importByKey(2, key, passWord, "tNULS");
   console.log(importAddress);

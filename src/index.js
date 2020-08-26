@@ -65,8 +65,8 @@ module.exports = {
    */
   importByKey(chainId, pri, passWord, prefix) {
     let addressInfo = {};
-    const patrn = /^([1-9a-fA-F][\da-fA-F]*|0)$/;
-    if (!patrn.exec(pri)) {
+    const patrn = /^[A-Fa-f0-9]+$/;
+    if (!patrn.exec(pri)) { //判断私钥是否为16进制
       return {success: false, data: 'Bad private key format'}
     }
     addressInfo.pri = pri;
