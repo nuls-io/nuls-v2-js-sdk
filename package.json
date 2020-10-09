@@ -44,7 +44,7 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
     "bignumber.js": "^9.0.0",
-    "bitcore-lib": "^0.13.7",
+    "bitcore-lib": "^0.16.0",
     "bitcore-mnemonic": "^1.0.1",
     "browserify": "16.2.3",
     "bs58": "4.0.1",
