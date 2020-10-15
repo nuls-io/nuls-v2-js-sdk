@@ -397,7 +397,7 @@ module.exports = {
      * @param buf
      * @returns {*}
      */
-    getSha256TiwceBuf: function (buf) {
+    getSha256TwiceBuf: function (buf) {
         return Hash.sha256sha256(buf);
     },
 
@@ -419,7 +419,7 @@ module.exports = {
      */
     getTxHash: function (transaction) {
         let bytes = transaction.serializeForHash();
-        transaction.hash = this.getSha256TiwceBuf(bytes);
+        transaction.hash = this.getSha256TwiceBuf(bytes);
         return transaction.hash;
     },
 
