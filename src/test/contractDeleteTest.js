@@ -18,7 +18,7 @@ let assetId = 1;
 let remark = 'delete contract...';
 
 let contractDelete = {
-  chainId: 2,
+  chainId: assetChainId,
   sender: fromAddress,
   contractAddress: busContractAddress
 };

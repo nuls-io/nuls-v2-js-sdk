@@ -2,7 +2,7 @@ const nuls = require('../index');
 const utils = require('../utils/utils');
 const sdk = require('../api/sdk');
 const BigNumber = require('bignumber.js');
-const {getNulsBalance, countFee, inputsOrOutputs, getContractMethodArgsTypes, validateContractCall, imputedContractCallGas, validateTx, broadcastTx} = require('./api/util');
+const {getBalance, countFee, inputsOrOutputsOfContractCall, getContractMethodArgsTypes, validateContractCall, imputedContractCallGas, validateTx, broadcastTx} = require('./api/util');
 
 module.exports = {
   /**
@@ -15,12 +15,13 @@ module.exports = {
    * @param contractCall
    * @returns {Promise<void>}
    */
-  async callContract(pri, pub, fromAddress, assetsChainId, assetsId, contractCall, remark) {
-    const balanceInfo = await getNulsBalance(fromAddress);
+  async callContract(pri, pub, fromAddress, assetsChainId, assetsId, contractCall, remark, multyAssets) {
+    let chainId = contractCall.chainId;
+    const balanceInfo = await getBalance(chainId, assetsChainId, assetsId, fromAddress);
     let contractAddress = contractCall.contractAddress;
     let value = Number(contractCall.value);
     let newValue = new BigNumber(contractCall.value);
-    const contractCallTxData = await this.makeCallData(contractCall.chainId, fromAddress, value, contractAddress, contractCall.methodName, contractCall.methodDesc, contractCall.args);
+    const contractCallTxData = await this.makeCallData(chainId, fromAddress, value, contractAddress, contractCall.methodName, contractCall.methodDesc, contractCall.args, multyAssets);
     let gasLimit = new BigNumber(contractCallTxData.gasLimit);
     let gasFee = Number(gasLimit.times(contractCallTxData.price));
     let amount = Number(newValue.plus(gasFee));
@@ -29,27 +30,29 @@ module.exports = {
       assetsChainId: assetsChainId,
       assetsId: assetsId,
       amount: amount,
-      fee: 100000
+      fee: 200000
     };
     if (value > 0) {
       transferInfo.toAddress = contractAddress;
       transferInfo.value = contractCall.value;
     }
-
-    let inOrOutputs = await inputsOrOutputs(transferInfo, balanceInfo, 16);
-    let tAssemble = await nuls.transactionAssemble(inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, 16, contractCallTxData);
-    let txhex;
-    //获取手续费
-    let newFee = countFee(tAssemble, 1);
-    //手续费大于0.001的时候重新组装交易及签名
-    if (transferInfo.fee !== newFee) {
-      transferInfo.fee = newFee;
-      inOrOutputs = await inputsOrOutputs(transferInfo, balanceInfo, 16);
-      tAssemble = await nuls.transactionAssemble(inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, 16, contractCallTxData);
-      txhex = await nuls.transactionSerialize(pri, pub, tAssemble);
-    } else {
-      txhex = await nuls.transactionSerialize(pri, pub, tAssemble);
+    // let inOrOutputs = await inputsOrOutputs(transferInfo, balanceInfo, 16);
+    if (multyAssets) {
+      let length = multyAssets.length;
+      for (var i = 0; i < length; i++) {
+        let multyAsset = multyAssets[i];
+        let _balanceInfo = await getBalance(chainId, multyAsset.assetChainId, multyAsset.assetId, fromAddress);
+        if (_balanceInfo.balance < Number(multyAsset.value)) {
+          throw "Your balance of " + multyAsset.assetChainId + "-" + multyAsset.assetId + " is not enough.";
+        }
+        multyAssets[i].nonce = _balanceInfo.nonce;
+      }
     }
+
+    let inOrOutputs = await inputsOrOutputsOfContractCall(transferInfo, balanceInfo, contractCall, multyAssets);
+    let tAssemble = await nuls.transactionAssemble(inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, 16, contractCallTxData);
+    let txhex = await nuls.transactionSerialize(pri, pub, tAssemble);
+
     console.log(txhex);
     let result = await validateTx(txhex);
     console.log(result);
@@ -76,10 +79,19 @@ module.exports = {
    * @param args
    * @returns {Promise<*>}
    */
-  async imputedCallGas(chainId, sender, value, contractAddress, methodName, methodDesc, args) {
-    let result = await validateContractCall(sender, value, sdk.CONTRACT_MAX_GASLIMIT, sdk.CONTRACT_MINIMUM_PRICE, contractAddress, methodName, methodDesc, args);
+  async imputedCallGas(chainId, sender, value, contractAddress, methodName, methodDesc, args, multyAssets) {
+    let multyAssetArray;
+    if (multyAssets) {
+        let length = multyAssets.length;
+        multyAssetArray = new Array(length);
+        for (var i = 0; i < length; i++) {
+            let multyAsset = multyAssets[i];
+            multyAssetArray[i] = [multyAsset.value, multyAsset.assetChainId, multyAsset.assetId];
+        }
+    }
+    let result = await validateContractCall(sender, value, sdk.CONTRACT_MAX_GASLIMIT, sdk.CONTRACT_MINIMUM_PRICE, contractAddress, methodName, methodDesc, args, multyAssetArray);
     if (result.success) {
-      let gasResult = await imputedContractCallGas(sender, value, contractAddress, methodName, methodDesc, args);
+      let gasResult = await imputedContractCallGas(sender, value, contractAddress, methodName, methodDesc, args, multyAssetArray);
       return Number(gasResult.data.gasLimit);
     } else {
       console.log("调用合约验证失败\n", result)
@@ -97,13 +109,13 @@ module.exports = {
    * @param args
    * @returns {Promise<{}>}
    */
-  async makeCallData(chainId, sender, value, contractAddress, methodName, methodDesc, args) {
+  async makeCallData(chainId, sender, value, contractAddress, methodName, methodDesc, args, multyAssets) {
     let contractCall = {};
     contractCall.chainId = chainId;
     contractCall.sender = sender;
     contractCall.contractAddress = contractAddress;
     contractCall.value = value;
-    contractCall.gasLimit = await this.imputedCallGas(chainId, sender, value, contractAddress, methodName, methodDesc, args);
+    contractCall.gasLimit = await this.imputedCallGas(chainId, sender, value, contractAddress, methodName, methodDesc, args, multyAssets);
     contractCall.price = sdk.CONTRACT_MINIMUM_PRICE;
     contractCall.methodName = methodName;
     contractCall.methodDesc = methodDesc;

@@ -1,4 +1,5 @@
 const http = require('./https.js');
+const BigNumber = require('bignumber.js');
 
 module.exports = {
 
@@ -137,6 +138,64 @@ module.exports = {
     // }
     /*console.log(inputs);
     console.log(outputs);*/
+    return {success: true, data: {inputs: inputs, outputs: outputs}};
+  },
+
+
+  inputsOrOutputsOfContractCall(transferInfo, balanceInfo, contractCall, multyAssets) {
+    let contractAddress = contractCall.contractAddress;
+    let sender = transferInfo.fromAddress;
+    let txSizeFee = new BigNumber(transferInfo.fee);
+    let newAmount = Number(txSizeFee.plus(transferInfo.amount));
+    let newLocked = 0;
+    let newNonce = balanceInfo.nonce;
+    let newoutputAmount = transferInfo.amount;
+    let newLockTime = 0;
+    if (balanceInfo.balance < newAmount) {
+      return {success: false, data: "Your balance of NULS is not enough."}
+    }
+    let inputs = [{
+      address: transferInfo.fromAddress,
+      assetsChainId: transferInfo.assetsChainId,
+      assetsId: transferInfo.assetsId,
+      amount: newAmount,
+      locked: newLocked,
+      nonce: newNonce
+    }];
+    let outputs = [];
+    if (transferInfo.toAddress) {
+      outputs.push({
+        address: contractAddress,
+        assetsChainId: transferInfo.assetsChainId,
+        assetsId: transferInfo.assetsId,
+        amount: transferInfo.value,
+        lockTime: newLockTime
+      });
+    }
+    if (multyAssets) {
+      let length = multyAssets.length;
+      for (var i = 0; i < length; i++) {
+        let multyAsset = multyAssets[i];
+        inputs.push({
+          address: transferInfo.fromAddress,
+          assetsChainId: multyAsset.assetChainId,
+          assetsId: multyAsset.assetId,
+          amount: multyAsset.value,
+          locked: newLocked,
+          nonce: multyAsset.nonce
+        });
+        outputs.push({
+          address: contractAddress,
+          assetsChainId: multyAsset.assetChainId,
+          assetsId: multyAsset.assetId,
+          amount: multyAsset.value,
+          lockTime: newLockTime
+        });
+      }
+    }
+
+    console.log(inputs);
+    console.log(outputs);
     return {success: true, data: {inputs: inputs, outputs: outputs}};
   },
 
@@ -377,8 +436,8 @@ module.exports = {
    * @param args
    * @returns {Promise<T>}
    */
-  async validateContractCall(sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args) {
-    return await http.post('/', 'validateContractCall', [sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args])
+  async validateContractCall(sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args, multyAssetArray) {
+    return await http.post('/', 'validateContractCall', [sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args, multyAssetArray])
       .then((response) => {
         if (response.hasOwnProperty("result")) {
           return {success: true, data: response.result};
@@ -401,8 +460,8 @@ module.exports = {
    * @param args
    * @returns {Promise<T>}
    */
-  async imputedContractCallGas(sender, value, contractAddress, methodName, methodDesc, args) {
-    return await http.post('/', 'imputedContractCallGas', [sender, value, contractAddress, methodName, methodDesc, args])
+  async imputedContractCallGas(sender, value, contractAddress, methodName, methodDesc, args, multyAssetArray) {
+    return await http.post('/', 'imputedContractCallGas', [sender, value, contractAddress, methodName, methodDesc, args, multyAssetArray])
       .then((response) => {
         if (response.hasOwnProperty("result")) {
           return {success: true, data: response.result};

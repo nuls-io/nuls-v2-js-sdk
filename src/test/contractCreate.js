@@ -1,7 +1,7 @@
 const nuls = require('../index');
 const utils = require('../utils/utils');
 const sdk = require('../api/sdk');
-const {getNulsBalance, countFee, inputsOrOutputs, getContractConstructor, validateContractCreate, imputedContractCreateGas, validateTx, broadcastTx} = require('./api/util');
+const {getBalance, countFee, inputsOrOutputs, getContractConstructor, validateContractCreate, imputedContractCreateGas, validateTx, broadcastTx} = require('./api/util');
 
 module.exports = {
 
@@ -24,7 +24,8 @@ module.exports = {
     const contractCreateTxData = await this.makeCreateData(contractCreate.chainId, createAddress, contractCreate.alias, hex, newArgs);
     //3、序列化
 
-    const balanceInfo = await getNulsBalance(createAddress);
+    let chainId = contractCreate.chainId;
+    const balanceInfo = await getBalance(chainId, assetsChainId, assetsId, createAddress);
     let amount = contractCreateTxData.gasLimit * contractCreateTxData.price;
     let transferInfo = {
       fromAddress: createAddress,

@@ -1,5 +1,5 @@
 const nuls = require('../index');
-const {getNulsBalance, inputsOrOutputs, validateContractDelete, validateTx, broadcastTx} = require('./api/util');
+const {getBalance, inputsOrOutputs, validateContractDelete, validateTx, broadcastTx} = require('./api/util');
 
 module.exports = {
     /**
@@ -13,7 +13,8 @@ module.exports = {
      * @returns {Promise<void>}
      */
     async deleteContract(pri, pub, fromAddress, assetsChainId, assetsId, contractDelete, remark) {
-        const balanceInfo = await getNulsBalance(fromAddress);
+        let chainId = contractDelete.chainId;
+        const balanceInfo = await getBalance(chainId, assetsChainId, assetsId, fromAddress);
         let amount = 0;
         let transferInfo = {
             fromAddress: fromAddress,
