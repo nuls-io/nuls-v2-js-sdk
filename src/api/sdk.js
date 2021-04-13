@@ -103,11 +103,11 @@ module.exports = {
      * @param stringAddress
      */
     getStringAddressByBytes: function (bytes) {
-        var chainId = (bytes[0] & 0xff) |
+        let chainId = (bytes[0] & 0xff) |
             ((bytes[1] & 0xff) << 8);
         let tempBuffer = Buffer.allocUnsafe(bytes.length + 1);
         let xor = 0x00;
-        let temp = "";
+        let temp,prefix= "";
         for (let i = 0; i < bytes.length; i++) {
             temp = bytes[i];
             temp = temp > 127 ? temp - 256 : temp;
