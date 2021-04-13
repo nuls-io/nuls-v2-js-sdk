@@ -1,6 +1,8 @@
 const sdk = require('./api/sdk');
 const txs = require('./model/txs');
 const crypto = require("./crypto/eciesCrypto");
+const CoinData = require("./model/coindata");
+const BufferReader = require("./utils/bufferreader");
 
 module.exports = {
 
@@ -187,6 +189,19 @@ module.exports = {
     let bufferEncrypted = Buffer.from(encrypted, "hex");
     let decrypted = await eccrypto.decrypt(pri, bufferData);
     return decrypted.toString();
+  },
+
+  /**
+   * @disc: hex 解析
+   * @params: hex
+   * @date: 2021-04-13 15:57
+   * @author: Wave
+   */
+  hexParsing(hex) {
+    let tx = new txs.Transaction();
+    let bufferReader = new BufferReader(Buffer.from(hex, "hex"), 0);
+    tx.parse(bufferReader);
+    return new CoinData(new BufferReader(tx.coinData, 0));
   }
 
 };
