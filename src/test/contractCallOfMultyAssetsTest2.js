@@ -12,7 +12,7 @@ let pub = '03958b790c331954ed367d37bac901de5c2f06ac8368b37d7bd6cd5ae143c1d7e3';
 // 用户地址
 let fromAddress = "tNULSeBaMvEtDfvZuukDf2mVyfGo3DdiN8KLRG";
 // 业务合约地址
-let busContractAddress = "tNULSeBaN31HBrLhXsWDkSz1bjhw5qGBcjafVJ";
+let busContractAddress = "tNULSeBaN29xi4PZLpJX5ZFxfUjPVVdZMCAbDs";
 // 要转入的NULS数量，如果没有请填入0，如转入200个NULS，则填入20000000000，此处填入的值要乘以10的8次幂，如200个NULS，则`value = 200 * (10 ^ 8)`
 let nulsAmount = 660000000;
 // 资产链ID

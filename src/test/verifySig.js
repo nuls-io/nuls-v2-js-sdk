@@ -1,5 +1,6 @@
 const sdk = require('../api/sdk');
 var secp256k1 = require("secp256k1");
+var rs = require('jsrsasign/lib/jsrsasign.js');
 
 //验证签名是否正确
 
@@ -12,16 +13,56 @@ let account = {
     }
 ;
 
-let hashHex = "5ea8974bc3ad29a9af9035be47d3e6a4a5b505935658ff4234c60d795313b524";
+// 30440220
+// hello
+let hashHex = "6869";
 
 let signVal = sdk.signature(hashHex, account.pri);
 
 let publickey = secp256k1.publicKeyConvert(Buffer.from(account.pub, "hex"), false);
 
 let result1 = sdk.verifySign(hashHex, signVal, publickey.toString('hex'));
-console.log(result1)
-console.log(account.pri.length)
 
+console.log(Buffer.from(hashHex, "hex").toString("hex") == '');
+console.log(Buffer.from(hashHex, "hex").toString("hex") === hashHex);
+console.log(Buffer.from(hashHex, "hex").toString("hex"));
+console.log(Buffer.from(hashHex, "utf8").toString("hex"));
+console.log(signVal);
+console.log(result1);
+console.log(account.pri.length);
+
+function dataToHex(data) {
+    let _data = Buffer.from(data, "hex").toString("hex");
+    let isHex = _data != '' && _data === data;
+    if (isHex) {
+        return data;
+    }
+    return Buffer.from(data, "utf8").toString("hex");
+}
+
+function dataToHex1(data) {
+    try {
+        return Buffer.from(data, "hex").toString("hex");
+    } catch (e) {
+        return Buffer.from(data, "utf8").toString("hex");
+    }
+}
+
+function dataToHex2(data) {
+    try {
+        let _data = Buffer.from(data, "hex").toString("hex");
+        let isHex = _data != '' && _data === data;
+        if (isHex) {
+            return data;
+        }
+        return Buffer.from(data, "utf8").toString("hex");
+    } catch (e) {
+        return Buffer.from(data, "utf8").toString("hex");
+    }
+}
+
+console.log(dataToHex("30440220"));
+console.log(dataToHex("hi"));
 
 var testSig = function () {
     let hash = '63a1802f22fd9b7bd9663317649f57af2dd7a2f1deee82e4d6028d62cdbd57b5';
@@ -36,4 +77,4 @@ var testSig = function () {
     };
     console.log(result);
 }
-testSig();
+// testSig();
