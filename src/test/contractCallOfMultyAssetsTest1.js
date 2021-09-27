@@ -2,7 +2,7 @@
 const call = require('./contractCall.js');
 
 /**
- * 调用合约转入多资产, 举例资产数据 5-1(NVT), 5-7(USDT)
+ * 调用合约转入多资产, 举例资产数据 5-1(NVT)
  */
 // 用户私钥
 let pri = '9ce21dad67e0f0af2599b41b515a7f7018059418bab892a7b68f283d489abc4b';
@@ -30,17 +30,12 @@ let contractCall = {
     methodDesc: "",
     args: []
 };
-// 转入2个NVT和3个USDT
+// 转入2个NVT
 let multyAssets = [
     {
         value: "200000000",
         assetChainId: 5,
         assetId: 1
-    },
-    {
-        value: "3000000",
-        assetChainId: 5,
-        assetId: 7
     }
 ];
 //调用合约
