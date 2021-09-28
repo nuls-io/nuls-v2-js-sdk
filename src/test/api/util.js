@@ -194,8 +194,8 @@ module.exports = {
       }
     }
 
-    console.log(inputs);
-    console.log(outputs);
+    // console.log(inputs);
+    // console.log(outputs);
     return {success: true, data: {inputs: inputs, outputs: outputs}};
   },
 
