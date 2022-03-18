@@ -15,7 +15,7 @@ module.exports = {
    * @param contractCall
    * @returns {Promise<void>}
    */
-  async callContract(pri, pub, fromAddress, assetsChainId, assetsId, contractCall, remark, multyAssets) {
+  async callContract(pri, pub, fromAddress, assetsChainId, assetsId, contractCall, remark, multyAssets, nulsValueToOthers) {
     let chainId = contractCall.chainId;
     const balanceInfo = await getBalance(chainId, assetsChainId, assetsId, fromAddress);
     let contractAddress = contractCall.contractAddress;
@@ -49,7 +49,7 @@ module.exports = {
       }
     }
 
-    let inOrOutputs = await inputsOrOutputsOfContractCall(transferInfo, balanceInfo, contractCall, multyAssets);
+    let inOrOutputs = await inputsOrOutputsOfContractCall(transferInfo, balanceInfo, contractCall, multyAssets, nulsValueToOthers);
     let tAssemble = await nuls.transactionAssemble(inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, 16, contractCallTxData);
     let txhex = await nuls.transactionSerialize(pri, pub, tAssemble);
 

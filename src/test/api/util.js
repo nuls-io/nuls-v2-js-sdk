@@ -142,26 +142,15 @@ module.exports = {
   },
 
 
-  inputsOrOutputsOfContractCall(transferInfo, balanceInfo, contractCall, multyAssets) {
+  inputsOrOutputsOfContractCall(transferInfo, balanceInfo, contractCall, multyAssets, nulsValueToOthers) {
     let contractAddress = contractCall.contractAddress;
     let sender = transferInfo.fromAddress;
     let txSizeFee = new BigNumber(transferInfo.fee);
-    let newAmount = Number(txSizeFee.plus(transferInfo.amount));
     let newLocked = 0;
     let newNonce = balanceInfo.nonce;
     let newoutputAmount = transferInfo.amount;
     let newLockTime = 0;
-    if (balanceInfo.balance < newAmount) {
-      return {success: false, data: "Your balance of NULS is not enough."}
-    }
-    let inputs = [{
-      address: transferInfo.fromAddress,
-      assetsChainId: transferInfo.assetsChainId,
-      assetsId: transferInfo.assetsId,
-      amount: newAmount,
-      locked: newLocked,
-      nonce: newNonce
-    }];
+
     let outputs = [];
     if (transferInfo.toAddress) {
       outputs.push({
@@ -193,6 +182,34 @@ module.exports = {
         });
       }
     }
+
+    let _newAmount = txSizeFee.plus(transferInfo.amount);
+    if (nulsValueToOthers) {
+      let length = nulsValueToOthers.length;
+      for (var i = 0; i < length; i++) {
+        let nulsValueToOther = nulsValueToOthers[i];
+        _newAmount = _newAmount.plus(nulsValueToOther.value);
+        outputs.push({
+          address: nulsValueToOther.address,
+          assetsChainId: transferInfo.assetsChainId,
+          assetsId: transferInfo.assetsId,
+          amount: nulsValueToOther.value,
+          lockTime: newLockTime
+        });
+      }
+    }
+    let newAmount = Number(_newAmount);
+    if (balanceInfo.balance < newAmount) {
+      return {success: false, data: "Your balance of NULS is not enough."}
+    }
+    let inputs = [{
+      address: transferInfo.fromAddress,
+      assetsChainId: transferInfo.assetsChainId,
+      assetsId: transferInfo.assetsId,
+      amount: newAmount,
+      locked: newLocked,
+      nonce: newNonce
+    }];
 
     // console.log(inputs);
     // console.log(outputs);
@@ -437,7 +454,11 @@ module.exports = {
    * @returns {Promise<T>}
    */
   async validateContractCall(sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args, multyAssetArray) {
-    return await http.post('/', 'validateContractCall', [sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args, multyAssetArray])
+    let parms = [sender, value, gasLimit, price, contractAddress, methodName, methodDesc, args];
+    if (multyAssetArray) {
+      parms.push(multyAssetArray);
+    }
+    return await http.post('/', 'validateContractCall', parms)
       .then((response) => {
         if (response.hasOwnProperty("result")) {
           return {success: true, data: response.result};
@@ -461,7 +482,11 @@ module.exports = {
    * @returns {Promise<T>}
    */
   async imputedContractCallGas(sender, value, contractAddress, methodName, methodDesc, args, multyAssetArray) {
-    return await http.post('/', 'imputedContractCallGas', [sender, value, contractAddress, methodName, methodDesc, args, multyAssetArray])
+    let parms = [sender, value, contractAddress, methodName, methodDesc, args];
+    if (multyAssetArray) {
+      parms.push(multyAssetArray);
+    }
+    return await http.post('/', 'imputedContractCallGas', parms)
       .then((response) => {
         if (response.hasOwnProperty("result")) {
           return {success: true, data: response.result};
