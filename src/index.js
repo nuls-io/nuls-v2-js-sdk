@@ -2,6 +2,7 @@ const sdk = require('./api/sdk');
 const txs = require('./model/txs');
 const crypto = require("./crypto/eciesCrypto");
 const CoinData = require("./model/coindata");
+const ContractData = require("./model/contractdata");
 const BufferReader = require("./utils/bufferreader");
 
 module.exports = {
@@ -202,6 +203,11 @@ module.exports = {
     let bufferReader = new BufferReader(Buffer.from(hex, "hex"), 0);
     tx.parse(bufferReader);
     return new CoinData(new BufferReader(tx.coinData, 0));
+  },
+
+  contractDataParsing(hex) {
+    let bufferReader = new BufferReader(Buffer.from(hex, "hex"), 0);
+    return new ContractData(bufferReader);
   }
 
 };
