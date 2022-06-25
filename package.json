@@ -54,7 +54,7 @@
     "ecurve": "1.0.6",
     "elliptic": "6.5.3",
     "es6-promise": "3.0.2",
-    "jsrsasign": "8.0.19",
+    "jsrsasign": "10.5.25",
     "nan": "2.11.1",
     "randombytes": "2.0.6",
     "rimraf": "^2.6.3",
