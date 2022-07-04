@@ -15,7 +15,7 @@ module.exports = {
    * @param contractCall
    * @returns {Promise<void>}
    */
-  async callContract(pri, pub, fromAddress, assetsChainId, assetsId, contractCall, remark, multyAssets, nulsValueToOthers) {
+  async callContract(pri, pub, fromAddress, assetsChainId, assetsId, contractCall, remark, multyAssets, nulsValueToOthers, payAccount) {
     let chainId = contractCall.chainId;
     const balanceInfo = await getBalance(chainId, assetsChainId, assetsId, fromAddress);
     let contractAddress = contractCall.contractAddress;
@@ -50,10 +50,29 @@ module.exports = {
     }
 
     let inOrOutputs = await inputsOrOutputsOfContractCall(transferInfo, balanceInfo, contractCall, multyAssets, nulsValueToOthers);
+    if (payAccount) {
+      const balanceInfoOfPayAccount = await getBalance(chainId, assetsChainId, assetsId, payAccount);
+      let inputs = inOrOutputs.data.inputs;
+      let from = inputs[inputs.length - 1];
+      inputs.push({
+        address: from.address,
+        assetsChainId: from.assetsChainId,
+        assetsId: from.assetsId,
+        amount: '0',
+        locked: 0,
+        nonce: from.nonce
+      });
+      from.address = payAccount;
+      from.nonce = balanceInfoOfPayAccount.nonce;
+    }
     let tAssemble = await nuls.transactionAssemble(inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, 16, contractCallTxData);
     let txhex = await nuls.transactionSerialize(pri, pub, tAssemble);
 
     console.log(txhex);
+    if (payAccount) {
+      console.log("请追加账户["+payAccount+"]的签名");
+      return;
+    }
     let result = await validateTx(txhex);
     console.log(result);
     if (result.success) {
