@@ -161,27 +161,6 @@ module.exports = {
         lockTime: newLockTime
       });
     }
-    if (multyAssets) {
-      let length = multyAssets.length;
-      for (var i = 0; i < length; i++) {
-        let multyAsset = multyAssets[i];
-        inputs.push({
-          address: transferInfo.fromAddress,
-          assetsChainId: multyAsset.assetChainId,
-          assetsId: multyAsset.assetId,
-          amount: multyAsset.value,
-          locked: newLocked,
-          nonce: multyAsset.nonce
-        });
-        outputs.push({
-          address: contractAddress,
-          assetsChainId: multyAsset.assetChainId,
-          assetsId: multyAsset.assetId,
-          amount: multyAsset.value,
-          lockTime: newLockTime
-        });
-      }
-    }
 
     let _newAmount = txSizeFee.plus(transferInfo.amount);
     if (nulsValueToOthers) {
@@ -211,6 +190,27 @@ module.exports = {
       nonce: newNonce
     }];
 
+    if (multyAssets) {
+      let length = multyAssets.length;
+      for (var i = 0; i < length; i++) {
+        let multyAsset = multyAssets[i];
+        inputs.push({
+          address: transferInfo.fromAddress,
+          assetsChainId: multyAsset.assetChainId,
+          assetsId: multyAsset.assetId,
+          amount: multyAsset.value,
+          locked: newLocked,
+          nonce: multyAsset.nonce
+        });
+        outputs.push({
+          address: contractAddress,
+          assetsChainId: multyAsset.assetChainId,
+          assetsId: multyAsset.assetId,
+          amount: multyAsset.value,
+          lockTime: newLockTime
+        });
+      }
+    }
     // console.log(inputs);
     // console.log(outputs);
     return {success: true, data: {inputs: inputs, outputs: outputs}};
