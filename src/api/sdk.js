@@ -203,7 +203,7 @@ module.exports = {
         if (!pub) {
             pub = this.getPub(pri)
         }
-
+        pub = secp256k1.publicKeyConvert(Buffer.from(pub, "hex"), true).toString("hex");
         let pubBuffer = Buffer.from(pub, 'hex');
         let val = BigInteger.fromBuffer(pubBuffer);
         if (val.compareTo(BigInteger.valueOf(1)) <= 0) {
