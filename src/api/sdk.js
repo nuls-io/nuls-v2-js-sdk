@@ -10,7 +10,9 @@ const iv = CryptoJS.enc.Hex.parse('0000000000000000');
 const bufferUtils = require("../utils/buffer");
 const Hash = require("../utils/hash");
 const Serializers = require("./serializers");
-const secp256k1 = require("secp256k1")
+const secp256k1 = require("secp256k1");
+const programEncodePacked = require("../model/ProgramEncodePacked");
+const BufferReader = require("../utils/bufferreader");
 
 /**
  * 将数字转为6个字节的字节数组
@@ -448,6 +450,20 @@ module.exports = {
     },
     bufferReadBytesByLength: function (buffer, cursor) {
 
+    },
+    newProgramEncodePacked: function (args) {
+        let encodePacked = new programEncodePacked.ProgramEncodePacked();
+        if (args) {
+            encodePacked.argsCount = args.length;
+            encodePacked.args = args;
+        }
+        return encodePacked.serialize().toString('hex');
+    },
+    parseProgramEncodePacked: function (data) {
+        let encodePacked = new programEncodePacked.ProgramEncodePacked();
+        let bufferReader = new BufferReader(Buffer.from(data, "hex"), 0);
+        encodePacked.parse(bufferReader);
+        return encodePacked.args;
     }
 
 };

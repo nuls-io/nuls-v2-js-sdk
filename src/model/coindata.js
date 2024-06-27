@@ -12,21 +12,33 @@ var CoinData = function (bufferReader) {
   }
 };
 var CoinFrom = function (bufferReader) {
-  this.address = sdk.getStringAddressByBytes(bufferReader.readBytesByLength());
+  this.address = bufferReader.readBytesByLength();
   this.assetsChainId = bufferReader.readUInt16LE();
   this.assetsId = bufferReader.readUInt16LE();
   this.amount = bufferReader.readBigInteger();
-  this.nonce = sdk.getStringAddressByBytes(bufferReader.readBytesByLength());
-  this.locked = bufferReader.readBoolean();
+  this.nonce = bufferReader.readBytesByLength();
+  this.locked = bufferReader.slice(1);
 };
 var CoinTo = function (bufferReader) {
-  this.address = sdk.getStringAddressByBytes(bufferReader.readBytesByLength());
+  this.address = bufferReader.readBytesByLength();
   this.assetsChainId = bufferReader.readUInt16LE();
   this.assetsId = bufferReader.readUInt16LE();
   this.amount = bufferReader.readBigInteger();
   this.lockTime = bufferReader.readUInt64LE();
 };
 
+CoinData.prototype.dataReadable = function() {
+  for (let i = 0; i < this.fromList.length; i++) {
+    const coinFrom = this.fromList[i];
+    coinFrom.address = sdk.getStringAddressByBytes(coinFrom.address);
+    coinFrom.nonce = coinFrom.nonce.toString('hex');
+    coinFrom.locked = Number(coinFrom.locked.toString('hex'));
+  }
+  for (var i = 0; i < this.toList.length; i++) {
+    const coinTo = this.toList[i];
+    coinTo.address = sdk.getStringAddressByBytes(coinTo.address);
+  }
+};
 
 CoinData.prototype.getPrintInfo = function () {
   var result = "{\n      fromList: [";

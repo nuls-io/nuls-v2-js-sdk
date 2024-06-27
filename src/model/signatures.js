@@ -10,6 +10,14 @@ var Item = function (bufferReader) {
     this.signData = bufferReader.readBytesByLength();
 };
 
+TxSignatures.prototype.dataReadable = function () {
+    for (let i = 0; i < this.list.length; i++) {
+        const item = this.list[i];
+        item.publicKey = item.publicKey.toString('hex');
+        item.signData = item.signData.toString('hex');
+    }
+};
+
 TxSignatures.prototype.getPrintInfo = function () {
     var result = "[";
     for (var i = 0; i < this.list.length; i++) {

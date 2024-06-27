@@ -3,8 +3,9 @@ const API_CHAIN_ID = 2;
 axios.defaults.timeout = 8000;
 // axios.defaults.baseURL = 'http://127.0.0.1:18004/api';
 // axios.defaults.baseURL = 'http://localhost:18003/';
-axios.defaults.baseURL = 'http://beta.public1.nuls.io/';
-// axios.defaults.baseURL = 'http://seedg.nuls.io:18004/jsonrpc';
+axios.defaults.baseURL = 'https://beta.public1.nuls.io/';
+// axios.defaults.baseURL = 'https://beta.api.nuls.io/jsonrpc';
+// axios.defaults.baseURL = 'http://127.0.0.1:18004/jsonrpc';
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 /**

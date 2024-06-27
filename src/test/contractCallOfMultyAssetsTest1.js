@@ -33,7 +33,7 @@ let contractCall = {
 // 转入0.2个NVT
 let multyAssets = [
     {
-        value: "2000000000000000000000000",
+        value: "200000000000000000",
         assetChainId: 5,
         assetId: 74
     }

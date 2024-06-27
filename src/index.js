@@ -4,6 +4,7 @@ const crypto = require("./crypto/eciesCrypto");
 const CoinData = require("./model/coindata");
 const ContractData = require("./model/contractdata");
 const BufferReader = require("./utils/bufferreader");
+const TxSignatures = require("./model/signatures");
 
 module.exports = {
 
@@ -202,12 +203,30 @@ module.exports = {
     let tx = new txs.Transaction();
     let bufferReader = new BufferReader(Buffer.from(hex, "hex"), 0);
     tx.parse(bufferReader);
-    return new CoinData(new BufferReader(tx.coinData, 0));
+    tx.hash = tx.calcHash();
+    const coin = new CoinData(new BufferReader(tx.coinData, 0));
+    const signatures = new TxSignatures(new BufferReader(tx.signatures, 0));
+    coin.dataReadable();
+    signatures.dataReadable();
+    tx.hash = tx.hash.toString('hex');
+    tx.coinData = coin;
+    tx.txData = tx.txData.toString('hex');
+    tx.remark = tx.remark.toString('utf8');
+    tx.signatures = signatures;
+    return tx;
   },
 
   contractDataParsing(hex) {
     let bufferReader = new BufferReader(Buffer.from(hex, "hex"), 0);
     return new ContractData(bufferReader);
+  },
+
+  programEncodePacked(args) {
+    return new sdk.newProgramEncodePacked(args);
+  },
+
+  parseProgramEncodePacked(data) {
+    return new sdk.parseProgramEncodePacked(data);
   }
 
 };

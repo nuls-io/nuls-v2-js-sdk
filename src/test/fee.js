@@ -9,3 +9,16 @@ export function countFee(tx, signatrueCount) {
   txSize += signatrueCount * 110;
   return 100000 * (txSize / 1024);
 }
+
+let a = {
+  "chainId": 1,
+  "assetId": 1,
+  "mainChainId": 1,
+  "mainAssetId": 1,
+  "language": "zh-CHS",
+  "encoding": "UTF-8",
+  "keystoreFolder": "/keystore/backup",
+  "dataPath":"/data",
+  "blackHolePublicKey":"000000000000000000000000000000000000000000000000000000000000000000",
+  "addressPrefix":"NULS"
+};
