@@ -74,7 +74,7 @@ module.exports = {
       return;
     }
     let result = await validateTx(txhex);
-    console.log(result);
+    console.log('validateTx', result);
     if (result.success) {
       let results = await broadcastTx(txhex);
       if (results && results.value) {
@@ -108,13 +108,11 @@ module.exports = {
             multyAssetArray[i] = [multyAsset.value, multyAsset.assetChainId, multyAsset.assetId];
         }
     }
-    let result = await validateContractCall(sender, value, sdk.CONTRACT_MAX_GASLIMIT, sdk.CONTRACT_MINIMUM_PRICE, contractAddress, methodName, methodDesc, args, multyAssetArray);
-    if (result.success) {
-      let gasResult = await imputedContractCallGas(sender, value, contractAddress, methodName, methodDesc, args, multyAssetArray);
-      return Number(gasResult.data.gasLimit);
-    } else {
-      console.log("调用合约验证失败\n", result)
+    let gasResult = await imputedContractCallGas(sender, value, contractAddress, methodName, methodDesc, args, multyAssetArray);
+    if (!gasResult.success) {
+      throw 'imputedCallGas: ' + gasResult.data.errorMsg;
     }
+    return Number(gasResult.data.gasLimit);
   },
 
   /**

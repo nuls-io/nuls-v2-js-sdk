@@ -461,6 +461,9 @@ module.exports = {
     return await http.post('/', 'validateContractCall', parms)
       .then((response) => {
         if (response.hasOwnProperty("result")) {
+          if (!response.result.success) {
+            return {success: false, data: response.result};
+          }
           return {success: true, data: response.result};
         } else {
           return {success: false, data: response.error};
@@ -489,6 +492,9 @@ module.exports = {
     return await http.post('/', 'imputedContractCallGas', parms)
       .then((response) => {
         if (response.hasOwnProperty("result")) {
+          if (response.result.errorMsg) {
+            return {success: false, data: response.result};
+          }
           return {success: true, data: response.result};
         } else {
           return {success: false, data: response.error};
