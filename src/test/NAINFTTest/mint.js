@@ -3,17 +3,19 @@ const BigNumber = require("bignumber.js");
 const nuls = require("../../index");
 
 // 用户私钥
-const pri = '';
+const pri = '8212e7ba23c8b52790c45b0514490356cd819db15d364cbe08659b5888339e78';
 const importAddress = nuls.importByKey(2, pri, '', "tNULS");
 // 用户公钥
 const pub = importAddress.pub;
 // 用户地址
 const fromAddress = importAddress.address;
+console.log('fromAddress', fromAddress);
+
 // 资产链ID
 const assetChainId = 2;
 // 资产ID
 const assetId = 1;
-const mainContract = 'tNULSeBaMzkhJFy6ZnR5E4mebQa36hAR9mQEeB';
+const mainContract = 'tNULSeBaNA3MVKDseGH9w4LbDDJdotFEh4gNoP';
 
 let pid = 0;
 let mintAmount = 20;
@@ -23,7 +25,7 @@ call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     chainId: assetChainId,
     sender: fromAddress,
     contractAddress: mainContract,
-    value: new BigNumber(2*mintAmount).shiftedBy(8).toFixed(), //
+    value: new BigNumber(600*mintAmount).shiftedBy(8).toFixed(), //
     methodName: "mint",
     methodDesc: "",
     args: [

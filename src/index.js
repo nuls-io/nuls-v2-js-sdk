@@ -227,6 +227,11 @@ module.exports = {
 
   parseProgramEncodePacked(data) {
     return sdk.parseProgramEncodePacked(data);
+  },
+
+  currentTime() {
+    var times = new Date().valueOf();
+    return Number(times.toString().substr(0, times.toString().length - 3)); //交易时间
   }
 
 };

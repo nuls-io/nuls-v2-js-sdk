@@ -68,7 +68,7 @@ module.exports = {
     let tAssemble = await nuls.transactionAssemble(inOrOutputs.data.inputs, inOrOutputs.data.outputs, remark, 16, contractCallTxData);
     let txhex = await nuls.transactionSerialize(pri, pub, tAssemble);
 
-    console.log(txhex);
+    // console.log(txhex);
     if (payAccount) {
       console.log("请追加账户["+payAccount+"]的签名");
       return;

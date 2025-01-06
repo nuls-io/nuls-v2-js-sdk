@@ -3,7 +3,7 @@ const BigNumber = require("bignumber.js");
 const nuls = require("../../index");
 
 // 用户私钥
-const pri = '';
+const pri = 'edacaeb4ae6836ead7dd61d8ab79444b631274a303f91608472c8f99d646bbdf';
 const importAddress = nuls.importByKey(2, pri, '', "tNULS");
 // 用户公钥
 const pub = importAddress.pub;
@@ -13,7 +13,7 @@ const fromAddress = importAddress.address;
 const assetChainId = 2;
 // 资产ID
 const assetId = 1;
-const mainContract = 'tNULSeBaMzkhJFy6ZnR5E4mebQa36hAR9mQEeB';
+const mainContract = 'tNULSeBaNA3MVKDseGH9w4LbDDJdotFEh4gNoP';
 
 let pid = 0;
 let tokenAmount = 1;

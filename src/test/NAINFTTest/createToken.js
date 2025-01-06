@@ -1,4 +1,5 @@
 const call = require('../contractCall.js');
+const BigNumber = require("bignumber.js");
 const nuls = require("../../index");
 
 // 用户私钥
@@ -8,23 +9,24 @@ const importAddress = nuls.importByKey(2, pri, '', "tNULS");
 const pub = importAddress.pub;
 // 用户地址
 const fromAddress = importAddress.address;
+console.log('fromAddress', fromAddress);
 // 资产链ID
 const assetChainId = 2;
 // 资产ID
 const assetId = 1;
-const mainContract = 'tNULSeBaMzkhJFy6ZnR5E4mebQa36hAR9mQEeB';
+const mainContract = 'tNULSeBaNA3MVKDseGH9w4LbDDJdotFEh4gNoP';
 
 // 发布token
-// String uri, String name, String symbol, String payAsset, BigInteger price, int maxTotalSupply,
+// String uri, String extendUri, String name, String symbol, String payAsset, BigInteger price, int maxTotalSupply,
 // boolean tigerMode, int mintEndingProgress, int swapFeeRate
 call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     chainId: assetChainId,
     sender: fromAddress,
     contractAddress: mainContract,
-    value: 1000000000, //
+    value: new BigNumber(10).shiftedBy(8).toFixed(), //
     methodName: "createToken",
     methodDesc: "",
     args: [
-        'uritest', 'token1n', 'token1s', '2-1', '200000000', 100, true, 6000, 2000
+        'uritest', 'extendUriTest', 'token1n', 'token1s', '2-1', new BigNumber(600).shiftedBy(8).toFixed(), 100, true, 6000, 30
     ]
 }, 'call contract...', []);

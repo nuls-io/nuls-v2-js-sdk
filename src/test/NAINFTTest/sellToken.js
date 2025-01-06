@@ -9,11 +9,12 @@ const importAddress = nuls.importByKey(2, pri, '', "tNULS");
 const pub = importAddress.pub;
 // 用户地址
 const fromAddress = importAddress.address;
+console.log('fromAddress', fromAddress);
 // 资产链ID
 const assetChainId = 2;
 // 资产ID
 const assetId = 1;
-const mainContract = 'tNULSeBaMzkhJFy6ZnR5E4mebQa36hAR9mQEeB';
+const mainContract = 'tNULSeBaNA3MVKDseGH9w4LbDDJdotFEh4gNoP';
 
 let pid = 0;
 let tokenIds = ['0', '1'];
