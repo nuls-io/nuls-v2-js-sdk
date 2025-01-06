@@ -3,7 +3,7 @@ const BigNumber = require("bignumber.js");
 const nuls = require("../../index");
 
 // 用户私钥
-const pri = '8212e7ba23c8b52790c45b0514490356cd819db15d364cbe08659b5888339e78';
+const pri = '';
 const importAddress = nuls.importByKey(2, pri, '', "tNULS");
 // 用户公钥
 const pub = importAddress.pub;

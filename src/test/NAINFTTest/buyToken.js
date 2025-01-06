@@ -3,12 +3,13 @@ const BigNumber = require("bignumber.js");
 const nuls = require("../../index");
 
 // 用户私钥
-const pri = 'edacaeb4ae6836ead7dd61d8ab79444b631274a303f91608472c8f99d646bbdf';
+const pri = '';
 const importAddress = nuls.importByKey(2, pri, '', "tNULS");
 // 用户公钥
 const pub = importAddress.pub;
 // 用户地址
 const fromAddress = importAddress.address;
+console.log('fromAddress', fromAddress);
 // 资产链ID
 const assetChainId = 2;
 // 资产ID
