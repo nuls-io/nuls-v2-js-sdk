@@ -31,7 +31,6 @@ console.log(signVal);
 console.log(result1);
 console.log(account.pri.length);
 
-let hashHex = dataToHex("hello");
 function dataToHex(data) {
     let _data = Buffer.from(data, "hex").toString("hex");
     let isHex = _data != '' && _data === data;
