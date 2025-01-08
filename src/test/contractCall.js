@@ -50,6 +50,9 @@ module.exports = {
     }
 
     let inOrOutputs = await inputsOrOutputsOfContractCall(transferInfo, balanceInfo, contractCall, multyAssets, nulsValueToOthers);
+    if (!inOrOutputs.success) {
+      throw inOrOutputs.data;
+    }
     if (payAccount) {
       const balanceInfoOfPayAccount = await getBalance(chainId, assetsChainId, assetsId, payAccount);
       let inputs = inOrOutputs.data.inputs;
