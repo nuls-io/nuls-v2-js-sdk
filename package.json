@@ -34,7 +34,8 @@
     "karma-mocha": "^1.3.0",
     "karma-mocha-reporter": "^2.2.5",
     "mocha": "*",
-    "watchify": "^3.11.0"
+    "watchify": "^3.11.0",
+    "dotenv": "^16.4.1"
   },
   "dependencies": {
     "acorn": "6.4.1",
@@ -55,6 +56,7 @@
     "elliptic": "6.5.3",
     "es6-promise": "3.0.2",
     "jsrsasign": "8.0.19",
+    "keccak": "^3.0.4",
     "nan": "2.11.1",
     "randombytes": "2.0.6",
     "rimraf": "^2.6.3",

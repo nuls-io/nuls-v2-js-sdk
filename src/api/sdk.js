@@ -12,6 +12,7 @@ const Hash = require("../utils/hash");
 const Serializers = require("./serializers");
 const secp256k1 = require("secp256k1");
 const programEncodePacked = require("../model/ProgramEncodePacked");
+const programCreateDataEncodePacked = require("../model/ProgramCreateDataEncodePacked");
 const BufferReader = require("../utils/bufferreader");
 
 /**
@@ -448,9 +449,11 @@ module.exports = {
         }
         return 9;
     },
+
     bufferReadBytesByLength: function (buffer, cursor) {
 
     },
+
     newProgramEncodePacked: function (args) {
         let encodePacked = new programEncodePacked.ProgramEncodePacked();
         if (args) {
@@ -459,11 +462,20 @@ module.exports = {
         }
         return encodePacked.serialize().toString('hex');
     },
+
     parseProgramEncodePacked: function (data) {
         let encodePacked = new programEncodePacked.ProgramEncodePacked();
         let bufferReader = new BufferReader(Buffer.from(data, "hex"), 0);
         encodePacked.parse(bufferReader);
         return encodePacked.args;
-    }
+    },
+
+    newProgramCreateDataEncodePacked: function (_sender, _salt, _codeHash) {
+        let encodePacked = new programCreateDataEncodePacked.ProgramCreateDataEncodePacked();
+        encodePacked.sender = _sender;
+        encodePacked.salt = _salt;
+        encodePacked.codeHash = _codeHash;
+        return encodePacked.serialize().toString('hex');
+    },
 
 };

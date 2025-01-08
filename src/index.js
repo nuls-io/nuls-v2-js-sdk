@@ -5,6 +5,7 @@ const CoinData = require("./model/coindata");
 const ContractData = require("./model/contractdata");
 const BufferReader = require("./utils/bufferreader");
 const TxSignatures = require("./model/signatures");
+const Hash = require("./utils/hash");
 
 module.exports = {
 
@@ -232,6 +233,33 @@ module.exports = {
   currentTime() {
     var times = new Date().valueOf();
     return Number(times.toString().substr(0, times.toString().length - 3)); //交易时间
+  },
+
+  programCreateDataEncodePacked(sender, salt, codeHash) {
+    return sdk.newProgramCreateDataEncodePacked(sender, salt, codeHash);
+  },
+
+  hashCode(value) {
+    let h = 0;
+    if (value.length > 0) {
+        for (let i = 0; i < value.length; i++) {
+            h = 31 * h + value.charCodeAt(i);
+            h = h | 0; // 保持结果在32位整数范围内
+        }
+    }
+    return h;
+  },
+
+  getBytesAddress(addressStr) {
+    return sdk.getBytesAddress(addressStr);
+  },
+
+  getStringAddressByBytes(buf) {
+    return sdk.getStringAddressByBytes(buf);
+  },
+
+  sha256ripemd160(buf) {
+    return Hash.sha256ripemd160(buf);
   }
 
 };
