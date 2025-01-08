@@ -1,9 +1,10 @@
 const call = require('../contractCall.js');
 const BigNumber = require("bignumber.js");
 const nuls = require("../../index");
+require('dotenv').config({ path: '../../test/.env'});
 
 // 用户私钥
-const pri = '';
+const pri = process.env.asd;
 const importAddress = nuls.importByKey(2, pri, '', "tNULS");
 // 用户公钥
 const pub = importAddress.pub;
@@ -14,7 +15,7 @@ console.log('fromAddress', fromAddress);
 const assetChainId = 2;
 // 资产ID
 const assetId = 1;
-const mainContract = 'tNULSeBaNA3MVKDseGH9w4LbDDJdotFEh4gNoP';
+const mainContract = 'tNULSeBaMyqgRwmgPGnaibP2vR4H2ePqQivbot';
 
 // 发布token
 // String uri, String extendUri, String name, String symbol, String payAsset, BigInteger price, int maxTotalSupply,

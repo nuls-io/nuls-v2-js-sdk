@@ -4,8 +4,8 @@ const keccak = require('keccak');
 
 const factoryBuf = nuls.getBytesAddress('tNULSeBaMyduuqjrF9DkXN3hXUbpR6azkqkQJA');
 const pairCodeHashBuf = Buffer.from('5af944402b2c9926408fbe6dda6fd097bef299b553a4190e32300714b6733fce', 'hex');
-const tokenA = 'tNULSeBaN8aNHMo4yKomvGDbZfL1KAYGwfn8Jk';
-const tokenB = 'tNULSeBaMy1Rk3KaHcvXYTGNoNpr8ckAzkKWfS';
+const tokenA = 'tNULSeBaMy1Rk3KaHcvXYTGNoNpr8ckAzkKWfS';
+const tokenB = 'tNULSeBaN8Ps39De43Gik5GfQ6h4GYsHGmwNcP';
 
 function calcPairAddress(chainId, _tokenA, _tokenB) {
 

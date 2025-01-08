@@ -1,10 +1,10 @@
-const call = require('../contractCall.js');
+const call = require('../../contractCall.js');
 const BigNumber = require("bignumber.js");
-const nuls = require("../../index");
-require('dotenv').config({ path: '../../test/.env'});
+const nuls = require("../../../index");
+require('dotenv').config({ path: '../../../test/.env'});
 
 // 用户私钥
-const pri = process.env.lrg;
+const pri = process.env.asd;
 const importAddress = nuls.importByKey(2, pri, '', "tNULS");
 // 用户公钥
 const pub = importAddress.pub;
@@ -15,20 +15,16 @@ console.log('fromAddress', fromAddress);
 const assetChainId = 2;
 // 资产ID
 const assetId = 1;
-const mainContract = 'tNULSeBaMyqgRwmgPGnaibP2vR4H2ePqQivbot';
+const mainContract = 'tNULSeBaN45qZwijawwFc3UtPX8mZAUJk3bbfJ';
 
-let pid = 0;
-let tokenAmount = 1;
-// buyToken(int pid, int tokenAmount)
 call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     chainId: assetChainId,
     sender: fromAddress,
     contractAddress: mainContract,
-    value: new BigNumber(9).shiftedBy(8).toFixed(),
-    methodName: "buyToken",
+    value: new BigNumber(100).shiftedBy(8).toFixed(), //
+    methodName: "addLiquidityNuls",
     methodDesc: "",
     args: [
-        pid, tokenAmount
+        'tNULSeBaMy1Rk3KaHcvXYTGNoNpr8ckAzkKWfS', new BigNumber(50).shiftedBy(18).toFixed(), 0, 0, fromAddress, nuls.currentTime() + 300
     ]
-}, 'call contract...', []);
-
+}, 'add lp nuls and fark', []);

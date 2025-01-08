@@ -1,10 +1,10 @@
-const call = require('../contractCall.js');
+const call = require('../../contractCall.js');
 const BigNumber = require("bignumber.js");
-const nuls = require("../../index");
-require('dotenv').config({ path: '../../test/.env'});
+const nuls = require("../../../index");
+require('dotenv').config({ path: '../../../test/.env'});
 
 // 用户私钥
-const pri = process.env.lrg;
+const pri = process.env.asd;
 const importAddress = nuls.importByKey(2, pri, '', "tNULS");
 // 用户公钥
 const pub = importAddress.pub;
@@ -15,20 +15,16 @@ console.log('fromAddress', fromAddress);
 const assetChainId = 2;
 // 资产ID
 const assetId = 1;
-const mainContract = 'tNULSeBaMyqgRwmgPGnaibP2vR4H2ePqQivbot';
+const mainContract = 'tNULSeBaMyH35cm1jtDjdtqrQF9XYU7qt2kwMN';
 
-let pid = 0;
-let tokenAmount = 1;
-// buyToken(int pid, int tokenAmount)
 call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     chainId: assetChainId,
     sender: fromAddress,
     contractAddress: mainContract,
-    value: new BigNumber(9).shiftedBy(8).toFixed(),
-    methodName: "buyToken",
+    value: new BigNumber(1).shiftedBy(8).toFixed(), //
+    methodName: "swapExactNulsForWAsset",
     methodDesc: "",
     args: [
-        pid, tokenAmount
+        5, 1, 0, ['tNULSeBaN8aNHMo4yKomvGDbZfL1KAYGwfn8Jk', 'wnvt地址'], fromAddress, nuls.currentTime() + 300, 'tNULSeBaN5nddf9WkQgRr3RNwARgryndv2Bzs6'
     ]
-}, 'call contract...', []);
-
+}, 'swap nuls for nvt', []);
