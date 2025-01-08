@@ -19,12 +19,13 @@ const mainContract = 'tNULSeBaMyqgRwmgPGnaibP2vR4H2ePqQivbot';
 
 let pid = 0;
 let tokenAmount = 1;
+let payNULS = 9;// 支付的NULS数量
 // buyToken(int pid, int tokenAmount)
 call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     chainId: assetChainId,
     sender: fromAddress,
     contractAddress: mainContract,
-    value: new BigNumber(9).shiftedBy(8).toFixed(),
+    value: new BigNumber(payNULS).shiftedBy(8).toFixed(),
     methodName: "buyToken",
     methodDesc: "",
     args: [

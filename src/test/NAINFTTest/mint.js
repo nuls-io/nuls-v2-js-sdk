@@ -20,13 +20,14 @@ const mainContract = 'tNULSeBaMyqgRwmgPGnaibP2vR4H2ePqQivbot';
 
 let pid = 0;
 let mintAmount = 20;
+let mintPrice = 600;// mint一个nft需要的nuls数量
 // mint token
 // int pid, int mintAmount
 call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     chainId: assetChainId,
     sender: fromAddress,
     contractAddress: mainContract,
-    value: new BigNumber(600*mintAmount).shiftedBy(8).toFixed(), //
+    value: new BigNumber(mintPrice*mintAmount).shiftedBy(8).toFixed(), //
     methodName: "mint",
     methodDesc: "",
     args: [

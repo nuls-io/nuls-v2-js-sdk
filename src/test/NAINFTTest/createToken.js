@@ -17,6 +17,11 @@ const assetChainId = 2;
 const assetId = 1;
 const mainContract = 'tNULSeBaMyqgRwmgPGnaibP2vR4H2ePqQivbot';
 
+const price = 600;// mint一个nft需要的nuls数量
+const maxTotalSupply = 100;// 发行总量
+const tigerMode = true;// 是否开启老虎机模式
+const mintEndingProgress = 6000;// mint阶段比例，万分位
+const swapFeeRate = 30;// 买卖阶段手续费不理，百分位
 // 发布token
 // String uri, String extendUri, String name, String symbol, String payAsset, BigInteger price, int maxTotalSupply,
 // boolean tigerMode, int mintEndingProgress, int swapFeeRate
@@ -28,6 +33,6 @@ call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     methodName: "createToken",
     methodDesc: "",
     args: [
-        'uritest', 'extendUriTest', 'token1n', 'token1s', '2-1', new BigNumber(600).shiftedBy(8).toFixed(), 100, true, 6000, 30
+        'uritest', 'extendUriTest', 'token1n', 'token1s', '2-1', new BigNumber(price).shiftedBy(8).toFixed(), maxTotalSupply, tigerMode, mintEndingProgress, swapFeeRate
     ]
 }, 'call contract...', []);
