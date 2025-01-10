@@ -29,8 +29,9 @@ async function approve(pri, mainContract, to) {
 }
 
 async function approveList() {
-    const router = 'tNULSeBaMyH35cm1jtDjdtqrQF9XYU7qt2kwMN';
-    await approve(process.env.asd, 'tNULSeBaxxxxx', router);// Pair [USDT, QQQ].LPAddress
+    const router = process.env.router;
+    await approve(process.env.asd, process.env.qqq, router);
+    // await approve(process.env.asd, 'tNULSxxxxx', router);// Pair [USDT, QQQ].LPAddress
 }
 
 approveList();

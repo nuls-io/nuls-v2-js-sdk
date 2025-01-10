@@ -15,7 +15,7 @@ console.log('fromAddress', fromAddress);
 const assetChainId = 2;
 // 资产ID
 const assetId = 1;
-const mainContract = 'tNULSeBaN45qZwijawwFc3UtPX8mZAUJk3bbfJ';
+const mainContract = process.env.router;
 
 async function swapNulsForFark() {
     await call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
@@ -26,9 +26,9 @@ async function swapNulsForFark() {
         methodName: "swapExactNulsForTokens",
         methodDesc: "",
         args: [
-            0, ['tNULSeBaN8aNHMo4yKomvGDbZfL1KAYGwfn8Jk', 'tNULSeBaMy1Rk3KaHcvXYTGNoNpr8ckAzkKWfS'], fromAddress, nuls.currentTime() + 300, 'tNULSeBaN5nddf9WkQgRr3RNwARgryndv2Bzs6'
+            0, [process.env.wnuls, process.env.fark], fromAddress, nuls.currentTime() + 300, 'tNULSeBaN5nddf9WkQgRr3RNwARgryndv2Bzs6'
         ]
-    }, 'swap nuls for fark', []);
+    }, 'swap nuls(1) for fark', []);
 }
 
 
@@ -41,9 +41,9 @@ async function swapNulsForCCC() {
         methodName: "swapExactNulsForTokens",
         methodDesc: "",
         args: [
-            0, ['tNULSeBaN8aNHMo4yKomvGDbZfL1KAYGwfn8Jk', 'tNULSeBaMy1Rk3KaHcvXYTGNoNpr8ckAzkKWfS', 'tNULSeBaN8Ps39De43Gik5GfQ6h4GYsHGmwNcP'], fromAddress, nuls.currentTime() + 300, 'tNULSeBaN5nddf9WkQgRr3RNwARgryndv2Bzs6'
+            0, [process.env.wnuls, process.env.fark, process.env.ccc], fromAddress, nuls.currentTime() + 300, 'tNULSeBaN5nddf9WkQgRr3RNwARgryndv2Bzs6'
         ]
     }, 'swap nuls for ccc: nuls to fark to ccc', []);
 }
 
-swapNulsForCCC();
+swapNulsForFark();

@@ -17,15 +17,24 @@ const assetChainId = 2;
 const assetId = 1;
 const mainContract = process.env.router;
 
-// BigInteger amountOut, String[] path, Address to, BigInteger deadline, Address ref
+// 转入1个NVT
+let multyAssets = [
+    {
+        value: new BigNumber("10").shiftedBy(8).toFixed(),
+        assetChainId: 5,
+        assetId: 1
+    }
+];
+
+// Integer chainId, Integer assetId, BigInteger amountOut, String[] path, Address to, BigInteger deadline, Address ref
 call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     chainId: assetChainId,
     sender: fromAddress,
     contractAddress: mainContract,
-    value: new BigNumber("1").shiftedBy(8).toFixed(), //
-    methodName: "swapNulsForExactTokens",
+    value: 0, //
+    methodName: "swapWAssetForExactNuls",
     methodDesc: "",
     args: [
-        new BigNumber("0.5").shiftedBy(18).toFixed(), [process.env.wnuls, process.env.fark], fromAddress, nuls.currentTime() + 300, 'tNULSeBaN5nddf9WkQgRr3RNwARgryndv2Bzs6'
+        5, 1, new BigNumber("4").shiftedBy(8).toFixed(), [process.env.wnvt, process.env.wnuls], fromAddress, nuls.currentTime() + 300, 'tNULSeBaN5nddf9WkQgRr3RNwARgryndv2Bzs6'
     ]
-}, 'swap nuls for fark', []);
+}, 'swap nvt for nuls', multyAssets);

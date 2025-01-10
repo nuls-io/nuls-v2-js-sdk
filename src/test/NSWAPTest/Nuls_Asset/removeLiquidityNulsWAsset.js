@@ -4,7 +4,7 @@ const nuls = require("../../../index");
 require('dotenv').config({ path: '../../../test/.env'});
 
 // 用户私钥
-const pri = process.env.asd;
+const pri = process.env.lrg;
 const importAddress = nuls.importByKey(2, pri, '', "tNULS");
 // 用户公钥
 const pub = importAddress.pub;
@@ -15,7 +15,7 @@ console.log('fromAddress', fromAddress);
 const assetChainId = 2;
 // 资产ID
 const assetId = 1;
-const mainContract = 'tNULSeBaMyH35cm1jtDjdtqrQF9XYU7qt2kwMN';
+const mainContract = process.env.router;
 
 call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     chainId: assetChainId,
@@ -25,7 +25,7 @@ call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     methodName: "removeLiquidityNulsWAsset",
     methodDesc: "",
     args: [
-        5, 1, new BigNumber('353553390592773').shiftedBy(0).toFixed(), 0, 0, fromAddress, nuls.currentTime() + 300
+        5, 1, new BigNumber('7071066811').shiftedBy(0).toFixed(), 0, 0, fromAddress, nuls.currentTime() + 300
     ]
 }, 'remove lp nuls and nvt', []);
 

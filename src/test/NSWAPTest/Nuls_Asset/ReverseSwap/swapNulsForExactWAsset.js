@@ -17,15 +17,15 @@ const assetChainId = 2;
 const assetId = 1;
 const mainContract = process.env.router;
 
-// BigInteger amountOut, String[] path, Address to, BigInteger deadline, Address ref
+// Integer chainId, Integer assetId, BigInteger amountOut, String[] path, Address to, BigInteger deadline, Address ref
 call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     chainId: assetChainId,
     sender: fromAddress,
     contractAddress: mainContract,
-    value: new BigNumber("1").shiftedBy(8).toFixed(), //
-    methodName: "swapNulsForExactTokens",
+    value: new BigNumber("5").shiftedBy(8).toFixed(), //
+    methodName: "swapNulsForExactWAsset",
     methodDesc: "",
     args: [
-        new BigNumber("0.5").shiftedBy(18).toFixed(), [process.env.wnuls, process.env.fark], fromAddress, nuls.currentTime() + 300, 'tNULSeBaN5nddf9WkQgRr3RNwARgryndv2Bzs6'
+        5, 1, new BigNumber("5").shiftedBy(8).toFixed(), [process.env.wnuls, process.env.wnvt], fromAddress, nuls.currentTime() + 300, 'tNULSeBaN5nddf9WkQgRr3RNwARgryndv2Bzs6'
     ]
-}, 'swap nuls for fark', []);
+}, 'swap nuls for nvt', []);

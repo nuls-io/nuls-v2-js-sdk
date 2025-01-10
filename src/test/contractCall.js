@@ -113,7 +113,7 @@ module.exports = {
     }
     let gasResult = await imputedContractCallGas(sender, value, contractAddress, methodName, methodDesc, args, multyAssetArray);
     if (!gasResult.success) {
-      throw 'imputedCallGas: ' + gasResult.data.errorMsg;
+      throw 'imputedCallGas: ' + JSON.stringify(gasResult);
     }
     return Number(gasResult.data.gasLimit);
   },

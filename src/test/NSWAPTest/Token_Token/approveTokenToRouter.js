@@ -29,11 +29,7 @@ async function approve(pri, mainContract, to) {
 }
 
 async function approveList() {
-    const router = 'tNULSeBaN45qZwijawwFc3UtPX8mZAUJk3bbfJ';
-    // await approve(process.env.asd, 'tNULSeBaMy1Rk3KaHcvXYTGNoNpr8ckAzkKWfS', router);// FARK
-    // await approve(process.env.xaf, 'tNULSeBaN1hFKKD8cFJBxxGuuFKFSYSLy11eFc', router);// DDD
-    // await approve(process.env.asd, 'tNULSeBaN8Ps39De43Gik5GfQ6h4GYsHGmwNcP', router);// CCC
-    // await approve(process.env.xaf, 'tNULSeBaNBvNyhUxFQXiBJk6pSqCr2qTFFvVdt', router);// QQQ
+    const router = process.env.router;
     await approve(process.env.asd, 'tNULSeBaN4sUdYkKzUuurAP3Phwu6iVtRHqTqK', router);// Pair [FARK, CCC].LPAddress
 }
 

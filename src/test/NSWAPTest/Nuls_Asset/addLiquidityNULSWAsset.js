@@ -4,7 +4,7 @@ const nuls = require("../../../index");
 require('dotenv').config({ path: '../../../test/.env'});
 
 // 用户私钥
-const pri = process.env.asd;
+const pri = process.env.lrg;
 const importAddress = nuls.importByKey(2, pri, '', "tNULS");
 // 用户公钥
 const pub = importAddress.pub;
@@ -15,7 +15,7 @@ console.log('fromAddress', fromAddress);
 const assetChainId = 2;
 // 资产ID
 const assetId = 1;
-const mainContract = 'tNULSeBaMyH35cm1jtDjdtqrQF9XYU7qt2kwMN';
+const mainContract = process.env.router;
 
 // 转入100个NVT
 let multyAssets = [
@@ -36,4 +36,4 @@ call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     args: [
         5, 1, 0, 0, fromAddress, nuls.currentTime() + 300
     ]
-}, 'add lp nuls and nvt', multyAssets);
+}, 'add lp nuls(50) and nvt(100)', multyAssets);

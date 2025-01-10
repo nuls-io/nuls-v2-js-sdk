@@ -29,12 +29,20 @@ async function approve(pri, mainContract, to) {
 }
 
 async function approveList() {
-    const router = 'tNULSeBaMyH35cm1jtDjdtqrQF9XYU7qt2kwMN';
-    // await approve(process.env.asd, 'tNULSeBaMy1Rk3KaHcvXYTGNoNpr8ckAzkKWfS', router);// FARK
-    // await approve(process.env.xaf, 'tNULSeBaN1hFKKD8cFJBxxGuuFKFSYSLy11eFc', router);// DDD
-    // await approve(process.env.asd, 'tNULSeBaN8Ps39De43Gik5GfQ6h4GYsHGmwNcP', router);// CCC
-    // await approve(process.env.xaf, 'tNULSeBaNBvNyhUxFQXiBJk6pSqCr2qTFFvVdt', router);// QQQ
-    await approve(process.env.asd, 'tNULSeBaN1aV5VZspgxP25yuEMXkGZ4e8QZX2S', router);// Pair [NULS, FARK].LPAddress
+    const router = process.env.router;
+    // await approve(process.env.asd, process.env.fark, router);// FARK
+    // console.log('asd fark done.');
+    // await approve(process.env.xaf, process.env.ddd, router);// DDD
+    // console.log('xaf ddd done.');
+    // await approve(process.env.asd, process.env.ccc, router);// CCC
+    // console.log('asd ccc done.');
+    // await approve(process.env.xaf, process.env.qqq, router);// QQQ
+    // console.log('xaf qqq done.');
+    await approve(process.env.xaf, process.env.fark, router);// fark
+    console.log('xaf fark done.');
+    // await approve(process.env.xaf, process.env.ccc, router);// ccc
+    // console.log('xaf ccc done.');
+    // await approve(process.env.asd, 'tNULSeBaN1aV5VZspgxP25yuEMXkGZ4e8QZX2S', router);// Pair [NULS, FARK].LPAddress
 }
 
 approveList();

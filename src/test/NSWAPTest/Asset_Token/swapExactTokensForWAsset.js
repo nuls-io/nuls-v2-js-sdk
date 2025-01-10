@@ -4,7 +4,7 @@ const nuls = require("../../../index");
 require('dotenv').config({ path: '../../../test/.env'});
 
 // 用户私钥
-const pri = process.env.asd;
+const pri = process.env.xaf;
 const importAddress = nuls.importByKey(2, pri, '', "tNULS");
 // 用户公钥
 const pub = importAddress.pub;
@@ -15,7 +15,7 @@ console.log('fromAddress', fromAddress);
 const assetChainId = 2;
 // 资产ID
 const assetId = 1;
-const mainContract = 'tNULSeBaMyH35cm1jtDjdtqrQF9XYU7qt2kwMN';
+const mainContract = process.env.router;
 
 // Integer chainId, Integer assetId, BigInteger amountIn, BigInteger amountOutMin, String[] path, Address to, BigInteger deadline, Address ref
 call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
@@ -26,6 +26,6 @@ call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     methodName: "swapExactTokensForWAsset",
     methodDesc: "",
     args: [
-        5, 74, new BigNumber("2").shiftedBy(18).toFixed(), 0, ['tNULSeBaNBvNyhUxFQXiBJk6pSqCr2qTFFvVdt', 'wusdt地址'], fromAddress, nuls.currentTime() + 300, 'tNULSeBaN5nddf9WkQgRr3RNwARgryndv2Bzs6'
+        5, 74, new BigNumber("20").shiftedBy(18).toFixed(), 0, [process.env.qqq, process.env.wusdt], fromAddress, nuls.currentTime() + 300, 'tNULSeBaN5nddf9WkQgRr3RNwARgryndv2Bzs6'
     ]
 }, 'swap qqq for usdt', []);

@@ -15,7 +15,7 @@ console.log('fromAddress', fromAddress);
 const assetChainId = 2;
 // 资产ID
 const assetId = 1;
-const mainContract = 'tNULSeBaN45qZwijawwFc3UtPX8mZAUJk3bbfJ';
+const mainContract = process.env.router;
 
 call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     chainId: assetChainId,
@@ -25,7 +25,7 @@ call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     methodName: "removeLiquidityNuls",
     methodDesc: "",
     args: [
-        'tNULSeBaMy1Rk3KaHcvXYTGNoNpr8ckAzkKWfS', new BigNumber('353553390592773').shiftedBy(0).toFixed(), 0, 0, fromAddress, nuls.currentTime() + 300
+        process.env.fark, new BigNumber('353553390592773').shiftedBy(0).toFixed(), 0, 0, fromAddress, nuls.currentTime() + 300
     ]
 }, 'remove lp nuls and fark', []);
 

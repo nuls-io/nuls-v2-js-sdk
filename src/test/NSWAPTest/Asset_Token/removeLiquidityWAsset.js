@@ -15,7 +15,7 @@ console.log('fromAddress', fromAddress);
 const assetChainId = 2;
 // 资产ID
 const assetId = 1;
-const mainContract = 'tNULSeBaMyH35cm1jtDjdtqrQF9XYU7qt2kwMN';
+const mainContract = process.env.router;
 
 // Integer chainId, Integer assetId, Address token, BigInteger liquidity, BigInteger amountTokenMin, BigInteger amountETHMin, Address to, BigInteger deadline
 call.callContract(pri, pub, fromAddress, assetChainId, assetId, {

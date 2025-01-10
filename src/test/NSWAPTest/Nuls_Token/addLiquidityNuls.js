@@ -15,16 +15,16 @@ console.log('fromAddress', fromAddress);
 const assetChainId = 2;
 // 资产ID
 const assetId = 1;
-const mainContract = 'tNULSeBaN45qZwijawwFc3UtPX8mZAUJk3bbfJ';
+const mainContract = process.env.router;
 
 call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     chainId: assetChainId,
     sender: fromAddress,
     contractAddress: mainContract,
-    value: new BigNumber(100).shiftedBy(8).toFixed(), //
+    value: new BigNumber(50).shiftedBy(8).toFixed(), //
     methodName: "addLiquidityNuls",
     methodDesc: "",
     args: [
-        'tNULSeBaMy1Rk3KaHcvXYTGNoNpr8ckAzkKWfS', new BigNumber(50).shiftedBy(18).toFixed(), 0, 0, fromAddress, nuls.currentTime() + 300
+        process.env.fark, new BigNumber(100).shiftedBy(18).toFixed(), 0, 0, fromAddress, nuls.currentTime() + 300
     ]
-}, 'add lp nuls and fark', []);
+}, 'add lp nuls(50) and fark(100)', []);

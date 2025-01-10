@@ -4,7 +4,7 @@ const nuls = require("../../../../index");
 require('dotenv').config({ path: '../../../../test/.env'});
 
 // 用户私钥
-const pri = process.env.asd;
+const pri = process.env.xaf;
 const importAddress = nuls.importByKey(2, pri, '', "tNULS");
 // 用户公钥
 const pub = importAddress.pub;
@@ -17,15 +17,15 @@ const assetChainId = 2;
 const assetId = 1;
 const mainContract = process.env.router;
 
-// BigInteger amountOut, String[] path, Address to, BigInteger deadline, Address ref
+// BigInteger amountOut, BigInteger amountInMax, String[] path, Address to, BigInteger deadline, Address ref
 call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     chainId: assetChainId,
     sender: fromAddress,
     contractAddress: mainContract,
-    value: new BigNumber("1").shiftedBy(8).toFixed(), //
-    methodName: "swapNulsForExactTokens",
+    value: 0, //
+    methodName: "swapTokensForExactTokens",
     methodDesc: "",
     args: [
-        new BigNumber("0.5").shiftedBy(18).toFixed(), [process.env.wnuls, process.env.fark], fromAddress, nuls.currentTime() + 300, 'tNULSeBaN5nddf9WkQgRr3RNwARgryndv2Bzs6'
+        new BigNumber("0.5").shiftedBy(18).toFixed(), new BigNumber("50").shiftedBy(18).toFixed(), [process.env.fark, process.env.qqq], fromAddress, nuls.currentTime() + 300, 'tNULSeBaN5nddf9WkQgRr3RNwARgryndv2Bzs6'
     ]
-}, 'swap nuls for fark', []);
+}, 'swap fark for qqq', []);

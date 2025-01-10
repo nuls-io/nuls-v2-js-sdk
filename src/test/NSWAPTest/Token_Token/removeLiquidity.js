@@ -15,7 +15,7 @@ console.log('fromAddress', fromAddress);
 const assetChainId = 2;
 // 资产ID
 const assetId = 1;
-const mainContract = 'tNULSeBaN45qZwijawwFc3UtPX8mZAUJk3bbfJ';
+const mainContract = process.env.router;
 
 // Address tokenA, Address tokenB, BigInteger liquidity, BigInteger amountAMin, BigInteger amountBMin, Address to, BigInteger deadline
 call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
@@ -26,7 +26,7 @@ call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     methodName: "removeLiquidity",
     methodDesc: "",
     args: [
-        'tNULSeBaMy1Rk3KaHcvXYTGNoNpr8ckAzkKWfS', 'tNULSeBaN8Ps39De43Gik5GfQ6h4GYsHGmwNcP', new BigNumber('353553390592773').shiftedBy(0).toFixed(), 0, 0, fromAddress, nuls.currentTime() + 300
+        process.env.fark, process.env.ccc, new BigNumber('353553390592773').shiftedBy(0).toFixed(), 0, 0, fromAddress, nuls.currentTime() + 300
     ]
 }, 'remove lp fark and ccc', []);
 

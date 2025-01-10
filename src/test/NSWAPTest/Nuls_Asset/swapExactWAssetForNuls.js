@@ -15,7 +15,7 @@ console.log('fromAddress', fromAddress);
 const assetChainId = 2;
 // 资产ID
 const assetId = 1;
-const mainContract = 'tNULSeBaMyH35cm1jtDjdtqrQF9XYU7qt2kwMN';
+const mainContract = process.env.router;
 
 // 转入1个NVT
 let multyAssets = [
@@ -26,7 +26,7 @@ let multyAssets = [
     }
 ];
 
-// Integer chainId, Integer assetId, BigInteger amountIn, BigInteger amountOutMin, String[] path, Address to, BigInteger deadline, Address ref
+// Integer chainId, Integer assetId, BigInteger amountOutMin, String[] path, Address to, BigInteger deadline, Address ref
 call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     chainId: assetChainId,
     sender: fromAddress,
@@ -35,6 +35,6 @@ call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     methodName: "swapExactWAssetForNuls",
     methodDesc: "",
     args: [
-        5, 1, 0, 0, ['wnvt地址', 'tNULSeBaN8aNHMo4yKomvGDbZfL1KAYGwfn8Jk'], fromAddress, nuls.currentTime() + 300, 'tNULSeBaN5nddf9WkQgRr3RNwARgryndv2Bzs6'
+        5, 1, 0, [process.env.wnvt, process.env.wnuls], fromAddress, nuls.currentTime() + 300, 'tNULSeBaN5nddf9WkQgRr3RNwARgryndv2Bzs6'
     ]
 }, 'swap nvt for nuls', multyAssets);

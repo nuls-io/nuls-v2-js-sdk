@@ -15,12 +15,12 @@ console.log('fromAddress', fromAddress);
 const assetChainId = 2;
 // 资产ID
 const assetId = 1;
-const mainContract = 'tNULSeBaMyH35cm1jtDjdtqrQF9XYU7qt2kwMN';
+const mainContract = process.env.router;
 
 // 转入1个USDT
 let multyAssets = [
     {
-        value: new BigNumber("1").shiftedBy(18).toFixed(),
+        value: new BigNumber("0.3").shiftedBy(18).toFixed(),
         assetChainId: 5,
         assetId: 74
     }
@@ -35,6 +35,6 @@ call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     methodName: "swapExactWAssetForTokens",
     methodDesc: "",
     args: [
-        5, 74, 0, ['wusdt地址', 'tNULSeBaNBvNyhUxFQXiBJk6pSqCr2qTFFvVdt'], fromAddress, nuls.currentTime() + 300, 'tNULSeBaN5nddf9WkQgRr3RNwARgryndv2Bzs6'
+        5, 74, 0, [process.env.wusdt, process.env.qqq], fromAddress, nuls.currentTime() + 300, 'tNULSeBaN5nddf9WkQgRr3RNwARgryndv2Bzs6'
     ]
 }, 'swap usdt for qqq', multyAssets);
