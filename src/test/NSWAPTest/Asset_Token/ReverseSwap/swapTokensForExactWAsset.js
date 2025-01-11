@@ -1,7 +1,7 @@
-const call = require('../../contractCall.js');
+const call = require('../../../contractCall.js');
 const BigNumber = require("bignumber.js");
-const nuls = require("../../../index");
-require('dotenv').config({ path: '../../../test/.env'});
+const nuls = require("../../../../index");
+require('dotenv').config({ path: '../../../../test/.env'});
 
 // 用户私钥
 const pri = process.env.xaf;
@@ -17,17 +17,15 @@ const assetChainId = 2;
 const assetId = 1;
 const mainContract = process.env.router;
 
-// Integer chainId, Integer assetId, Address token, BigInteger liquidity, BigInteger amountTokenMin, BigInteger amountETHMin, Address to, BigInteger deadline
+// Integer chainId, Integer assetId, BigInteger amountOut, BigInteger amountInMax, String[] path, Address to, BigInteger deadline, Address ref
 call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     chainId: assetChainId,
     sender: fromAddress,
     contractAddress: mainContract,
     value: 0, //
-    methodName: "removeLiquidityWAsset",
+    methodName: "swapTokensForExactWAsset",
     methodDesc: "",
     args: [
-        5, 74, process.env.qqq, new BigNumber('3348469228349534293591').shiftedBy(0).toFixed(), 0, 0, fromAddress, nuls.currentTime() + 300
+        5, 74, new BigNumber("1").shiftedBy(18).toFixed(), new BigNumber("70").shiftedBy(18).toFixed(), [process.env.qqq, process.env.wusdt], fromAddress, nuls.currentTime() + 300, 'tNULSeBaN5nddf9WkQgRr3RNwARgryndv2Bzs6'
     ]
-}, 'remove lp usdt and qqq', []);
-
-
+}, 'swap qqq for wusdt', []);

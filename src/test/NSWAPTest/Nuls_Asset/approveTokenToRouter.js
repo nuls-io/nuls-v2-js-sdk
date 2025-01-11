@@ -30,7 +30,7 @@ async function approve(pri, mainContract, to) {
 
 async function approveList() {
     const router = process.env.router;
-    await approve(process.env.lrg, 'tNULSeBaN32bxyPCSs2KBRYcyjRRjBPnHBv4EE', router);// Pair [NULS, NVT].LPAddress
+    await approve(process.env.lrg, 'tNULSeBaN8FWRnocG52hxJXR9msbS2Un8U1i62', router);// Pair [NULS, NVT].LPAddress
 }
 
 approveList();

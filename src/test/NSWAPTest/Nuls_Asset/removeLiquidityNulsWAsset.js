@@ -25,7 +25,7 @@ call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     methodName: "removeLiquidityNulsWAsset",
     methodDesc: "",
     args: [
-        5, 1, new BigNumber('7071066811').shiftedBy(0).toFixed(), 0, 0, fromAddress, nuls.currentTime() + 300
+        5, 1, new BigNumber('3071066811').shiftedBy(0).toFixed(), 0, 0, fromAddress, nuls.currentTime() + 300
     ]
 }, 'remove lp nuls and nvt', []);
 

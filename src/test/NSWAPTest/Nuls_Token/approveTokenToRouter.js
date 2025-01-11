@@ -36,10 +36,10 @@ async function approveList() {
     // console.log('xaf ddd done.');
     // await approve(process.env.asd, process.env.ccc, router);// CCC
     // console.log('asd ccc done.');
-    // await approve(process.env.xaf, process.env.qqq, router);// QQQ
-    // console.log('xaf qqq done.');
-    await approve(process.env.xaf, process.env.fark, router);// fark
-    console.log('xaf fark done.');
+    await approve(process.env.xaf, process.env.qqq, router);// QQQ
+    console.log('xaf qqq done.');
+    // await approve(process.env.xaf, process.env.fark, router);// fark
+    // console.log('xaf fark done.');
     // await approve(process.env.xaf, process.env.ccc, router);// ccc
     // console.log('xaf ccc done.');
     // await approve(process.env.asd, 'tNULSeBaN1aV5VZspgxP25yuEMXkGZ4e8QZX2S', router);// Pair [NULS, FARK].LPAddress
