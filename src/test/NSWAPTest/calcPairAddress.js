@@ -2,12 +2,12 @@
 const nuls = require("../../index");
 const keccak = require('keccak');
 
-const factory = 'tNULSeBaMyduuqjrF9DkXN3hXUbpR6azkqkQJA';
-const pairCodeHash = '5af944402b2c9926408fbe6dda6fd097bef299b553a4190e32300714b6733fce';
+const factory = 'tNULSeBaMzYWiaCcZPu3kD2nJ52jMzMvbNzgVn';
+const pairCodeHash = '39a7640b54538bafd656a732db46decbed89389cf6207b168dda6f925d60c590';
 const tokenA = 'tNULSeBaMy1Rk3KaHcvXYTGNoNpr8ckAzkKWfS';
 const tokenB = 'tNULSeBaN8Ps39De43Gik5GfQ6h4GYsHGmwNcP';
 
-const wAssetFactory = 'tNULSeBaMvpn8L9t6yUg26hkJucTSoanF9Xou8';
+const wAssetFactory = 'tNULSeBaNCULzexmzet8TbRu6uFnzZarwAX4yb';
 const wAssetCodeHash = '8ecce50a65f33c0c8d7ae30d4f7c0b04608ac9825a1db7f1eb6cb7e204e3776f';
 
 function calcDeployedAddress(chainId, sender, salt, codeHash) {
