@@ -15,11 +15,11 @@ console.log('fromAddress', fromAddress);
 const assetChainId = 2;
 // 资产ID
 const assetId = 1;
-const mainContract = 'tNULSeBaMyqgRwmgPGnaibP2vR4H2ePqQivbot';
+const mainContract = 'tNULSeBaN8wP2oywBZXZDZVYKxfz9UcfMYSA6Y';
 
 let pid = 0;
-let tokenAmount = 1;
-let payNULS = 9;// 支付的NULS数量
+let tokenAmount = 2;
+let payNULS = 2000;// 支付的NULS数量
 // buyToken(int pid, int tokenAmount)
 call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     chainId: assetChainId,

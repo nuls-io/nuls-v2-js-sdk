@@ -4,7 +4,7 @@ const nuls = require("../../index");
 require('dotenv').config({ path: '../../test/.env'});
 
 // 用户私钥
-const pri = process.env.lrg;
+const pri = process.env.l24;
 const importAddress = nuls.importByKey(2, pri, '', "tNULS");
 // 用户公钥
 const pub = importAddress.pub;
@@ -15,10 +15,10 @@ console.log('fromAddress', fromAddress);
 const assetChainId = 2;
 // 资产ID
 const assetId = 1;
-const mainContract = 'tNULSeBaNA3MVKDseGH9w4LbDDJdotFEh4gNoP';
+const mainContract = 'tNULSeBaN8wP2oywBZXZDZVYKxfz9UcfMYSA6Y';
 
 let pid = 0;
-let tokenIds = ['0', '1'];
+let tokenIds = ['0','1','2'];
 // sellToken(int pid, String[] tokenIds)
 call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     chainId: assetChainId,
