@@ -15,10 +15,14 @@ console.log('fromAddress', fromAddress);
 const assetChainId = 2;
 // 资产ID
 const assetId = 1;
-const mainContract = 'tNULSeBaN8wP2oywBZXZDZVYKxfz9UcfMYSA6Y';
+const mainContract = 'tNULSeBaN2W2u3S3thVwxaPofYwigvQLjhb2i7';
 
 let pid = 0;
-let tokenIds = ['0','1','2'];
+let tokenIds = [];
+for (let i=0;i<10;i++) {
+    tokenIds.push((i + 50) + "");
+}
+
 // sellToken(int pid, String[] tokenIds)
 call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     chainId: assetChainId,

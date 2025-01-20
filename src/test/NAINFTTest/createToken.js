@@ -15,7 +15,7 @@ console.log('fromAddress', fromAddress);
 const assetChainId = 2;
 // 资产ID
 const assetId = 1;
-const mainContract = 'tNULSeBaN8wP2oywBZXZDZVYKxfz9UcfMYSA6Y';
+const mainContract = 'tNULSeBaN2W2u3S3thVwxaPofYwigvQLjhb2i7';
 
 const price = 600;// mint一个nft需要的nuls数量
 const maxTotalSupply = 100;// 发行总量

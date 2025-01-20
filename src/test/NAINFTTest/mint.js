@@ -16,7 +16,7 @@ console.log('fromAddress', fromAddress);
 const assetChainId = 2;
 // 资产ID
 const assetId = 1;
-const mainContract = 'tNULSeBaN8wP2oywBZXZDZVYKxfz9UcfMYSA6Y';
+const mainContract = 'tNULSeBaN2W2u3S3thVwxaPofYwigvQLjhb2i7';
 
 let pid = 0;
 let mintAmount = 20;
