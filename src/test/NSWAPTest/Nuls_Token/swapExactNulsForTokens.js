@@ -22,7 +22,7 @@ async function swapNulsForFark() {
         chainId: assetChainId,
         sender: fromAddress,
         contractAddress: mainContract,
-        value: new BigNumber(1).shiftedBy(8).toFixed(), //
+        value: new BigNumber(100).shiftedBy(8).toFixed(), //
         methodName: "swapExactNulsForTokens",
         methodDesc: "",
         args: [
@@ -47,3 +47,4 @@ async function swapNulsForCCC() {
 }
 
 swapNulsForFark();
+// swapNulsForCCC();

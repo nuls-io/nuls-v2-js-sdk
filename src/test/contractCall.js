@@ -115,7 +115,7 @@ module.exports = {
     if (!gasResult.success) {
       throw 'imputedCallGas: ' + JSON.stringify(gasResult);
     }
-    return Number(gasResult.data.gasLimit);
+    return gasResult.data;
   },
 
   /**
@@ -135,19 +135,21 @@ module.exports = {
     contractCall.sender = sender;
     contractCall.contractAddress = contractAddress;
     contractCall.value = value;
-    contractCall.gasLimit = await this.imputedCallGas(chainId, sender, value, contractAddress, methodName, methodDesc, args, multyAssets);
+
+    let callGasInfo = await this.imputedCallGas(chainId, sender, value, contractAddress, methodName, methodDesc, args, multyAssets);
+    contractCall.gasLimit = Number(callGasInfo.gasLimit);
     contractCall.price = sdk.CONTRACT_MINIMUM_PRICE;
     contractCall.methodName = methodName;
     contractCall.methodDesc = methodDesc;
-    let argsTypesResult = await getContractMethodArgsTypes(contractAddress, methodName, methodDesc);
-    let contractConstructorArgsTypes;
-    if (argsTypesResult.success) {
-      contractConstructorArgsTypes = argsTypesResult.data;
-    } else {
-      console.log("获取参数数组失败\n", argsTypesResult.data);
-      throw "query data failed";
-    }
-    contractCall.args = utils.twoDimensionalArray(args, contractConstructorArgsTypes);
+    // let argsTypesResult = await getContractMethodArgsTypes(contractAddress, methodName, methodDesc);
+    // let contractConstructorArgsTypes;
+    // if (argsTypesResult.success) {
+    //   contractConstructorArgsTypes = argsTypesResult.data;
+    // } else {
+    //   console.log("获取参数数组失败\n", argsTypesResult.data);
+    //   throw "query data failed";
+    // }
+    contractCall.args = utils.twoDimensionalArray(args, callGasInfo.argsType);
     return contractCall;
   }
 

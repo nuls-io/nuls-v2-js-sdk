@@ -15,13 +15,13 @@ console.log('fromAddress', fromAddress);
 const assetChainId = 2;
 // 资产ID
 const assetId = 1;
-const mainContract = 'tNULSeBaN2W2u3S3thVwxaPofYwigvQLjhb2i7';
+const mainContract = 'tNULSeBaN3fGjoJLt5bMVBMjBT9bJHkJwHL2xu';
 
 const price = 600;// mint一个nft需要的nuls数量
 const maxTotalSupply = 100;// 发行总量
 const tigerMode = true;// 是否开启老虎机模式
 const mintEndingProgress = 6000;// mint阶段比例，万分位
-const swapFeeRate = 30;// 买卖阶段手续费比例，万分位
+const swapFeeRate = 1000;// 买卖阶段手续费比例，万分位
 // 发布token
 // String uri, String extendUri, String name, String symbol, String payAsset, BigInteger price, int maxTotalSupply,
 // boolean tigerMode, int mintEndingProgress, int swapFeeRate

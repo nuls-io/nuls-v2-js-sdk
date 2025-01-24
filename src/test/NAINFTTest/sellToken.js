@@ -15,12 +15,12 @@ console.log('fromAddress', fromAddress);
 const assetChainId = 2;
 // 资产ID
 const assetId = 1;
-const mainContract = 'tNULSeBaN2W2u3S3thVwxaPofYwigvQLjhb2i7';
+const mainContract = 'tNULSeBaN3fGjoJLt5bMVBMjBT9bJHkJwHL2xu';
 
 let pid = 0;
 let tokenIds = [];
 for (let i=0;i<10;i++) {
-    tokenIds.push((i + 50) + "");
+    tokenIds.push((i + 0) + "");
 }
 
 // sellToken(int pid, String[] tokenIds)

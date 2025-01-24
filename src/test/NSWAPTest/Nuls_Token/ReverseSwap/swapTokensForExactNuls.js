@@ -26,6 +26,6 @@ call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     methodName: "swapTokensForExactNuls",
     methodDesc: "",
     args: [
-        new BigNumber("1").shiftedBy(8).toFixed(), new BigNumber("2").shiftedBy(18).toFixed(), [process.env.fark, process.env.wnuls], fromAddress, nuls.currentTime() + 300, 'tNULSeBaN5nddf9WkQgRr3RNwARgryndv2Bzs6'
+        new BigNumber("1").shiftedBy(8).toFixed(), new BigNumber("2000").shiftedBy(18).toFixed(), [process.env.fark, process.env.wnuls], fromAddress, nuls.currentTime() + 300, 'tNULSeBaN5nddf9WkQgRr3RNwARgryndv2Bzs6'
     ]
 }, 'swap fark for nuls', []);

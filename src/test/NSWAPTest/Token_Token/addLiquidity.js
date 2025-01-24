@@ -46,4 +46,5 @@ async function addFarkAndCcc() {
     }, 'add lp fark(50) and ccc(100)', []);
 }
 
-addFarkAndQQQ();
+// addFarkAndQQQ();
+addFarkAndCcc();

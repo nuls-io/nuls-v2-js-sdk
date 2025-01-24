@@ -26,7 +26,7 @@ async function swapFarkForNuls() {
         methodName: "swapExactTokensForNuls",
         methodDesc: "",
         args: [
-            new BigNumber(1).shiftedBy(18).toFixed(), 0, [process.env.fark, process.env.wnuls], fromAddress, nuls.currentTime() + 300, 'tNULSeBaN5nddf9WkQgRr3RNwARgryndv2Bzs6'
+            new BigNumber(10000).shiftedBy(18).toFixed(), 0, [process.env.fark, process.env.wnuls], process.env.lrgAddr, nuls.currentTime() + 300, process.env.lrgAddr
         ]
     }, 'swap fark for nuls', []);
 }
@@ -40,9 +40,10 @@ async function swapCCCForNuls() {
         methodName: "swapExactTokensForNuls",
         methodDesc: "",
         args: [
-            new BigNumber(1).shiftedBy(8).toFixed(), 0, [process.env.ccc, process.env.fark, process.env.wnuls], fromAddress, nuls.currentTime() + 300, 'tNULSeBaN5nddf9WkQgRr3RNwARgryndv2Bzs6'
+            new BigNumber(1).shiftedBy(8).toFixed(), 0, [process.env.ccc, process.env.fark, process.env.wnuls], fromAddress, nuls.currentTime() + 300, process.env.burnAddr
         ]
     }, 'swap ccc for nuls: ccc to fark to nuls', []);
 }
 
-swapCCCForNuls();
+swapFarkForNuls();
+// swapCCCForNuls();
