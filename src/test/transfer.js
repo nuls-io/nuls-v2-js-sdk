@@ -1,4 +1,6 @@
 const nuls = require('../index');
+const txs = require('../model/txs');
+const BufferReader = require("../utils/bufferreader");
 const {getNulsBalance, countFee, inputsOrOutputs, validateTx, broadcastTx} = require('./api/util');
 
 /**
@@ -14,7 +16,7 @@ let toAddress = 'tNULSeBaMsvfuGcosTR5dedtk8ksdfarrQWz3X';
 let amount = 10000000;
 let remark = 'coin test';
 //调用
-transferTransaction(pri, pub, fromAddress, toAddress, 2, 1, amount, remark);
+// transferTransaction(pri, pub, fromAddress, toAddress, 2, 1, amount, remark);
 
 /**
  * 转账交易
@@ -73,5 +75,12 @@ async function transferTransaction(pri, pub, fromAddress, toAddress, assetsChain
   }
 }
 
+let hex = "02005fd2a96700008c0117020001f7ec6473df12e751d64cf20a8baa7edd50810f8102000100a0b33201000000000000000000000000000000000000000000000000000000000811f5e4619e0a12c2000117020001c712dcb7ad82a943470a9a23fae87c50068e465602000100002d310100000000000000000000000000000000000000000000000000000000000000000000000000";
+// let tx = new txs.Transaction();
+// let bufferReader = new BufferReader(Buffer.from(hex, "hex"), 0);
+// tx.parse(bufferReader);
 
+// let signedTx = nuls.transactionSerialize(pri, pub, tx);
+// console.log(signedTx);
+console.log(nuls.signTxHex(pri, pub, hex));
 

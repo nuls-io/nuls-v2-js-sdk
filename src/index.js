@@ -142,6 +142,21 @@ module.exports = {
   },
 
   /**
+   * 交易签名
+   * @param pri
+   * @param pub
+   * @param txHex
+   * @returns signed txHex
+   */
+  signTxHex(pri, pub, txHex) {
+    let tx = new txs.Transaction();
+    let bufferReader = new BufferReader(Buffer.from(txHex, "hex"), 0);
+    tx.parse(bufferReader);
+    sdk.signatureTx(tx, pri, pub);
+    return tx.txSerialize().toString('hex');
+  },
+
+  /**
    * @disc: App签名，拼接公钥
    * @date: 2019-12-03 16:01
    * @author: Wave
