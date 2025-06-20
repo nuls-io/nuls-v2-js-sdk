@@ -30,7 +30,7 @@ module.exports = {
       assetsChainId: assetsChainId,
       assetsId: assetsId,
       amount: amount,
-      fee: 200000
+      fee: 500000
     };
     if (value > 0) {
       transferInfo.toAddress = contractAddress;

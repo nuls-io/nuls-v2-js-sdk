@@ -27,3 +27,32 @@ outputs.push({
 let temp = new tx.CrossChainTransaction();
 temp.setCoinData(inputs, outputs);
 console.log(temp.coinData.toString('hex'));
+
+
+function validTokenNameOrSymbol(name) {
+  if (!name || name.trim().length === 0) {
+      return false;
+  }
+
+  let upperCaseName = name.toUpperCase();
+  if (upperCaseName === "NULS") {
+      return false;
+  }
+
+  let aliasBytes = Buffer.from(name, 'utf-8'); 
+  if (aliasBytes.length < 1 || aliasBytes.length > 20) {
+      return false;
+  }
+
+  const regex = /^[a-zA-Z0-9_]+$/;
+  return regex.test(name);
+}
+
+console.log(validTokenNameOrSymbol('nUls'));
+console.log(validTokenNameOrSymbol('reg aaa'));
+console.log(validTokenNameOrSymbol('asdasdasd'));
+console.log(validTokenNameOrSymbol('asda_sdasd'));
+console.log(validTokenNameOrSymbol('_asdasdasd'));
+console.log(validTokenNameOrSymbol('asdasdasd_'));
+console.log(validTokenNameOrSymbol('asNULSasd'));
+console.log(validTokenNameOrSymbol('asdasdasdasdasdasdasdasdasdasdasdasd'));

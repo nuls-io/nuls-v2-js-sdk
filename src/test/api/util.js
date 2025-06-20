@@ -8,7 +8,7 @@ module.exports = {
    * @param chainId
    **/
   isMainNet(chainId) {
-    if (chainId === 2) {
+    if (chainId === 1) {
       return true;
     }
     return false;
@@ -595,7 +595,7 @@ module.exports = {
    * @returns {Promise<AxiosResponse<any>>}
    */
   async sendCrossTx(txHex) {
-    return await http.post('/', 'sendCrossTx', [8, txHex])
+    return await http.post('/', 'sendCrossTx', [txHex])
       .then((response) => {
         console.log(response);
         return response.result;
