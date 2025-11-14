@@ -15,16 +15,16 @@ console.log('fromAddress', fromAddress);
 const assetChainId = 2;
 // 资产ID
 const assetId = 1;
-const mainContract = 'tNULSeBaN26qVMgnxi1AxS1PDfXn2Kpu6YZyud';
+const mainContract = 'tNULSeBaN5vHLaC4jCuc8imWWFEYFpjK5z8zMf';
 
 // 期望得到的token数量
 let expectAmount = new BigNumber("0").shiftedBy(8).toFixed();
 // 接受的滑点损失
 let slippage = 0;
 // 支付的NULS数量
-let payNULS = 50;
+let payNULS = 35000;
 
-// buyToken( BigInteger expectAmount, int slippage, Address receiver)
+// buyToken( BigInteger expectAmount, int slippage)
 call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     chainId: assetChainId,
     sender: fromAddress,
@@ -33,7 +33,7 @@ call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     methodName: "buyToken",
     methodDesc: "",
     args: [
-        expectAmount, slippage, ''
+        expectAmount, slippage
     ]
 }, 'call contract...', []);
 

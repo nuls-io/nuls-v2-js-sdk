@@ -1,4 +1,5 @@
 const http = require('./https.js');
+const nuls = require('../../index');
 const BigNumber = require('bignumber.js');
 
 module.exports = {
@@ -22,7 +23,7 @@ module.exports = {
   countFee(tx, signatrueCount) {
     let txSize = tx.txSerialize().length;
     txSize += signatrueCount * 110;
-    return 100000 * Math.ceil(txSize / 1024);
+    return Number(new BigNumber("0.001").shiftedBy(nuls.decimals())) * Math.ceil(txSize / 1024);
   },
 
   /**
@@ -80,13 +81,14 @@ module.exports = {
    * @returns {*}
    */
   inputsOrOutputs(transferInfo, balanceInfo, type) {
-    let newAmount = transferInfo.amount + transferInfo.fee;
+    transferInfo.amount = new BigNumber(transferInfo.amount);
+    let newAmount = transferInfo.amount.plus(transferInfo.fee);
     let newLocked = 0;
     let newNonce = balanceInfo.nonce;
     let newoutputAmount = transferInfo.amount;
     let newLockTime = 0;
-    if (balanceInfo.balance < transferInfo.amount + transferInfo.fee) {
-      return {success: false, data: "Your balance is not enough."}
+    if (new BigNumber(balanceInfo.balance).isLessThan(newAmount)) {
+      throw "余额不足:" + JSON.stringify(balanceInfo) + " 新金额:" + newAmount.toFixed() + " 手续费:" + transferInfo.fee.toFixed();
     }
     if (type === 4) {
       newLockTime = -1;
@@ -96,12 +98,12 @@ module.exports = {
       newAmount = transferInfo.amount;
       newLocked = -1;
       newNonce = transferInfo.depositHash.substring(transferInfo.depositHash.length - 16);
-      newoutputAmount = transferInfo.amount - transferInfo.fee;
+      newoutputAmount = transferInfo.amount.minus(transferInfo.fee);
     } else if (type === 9) {
       newAmount = transferInfo.amount;
       newLocked = -1;
       newNonce = transferInfo.depositHash.substring(transferInfo.depositHash.length - 16);
-      newoutputAmount = transferInfo.amount - transferInfo.fee;
+      newoutputAmount = transferInfo.amount.minus(transferInfo.fee);
       //锁定三天
       let times = (new Date()).valueOf() + 3600000 * 72;
       newLockTime = Number(times.toString().substr(0, times.toString().length - 3));
@@ -112,7 +114,7 @@ module.exports = {
       address: transferInfo.fromAddress,
       assetsChainId: transferInfo.assetsChainId,
       assetsId: transferInfo.assetsId,
-      amount: newAmount,
+      amount: newAmount.toFixed(),
       locked: newLocked,
       nonce: newNonce
     }];
@@ -132,7 +134,7 @@ module.exports = {
       address: transferInfo.toAddress ? transferInfo.toAddress : transferInfo.fromAddress,
       assetsChainId: transferInfo.assetsChainId,
       assetsId: transferInfo.assetsId,
-      amount: newoutputAmount,
+      amount: newoutputAmount.toFixed(),
       lockTime: newLockTime
     }];
     // }
@@ -177,15 +179,15 @@ module.exports = {
         });
       }
     }
-    let newAmount = Number(_newAmount);
-    if (balanceInfo.balance < newAmount) {
+    let newAmount = _newAmount;
+    if (new BigNumber(balanceInfo.balance).isLessThan(newAmount)) {
       return {success: false, data: "Your balance of NULS is not enough."}
     }
     let inputs = [{
       address: transferInfo.fromAddress,
       assetsChainId: transferInfo.assetsChainId,
       assetsId: transferInfo.assetsId,
-      amount: newAmount,
+      amount: newAmount.toFixed(),
       locked: newLocked,
       nonce: newNonce
     }];
@@ -366,7 +368,7 @@ module.exports = {
   async getContractConstructor(contractCodeHex) {
     return await http.post('/', 'getContractConstructor', [contractCodeHex])
       .then((response) => {
-        //console.log(response);
+        // console.log(response);
         if (response.hasOwnProperty("result")) {
           return {success: true, data: response.result};
         } else {
@@ -374,6 +376,7 @@ module.exports = {
         }
       })
       .catch((error) => {
+        console.log(error);
         return {success: false, data: error};
       });
   },

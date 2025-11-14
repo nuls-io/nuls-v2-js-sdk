@@ -4,7 +4,7 @@ const nuls = require("../../../index");
 require('dotenv').config({ path: '../../../test/.env'});
 
 // 用户私钥
-const pri = process.env.asd;
+const pri = process.env.l24;
 const importAddress = nuls.importByKey(2, pri, '', "tNULS");
 // 用户公钥
 const pub = importAddress.pub;
@@ -20,9 +20,9 @@ const mainContract = process.env.router;
 // 转入1个USDT
 let multyAssets = [
     {
-        value: new BigNumber("0.3").shiftedBy(18).toFixed(),
+        value: new BigNumber("10").shiftedBy(18).toFixed(),
         assetChainId: 5,
-        assetId: 74
+        assetId: 102
     }
 ];
 
@@ -35,6 +35,6 @@ call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     methodName: "swapExactWAssetForTokens",
     methodDesc: "",
     args: [
-        5, 74, 0, [process.env.wusdt, process.env.qqq], fromAddress, nuls.currentTime() + 300, 'tNULSeBaN5nddf9WkQgRr3RNwARgryndv2Bzs6'
+        5, 102, 0, [process.env.wusdtn, process.env.www], fromAddress, nuls.currentTime() + 300, 'tNULSeBaMtsAgkKKd2Qr5uVsMm5V7V3m8QN49K'
     ]
-}, 'swap usdt for qqq', multyAssets);
+}, 'swap usdtn for www', multyAssets);

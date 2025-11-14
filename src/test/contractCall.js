@@ -23,14 +23,14 @@ module.exports = {
     let newValue = new BigNumber(contractCall.value);
     const contractCallTxData = await this.makeCallData(chainId, fromAddress, value, contractAddress, contractCall.methodName, contractCall.methodDesc, contractCall.args, multyAssets);
     let gasLimit = new BigNumber(contractCallTxData.gasLimit);
-    let gasFee = Number(gasLimit.times(contractCallTxData.price));
-    let amount = Number(newValue.plus(gasFee));
+    let gasFee = gasLimit.times(contractCallTxData.price);
+    let amount = newValue.plus(gasFee);
     let transferInfo = {
       fromAddress: fromAddress,
       assetsChainId: assetsChainId,
       assetsId: assetsId,
       amount: amount,
-      fee: 500000
+      fee: new BigNumber("0.005").shiftedBy(nuls.decimals())
     };
     if (value > 0) {
       transferInfo.toAddress = contractAddress;
@@ -77,16 +77,20 @@ module.exports = {
       return;
     }
     let result = await validateTx(txhex);
-    console.log('validateTx', result);
+    // console.log('validateTx', result);
     if (result.success) {
       let results = await broadcastTx(txhex);
+      console.log(results);
       if (results && results.value) {
-        console.log("交易完成")
+        // console.log("交易完成")
+        return {success: true, data: results};
       } else {
-        console.log("广播交易失败\n", results)
+        // console.log("广播交易失败\n", results)
+        return {success: false, data: results};
       }
     } else {
-      console.log("验证交易失败")
+      // console.log("验证交易失败")
+      return {success: false, data: result.error};
     }
   },
 
@@ -138,7 +142,7 @@ module.exports = {
 
     let callGasInfo = await this.imputedCallGas(chainId, sender, value, contractAddress, methodName, methodDesc, args, multyAssets);
     contractCall.gasLimit = Number(callGasInfo.gasLimit);
-    contractCall.price = sdk.CONTRACT_MINIMUM_PRICE;
+    contractCall.price = new BigNumber(sdk.CONTRACT_MINIMUM_PRICE).shiftedBy(nuls.decimals() - 8).toFixed();
     contractCall.methodName = methodName;
     contractCall.methodDesc = methodDesc;
     // let argsTypesResult = await getContractMethodArgsTypes(contractAddress, methodName, methodDesc);

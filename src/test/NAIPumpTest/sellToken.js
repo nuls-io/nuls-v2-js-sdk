@@ -15,7 +15,7 @@ console.log('fromAddress', fromAddress);
 const assetChainId = 2;
 // 资产ID
 const assetId = 1;
-const mainContract = 'tNULSeBaN26qVMgnxi1AxS1PDfXn2Kpu6YZyud';
+const mainContract = 'xxx';
 
 // 要卖出的token数量
 const amount = new BigNumber("20000000").shiftedBy(8).toFixed();

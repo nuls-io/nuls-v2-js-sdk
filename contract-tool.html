@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NULS智能合约测试工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .network-selector {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .network-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        
+        .network-btn {
+            padding: 8px 20px;
+            border: 2px solid white;
+            background: transparent;
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .network-btn:hover {
+            background: white;
+            color: #667eea;
+        }
+        
+        .network-btn.active {
+            background: white;
+            color: #667eea;
+        }
+        
+        .custom-url {
+            display: none;
+            margin-top: 10px;
+        }
+        
+        .custom-url.show {
+            display: block;
+        }
+        
+        .custom-url input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid white;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .network-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+            font-size: 13px;
+        }
+        
+        .network-info-item {
+            background: rgba(255,255,255,0.1);
+            padding: 8px;
+            border-radius: 6px;
+        }
+        
+        .network-info-item span {
+            font-weight: bold;
+            display: block;
+        }
+        
+        .tabs {
+            display: flex;
+            background: #f5f5f5;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .tab:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .tab.active {
+            color: #667eea;
+            background: white;
+        }
+        
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #667eea;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 30px;
+            animation: fadeIn 0.3s;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: monospace;
+        }
+        
+        .form-group small {
+            display: block;
+            margin-top: 5px;
+            color: #666;
+            font-size: 12px;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+        
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result-box {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            display: none;
+        }
+        
+        .result-box.show {
+            display: block;
+        }
+        
+        .result-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .result-box pre {
+            background: #fff;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        
+        .error-box {
+            margin-top: 20px;
+            padding: 20px;
+            background: #fff5f5;
+            border-radius: 8px;
+            border-left: 4px solid #e53e3e;
+            display: none;
+        }
+        
+        .error-box.show {
+            display: block;
+        }
+        
+        .error-box h3 {
+            color: #e53e3e;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .error-box pre {
+            background: #fff;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 12px;
+            color: #e53e3e;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        /* 构造函数参数样式 */
+        #constructorInfoSection {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        #constructorInfo {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+        
+        #constructorDesc {
+            color: #fff !important;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            font-weight: 500;
+        }
+        
+        .constructor-arg-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .constructor-arg-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        #constructorArgsContainer .form-group {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 12px;
+        }
+        
+        #constructorArgsContainer .form-group label {
+            color: #2d3748;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .args-container {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            background: #fafafa;
+        }
+        
+        .arg-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: flex-start;
+        }
+        
+        .arg-item input {
+            flex: 1;
+        }
+        
+        .arg-item button {
+            padding: 10px 15px;
+            background: #e53e3e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .add-arg-btn {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background: #48bb78;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .address-display {
+            display: none;
+            margin-top: 10px;
+            padding: 12px;
+            background: linear-gradient(135deg, #f0f8ff 0%, #e8f4ff 100%);
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        @keyframes slideOutRight {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+        }
+        
+        .address-label {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+        
+        .address-value {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .address-value span {
+            flex: 1;
+            font-family: 'Courier New', monospace;
+            color: #333;
+            word-break: break-all;
+            font-size: 13px;
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        
+        .copy-btn {
+            padding: 6px 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+        
+        .copy-btn:hover {
+            background: #5568d3;
+            transform: translateY(-1px);
+        }
+        
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+        
+        .copy-btn.copied {
+            background: #48bb78;
+        }
+        
+        .template-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        
+        .template-select:hover {
+            border-color: #667eea;
+        }
+        
+        .template-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            .network-buttons {
+                flex-direction: column;
+            }
+            
+            .network-btn {
+                width: 100%;
+            }
+            
+            .address-value {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .copy-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>NULS智能合约测试工具</h1>
+            <p>创建和调用NULS智能合约</p>
+            
+            <div class="network-selector">
+                <div class="network-buttons">
+                    <button class="network-btn" data-network="main">主网 (Main)</button>
+                    <button class="network-btn" data-network="test">测试网 (Test)</button>
+                    <button class="network-btn" data-network="dev">开发网 (Dev)</button>
+                    <button class="network-btn active" data-network="custom">自定义 (Custom)</button>
+                </div>
+                <div class="custom-url" id="customUrl" class="show">
+                    <input type="text" id="customUrlInput" placeholder="请输入自定义RPC地址" value="https://api.itac.club/jsonrpc">
+                </div>
+                <div class="network-info" id="networkInfo">
+                    <div class="network-info-item">
+                        <span>Chain ID:</span>
+                        <div id="chainId">-</div>
+                    </div>
+                    <div class="network-info-item">
+                        <span>Asset ID:</span>
+                        <div id="assetId">-</div>
+                    </div>
+                    <div class="network-info-item">
+                        <span>地址前缀:</span>
+                        <div id="addressPrefix">-</div>
+                    </div>
+                    <div class="network-info-item">
+                        <span>符号:</span>
+                        <div id="symbol">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab" data-tab="transfer">普通转账</button>
+            <button class="tab active" data-tab="create">创建合约</button>
+            <button class="tab" data-tab="call">调用合约</button>
+        </div>
+        
+        <div id="transferTab" class="tab-content">
+            <form id="transferForm">
+                <div class="form-group">
+                    <label>私钥 *</label>
+                    <input type="text" id="transferPri" required placeholder="请输入私钥">
+                    <small>用于签名交易的私钥</small>
+                    <div id="transferAddressDisplay" class="address-display">
+                        <div class="address-label">✓ 发送地址:</div>
+                        <div class="address-value">
+                            <span id="transferAddressText"></span>
+                            <button type="button" class="copy-btn" onclick="copyAddress('transfer')">复制</button>
+                        </div>
+                    </div>
+                    <div id="transferBalanceDisplay" class="address-display" style="margin-top: 5px;">
+                        <div class="address-label">💰 账户余额:</div>
+                        <div class="address-value">
+                            <span id="transferBalanceText" style="font-weight: 600; color: #48bb78;"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>目标地址 *</label>
+                    <input type="text" id="transferToAddress" required placeholder="请输入目标地址">
+                    <small>接收转账的地址</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>转账金额 *</label>
+                    <input type="number" id="transferAmount" required placeholder="请输入金额" min="0" step="0.00000001">
+                    <small>实际转账金额（如转账 10 个代币，直接输入 10）</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>备注</label>
+                    <input type="text" id="transferRemark" placeholder="交易备注（可选）">
+                </div>
+                
+                <button type="submit" class="submit-btn" id="transferSubmit">发起转账</button>
+            </form>
+            
+            <div class="loading" id="transferLoading">
+                <div class="spinner"></div>
+                <p>处理中，请稍候...</p>
+            </div>
+            
+            <div class="result-box" id="transferResult">
+                <h3>转账成功</h3>
+                <pre id="transferResultText"></pre>
+            </div>
+            
+            <div class="error-box" id="transferError">
+                <h3>转账失败</h3>
+                <pre id="transferErrorText"></pre>
+            </div>
+        </div>
+        
+        <div id="createTab" class="tab-content active">
+            <form id="createForm">
+                <div class="form-group">
+                    <label>私钥 *</label>
+                    <input type="text" id="createPri" required placeholder="请输入私钥">
+                    <small>用于签名交易的私钥</small>
+                    <div id="createAddressDisplay" class="address-display">
+                        <div class="address-label">✓ 计算出的地址:</div>
+                        <div class="address-value">
+                            <span id="createAddressText"></span>
+                            <button type="button" class="copy-btn" onclick="copyAddress('create')">复制</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>合约别名</label>
+                    <input type="text" id="createAlias" placeholder="请输入合约别名">
+                    <small>可选，为合约设置一个别名</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>选择内置合约模板</label>
+                    <select id="contractTemplateSelect" class="template-select">
+                        <option value="">-- 选择内置合约模板 --</option>
+                        <option value="NerveMultiSign">NerveMultiSign (多签合约)</option>
+                        <option value="NR20Minter">NR20Minter (NR20铸币合约)</option>
+                        <option value="NRC20">NRC20 (标准代币合约)</option>
+                        <option value="MultiCallView">MultiCallView (批量调用视图方法合约)</option>
+                    </select>
+                    <small>选择预定义的合约模板，或手动输入合约代码</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>合约代码 (HEX) *</label>
+                    <textarea id="createCode" required placeholder="请输入合约字节码（十六进制）或从上方选择模板自动填充"></textarea>
+                    <small>合约编译后的字节码（十六进制字符串）</small>
+                </div>
+                
+                <div id="constructorInfoSection" style="display: none;">
+                    <div class="form-group">
+                        <label>构造函数信息</label>
+                        <div id="constructorInfo" style="padding: 10px; background: #f5f7fa; border-radius: 4px; margin-bottom: 10px;">
+                            <div id="constructorDesc" style="color: #606266; font-size: 14px;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group" id="constructorArgsGroup">
+                        <label>构造函数参数</label>
+                        <div id="constructorArgsContainer">
+                            <!-- 动态生成的参数输入框将显示在这里 -->
+                        </div>
+                        <small>请按照构造函数定义填写参数值</small>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>备注</label>
+                    <input type="text" id="createRemark" placeholder="交易备注">
+                </div>
+                
+                <button type="submit" class="submit-btn" id="createSubmit">创建合约</button>
+            </form>
+            
+            <div class="loading" id="createLoading">
+                <div class="spinner"></div>
+                <p>处理中，请稍候...</p>
+            </div>
+            
+            <div class="result-box" id="createResult">
+                <h3>创建成功</h3>
+                <pre id="createResultText"></pre>
+            </div>
+            
+            <div class="error-box" id="createError">
+                <h3>创建失败</h3>
+                <pre id="createErrorText"></pre>
+            </div>
+        </div>
+        
+        <div id="callTab" class="tab-content">
+            <form id="callForm">
+                <div class="form-group">
+                    <label>私钥 *</label>
+                    <input type="text" id="callPri" required placeholder="请输入私钥">
+                    <small>用于签名交易的私钥</small>
+                    <div id="callAddressDisplay" class="address-display">
+                        <div class="address-label">✓ 计算出的地址:</div>
+                        <div class="address-value">
+                            <span id="callAddressText"></span>
+                            <button type="button" class="copy-btn" onclick="copyAddress('call')">复制</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>合约地址 *</label>
+                    <input type="text" id="callContractAddress" required placeholder="请输入合约地址">
+                    <small>要调用的合约地址</small>
+                </div>
+                
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>方法名 *</label>
+                        <input type="text" id="callMethodName" required placeholder="请输入方法名">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>方法描述</label>
+                        <input type="text" id="callMethodDesc" placeholder="方法描述（可选）">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>转入NULS数量</label>
+                    <input type="number" id="callValue" value="0" min="0" step="0.00000001" placeholder="0">
+                    <small>需要转入合约的NULS数量（实际值，如200个NULS则输入200）</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>方法参数</label>
+                    <div class="args-container">
+                        <div id="callArgsContainer">
+                            <div class="arg-item">
+                                <input type="text" placeholder="参数值" class="call-arg-value">
+                                <button type="button" class="remove-arg">删除</button>
+                            </div>
+                        </div>
+                        <button type="button" class="add-arg-btn" id="addCallArg">添加参数</button>
+                    </div>
+                    <small>按顺序输入方法的参数值。数组参数请使用JSON格式，如：["value1","value2"]</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>备注</label>
+                    <input type="text" id="callRemark" placeholder="交易备注">
+                </div>
+                
+                <button type="submit" class="submit-btn" id="callSubmit">调用合约</button>
+            </form>
+            
+            <div class="loading" id="callLoading">
+                <div class="spinner"></div>
+                <p>处理中，请稍候...</p>
+            </div>
+            
+            <div class="result-box" id="callResult">
+                <h3>调用成功</h3>
+                <pre id="callResultText"></pre>
+            </div>
+            
+            <div class="error-box" id="callError">
+                <h3>调用失败</h3>
+                <pre id="callErrorText"></pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // NULS智能合约测试工具 - 前端
+        // 使用说明:
+        // 1. 启动后端服务: node contract-tool-server.js
+        // 2. 在浏览器中访问: http://localhost:3000/contract-tool.html
+        
+        // 后端API地址
+        const API_BASE_URL = 'http://localhost:3000/api';
+        
+        // 内置合约代码模板
+        const CONTRACT_TEMPLATES = {
+            'NerveMultiSign': {
+                name: 'NerveMultiSign (多签合约)',
+                code: '504b03040a00000000006956645b000000000000000000000000090000004d4554412d494e462f504b03040a00000008006856645b85177e5f7200000087000000140000004d4554412d494e462f4d414e49464553542e4d46f34dcccb4c4b2d2ed10d4b2d2acecccfb35230d433e0e5722c4acec82c4b2d420807e4a45694162bc02478b99c4a33734a749d2aad140a32538b8a52734af379b99c8b52134b5253c0c28e0589c919a90abe8965a9790ac67aa62073419a5274bd52b241f658e819c41b9a98f072f1720100504b03040a000000000025b45f5b00000000000000000000000003000000696f2f504b03040a000000000025b45f5b00000000000000000000000008000000696f2f6e756c732f504b03040a000000000025b45f5b00000000000000000000000011000000696f2f6e756c732f636f6e74726163742f504b03040a00000000006856645b00000000000000000000000017000000696f2f6e756c732f636f6e74726163742f6e657276652f504b03040a00000000006856645b0000000000000000000000001e000000696f2f6e756c732f636f6e74726163742f6e657276652f656e746974792f504b03040a00000000006856645b0000000000000000000000001d000000696f2f6e756c732f636f6e74726163742f6e657276652f7574696c732f504b03040a00000000006856645b00000000000000000000000021000000696f2f6e756c732f636f6e74726163742f6e657276652f6f776e6572736869702f504b03040a00000000006856645b0000000000000000000000001d000000696f2f6e756c732f636f6e74726163742f6e657276652f6576656e742f504b03040a00000008006856645b85e8a2edc11c00003840000030000000696f2f6e756c732f636f6e74726163742f6e657276652f4e657276654d756c746953696757616c6c65742e636c617373b55a096054d5d53ee7cdf6327984242491611d11cd362118314a140c24418324a1098b01ad0cc9231999ccc49909126b6d6bb1d656abddb468ddabd6d6bab4125034d52eb6155bab76b57bd56eda7db356e0ffce7d6fdecc8409a4fdffbf36efdd7bdfbde79e7bce77b63b3c73e8b171226ad01afc743baf29a022eef071a79f5c56a74b1e6be5f1367974cba3471eeb7cbcde4f85d6ac0d3edea8f3797eeee54d3a6fd6f97c19bdc0cf6fe70bfdd4c25b740efb69376f2de43eee9787e9c7846d326bc043d6ff343f0f72441e17a5875cd2db2eb3a23e1ef2738ce3f218f6d342be58764b4837e9e3949f6a788d9f477887b42ed179a7bc4765e452695d28ad77c8a697e9fc4e61fc7261ec5d3abf5be7f714609b2b64aff7eabc4bd8bb52e7f7e97c95cc7fbf6c71b51ce5033a7fd0c7d7c83c75aa6b85830fc99ceb74be5ede1f96691ff1f147fd742e18c4c8c77cfc713f75f20db2e58d3a7f420677cbea9ba475b33c3ee9e35bfcb4816fd0f95621709bceb7cb99eff0f19d7e3a5fc6efd2f9533ebedb4f5bf81e79dcabf3a7e57d9fce9f91f76785cefd3efe9c9f0665c6203f206c42ee0ffaf8213f0df1c33a7f5ee72fe8fc886cbe47e68fc963afcefbe4fda8ce8fc979f68bb41ed7f9093f8ff3177dfca49f2e13c9f6f2533a7fa990bfcc5fd1f9abd27f5ae7afe9fc7559fc0d9d9f91f7019d9fd5f99b3a7f4be7e7448edfd6f9793912187941e71785b1efe8fc5d61f97bb2e0fb3aff40e71fcaf84b32ff473efeb100e5273aff54e79fc9d0cf65cf5ff8e8808f7fe9e397998c8e15e75dd8b1a273c5d96ddd3d4cdcce34ad251e4ba6c2b1d4867074c4740139d3655e7ba7334fc65c4ceeee15ebdaa4bd92a9b0b5adb30b7356acebea96a17e26df064c6defea642aea68ebe9c1ca0bd776b7ad6a3f8fa974cd45e11de1fa68383650df934a4462036760fec8f04022dc6f828b4d4c15760fcca412e1bed48afefe84994c32cd5b1389d7c746a2c9fa3efb537db27f7bbdfd1d74f4c17072b0271c4d8188b5cf50383558bf3232d01e4b9903660273cafa4612093396ea88c47a2203b1706a048b71caa469f677846361cc4277bab57c241589d6778487b1aec099cdd498fbf5cc23cf943592de7ab93038e4ec60f4c58786a366caec5fb7533674bae7e00c8aa3a10856263abb5b1a16a35b141f36632d897832d935926a87b2a6274c53a410eb1b3d7b249c80d8171d299f9899d8612a4693f5ddb9f3c18ef7cc482c925ace14aaca2faecd479eac7a03d4df1217654d5f1389999d23435bcdc4baf0d6a829da8df785a31bc28988f4ed419f7d68ac4b0d467094d0647c76cab363249a8a40d81bc351c843d0d137188ec4da71c0629b92ad7191d28c3c2c02c83da970df76a846b100afeae357e072a0800b87c3a3165bae2a394aa07b24968a0c991b22c9088657c462f1543815811d3055e7c75bd89953bfd622861d4bd38485fdd115600e20d4c3f23ed71c65f2aba6b22ba693f213ce2c55f340b530b30afc546e9eda3a1ffd90e994a9329f59adac23618653665742d0be31921aec4f842f61fa50551e881fd518f3e369d3d117e5d1e52408f4a4762ab16aa938601c1e8a438b404a24a9cc05c6134bf4352c763c873f9965eafee191add1481fd6276d97d11a4e85b1c68cf501d76b811c1360f3ec104bf4f1ab0049b6546c27d1320896a0cbad794433b573b44ffdb8ae703f38f226cca1f80eece94617bcfbac3e5a9e3e4b001c81456433bb3eed587bff630d4e9dbbe9131c3644dc97e5a836e7db3a2f3ca602a99ccd112dbc969b64aa9dccabc0eb4552a3f50a191d6af21902a0f8763336a98dabafd6928d89f0f0b05a53008f14bf040e14f22cdc96880fad0c47ad9ebb5f21c82d83f866814f8112d9067cf78e7034d29f1540d6fcd7a0a9cee7eefcb2fd1a3336901a049783e6ceb509735b6427364ea6435a8b0510ff76b3af2fbc5d900d3794878bbcf45d2069116e532682f05ab57965fea9c9441fcc723312032db915a673c4a4952391683fe4896c9369e68099b2595c05d96547e433fe7b19017405c98cb40b1c8387cd84d33ec13da884a026dad229ea1b34fbb6b78e0c63364c28370de8510eb22237c28d0ea7a3dc09b953f3e404cb71e45f4122c3097383e0013b00dac915b1feeeb41d57574dddeaca77d844bacd61187c786b240a982bd5e4b714be08878e46923868d5d4642bab8aec7cc9f1a5c538ff84e4c95dd52e329f668767254d0c17c44686cc44381587754eb37c55473a15c8cfe5060994fdfdce2c7f3a2b5a07fc554eea4726d29866a1bce1d4460be88ea8d621fd496eb3932aa6f555c7f038ff458893fd7d5bd38e615a2a7747a32f1a4f9a8e572e99e0397b4ece33d6c074fc311855878e243b3219e314d66c9a3411c94a123644cc4b00fb19097300c83113395b948fc4f28e4f4332919daabaab36a9b4515258c5684b26f705957c6e08cc1544920e100ae17a33d979795575deb4afe198c759ddd3d5d963c278a3914bedcced38b8a096bc350132c476c586a32f8c80b10056ac9fa44609564d125132554a7124d9352197f7f7c447127de6aa8878929979d2e045725a839ea2e70d7a901e024a32de46308e54d7a031da6bd063f2d82f8fc7e5f1843cc66545e83f290e0cfa223dc95433f5441df6d9b6b30f4594d91f4c0d9ac1a1f0cec8d0c85030a6ea83607c5b305dfbf8f8d706ff867f8b159df15410d94adf20f467ad8ac4f2ac609aad2ad3c4481f9c4953b06d6838351ab43df922837f479f479e66f06bfcbac1bfe73f00d869c5045536144f04fb140a8232144ea6291bfc47fe938fff6cf05ff8af06ff8d5b0d3e81171ab487ee42c9209fff6ef03ff89f06bd268f2fd02328b326cb33764084f5ade6703c1949ad1a89f527db64c4c76f18fc2f3ec7e037f9df5021bf65f0413e64f0618d80be49c2a34f6343d3c08fe6d2dcf0dd75d2f0189a57867c20c4677123e4d2158b8ea64f23670c9a3bcdbe9194198ca40c4d075cb4026e05645745764231519523886855fedc146c5c0259a5f3fca660da5b055371a58e4bcd443c2d6743f3d3238656a819881fe925e168d04abe834323c95470ab191c50d92728203f0e2e36b469a28e79caf14254b0c120e22e269ab1a053f2a27c32954ab3b37683eb18ba9d2192abe77fa3ea5e87ea3198167a9aad607fdc4c0645b583e11d663039b26d5ba42f02b9071d275c3c51c6d0ab5664d0afb4e9380b331c8a0ac8c14c9510dc168e440d5e0c0eb462ad84a9fea84a4fc7958cd60daee15aa6538fbe6c675a8e8e43b416d3535aa9a1cda0e721ea758366c20c86f1178b3b1611bc288ed21d4603649b3b232975a8d93c474e5666702557195ccd554c4dc76020a79ac9e502d5607b2aa32d3b2cf51b5a39af623a117c393a88581a081fa11d831ea6cf332d3906178e379db07fc6473605c5575801a4b4adbbbbabbb29b849a1d3aefd2aa798c78b052e31e84dad826941673c68c6e223038369146f833cc323a9c17802f141d06a68c7693301e0cc4c1b56ca882002b583a105b459069f2a26593de532c4d0660bb4e6679fb21dbe74005625149cb39d7c54f1659667c10f089ac334a723bc33cbe833f86e0a9e7c2adc7b26da05c3b1fea0952707b7a3324eaf1a8a2491e1f421899a15684b0914e1d36519bc4907140cf034f90d6dae36cf609d0b0cf6b0171a6a8fed986051064fe762946b566a6668f3b5a030793c0c70b14f5b00e7ad9d70445843226d680b85627116ab6622114f209716a70ce75296f5a93f9dbb1bda89da4940a90d9556a0aa0fc00a9ad9a12388686395d2cdd968961c59fc574a70bdd51433c3272c0e47e1dcfa47c5e292a9a4c491702692cce57908b24ef1101c0e27c243d816c62aa84a656d00ef2af62b6b8eff0fd688a12362b484639529d509caa565d0b95e6bcdb88a70fa864c8e28646c2791e78c96674965c894d93e21686f24125b64d0eb5a25d34205df2303458e5891ddb7c685a60aeb5b4783a3c86e9266741b4094df8e2c1baae2b7808023668807ae36b41af186de5633169180b1d056ec511931b45ad8ba1612ce4b8eb89135b43a098d552aaca4e522ee2ead66e5f6d209ae6c3a2f67aaedf432130c6d91566f688b3564f15593986cfc12bc938391e1faae4b6256e53837afe7ca5ca694e5ab3360db474b339165e794a3907cdee9eb25f9533749178f4412aab0df34c98d9be29c494fc5ad51305695f70ac00b5ae168724262dfb5f52258a04aec7d3be49ab26b9becd69e4d22734b9fc53d525b24dec32338c3e97908e6d9e2c821d41ec9c8a5385ea06a75f564bf0ce84392d00e4751432f9ae43e7cd2b533f35fcc2621256fd28cf58be43c3bacdbdf9955939239ed5805e9a425a7db1c12e7307f12022a28a889c543b9b7c5ead6a17a8a37cbb0bba9cc639a8e1249f55bd277f75e89be3134e6e4ea3cf75288a96e4a975299f9fef44eb2893ee07060c4e2b1745103c178a3f6f5987b535b7717aa3a493ee1fad6c5051493c8159559a19c134748aadba37214b2f9205f99f73623df4c3dedb08eb2ed86496a628c17020666aa07d5ec8832b03ca2149948859d761febfe57971c9342b5c0f6ce62c68dc7ba6a988c889196c62a7571faff721f0387e3de3a9240de78dd94acebffe69afa883579d529785d399ab2eed0aae5d2b42412db8168d8b6131125168eb60c01d54ba7785b97d7ef0122d8a828f3694d5c7c7745d5eafcd829177bb28eb272746de6e274c60e3311d936eae45ad66f26f9589bd22ddda609d7cf47f5dd72c5ff5f3b47b9498aa34aeeb2e2d7b484391c0df7991df6cf06ae01f54b5d2496761cc8504755c42c49fbe9aceb5f5f2abe2291088fca15eae63cece719a3e3a9886e47a97f0795d02cba93ee42fb53f20f35e86ef4efc9eadf8bfea7b3faf7a1ff99acfe67d1bf7fc2fccfd1034eff62fc3d480fa936ea2ef5fe023da2de7bb04ede63b417f3f7a9f6a3f87b6c427fff84fee313fa4f4ce88fdbfb7d919ec47b01be3d455fc2f3cb44fc02b9c987d143355853e3da435acd7e72f5ee25f71ef2649ade4cd39769ea9966410d1e7ef40bd137f6d0b4d078f1f4bbc8e7be97dcaed2e9fba83834eebd23dd2f917e67dd78a3dbd5e829f794bbefa48d75e59e86266fc0fb747a52292605bc358fd08c312a1ba3f29bd21f2af001c398ebde47c73d4a335db4117d4f767f9787ef3dfce99a1a99f72805182299b58766d7d496d19c7d346f8ce69751503516eca1131e967f33415fc1b39bcaf05c0aa99c44051442af8ee6d322aaa17a3a951653339d4c6db484d6521385e90ce873395d4567d10df8f220ad808c57d27318fb2eada25fd1d97490cea1af82620d285e85f6d3c08257e44d5fa3afab7ff97388be01fdb36a3d4307a0a767d16e22ff61da4c2e1f7dd347dff2d16d44cd5cd4cc87681a3acc6f51b98f9e6be6e39af9308867cf03ad6fd3f3a003fd8233b7a25db29f16f6eea313f7d1497ba9721f553dac202147f6e34dd445c53894b06a580b6c065fc09f17232f2ac2df7108bf680367c33eaa5e53fb34adaded088d2f7735bacbdd73efa495a172774393673fd5000eb501cf1885c6a8ae74d118d54b67313a63747293d7e64ac61a2cbe76b9a1b8f18c42e6a95dcec36ebda4d3269a03a92ca3f3c1ef265a4f173ac25d46a510ba08770e9d42dfa3ef93fcd3aa0df629dc50ec0fe887388108f738d20ee3b81e25b497f07fc689dfa056e7b03f5287fd31fdc4b212ed3e1028c4505b0d981da3534a9758109c3646a7d68e516371f3ed69709e26d076307c3a7a759fa7a563d4746b7aec0c6badaff6513a532307d5cb305ceede4d73031e67f972991af084eaf6d259f024fba8798c5640724d37a767acc48c62ef13d4d2ebaaede97543ca653dbd1e4c69ede9f596c31eda7a7a7d01cfd7c8c7f7922e72c6771ddb9f20539af480be8f563515d4040a02de806f2f9ddde40ff89dfdcfb1792ab29968bf976a2761228491d5fbe9dc5e99b7068aaca90df8f752c77eeaecaddd4b5d32a204b636a3dbad3413cf01206e9066d04530b9ed30ad28cc64089a1da67e985792127439a5e8e3340a377629f0f70e68f2727a85de457fa52ba0b6f7b28baee4597415cfa7f7732d5dc30d742d2fa3ebb895ae57f818b694973639b47eaa5cb2b47e0627aca9d6cf61862ed5fa057672abd62ff1d5a35a2fc334bdaaf50a5a3ef091a257d1d2c1cd104cfd01b88b57e0127e8d965fa12c4515c166369ab9b499cbd5737a7133bb0f5335e90a79cff9e837305a56afdbc4765dd61b26ed9e748edb9e836f87a84a759e53aea00cd4cb71aadfd2ef6cd83e0a32d3c07357366cf3e1f56ba4bb80a18e3abbd1191abf85f4ba7107b36f9b1cb335a2f0eed078ddf8167d0bd636f95c8d7ac057aeefd2b9b6c76e84c6f7514f4fa8a9205030dee8773516961796fbefa4598182f2c28626c39e15307a7615c2fc5fb5fb82df9e34893a45a2ee3f21918679c0e7801c41221fc86b70867535a1bdb43e4fc8b071bc4170bcd1769d16802f476c20ba1100de8dd64d7402dd4c55740be2c6ad8813b72352dc01577517807e0fc5900b5c8cdce152e40c572167b81db9c267f0df43c80f9e00689e41fc7819bddfe3fd57c0ee307d81bd34c6a5b4978fa7c7f824da0f708ff399f414b7d097b8132a1670ef828a6f07e45e030d0314fcf4ba6a41ed0ee0bb1cc07781fe0105f82efa035a2ed5fa237874ab96c0dca35aaf28c0c7600caf2ac05f0c1a7fc23c1d5cb55b80076fcbb200bf9aa6079a799a5ee052803f8c2066a4416c43f6b64ccbf2b9730fd142d541f32055a6b10c5eff4c7fb17394a85803e8df770c184f06d047487306ce13b88f516fe926348ef09b8e5ff4043c02196f4dc05b17700b627c015f2e62dc922b85f6d06600c4a70072be00e4821c803421b124a8d68080e6d337a991be85a4e03944da17e0eb5e846ffb1ebd13b1ea1a7a893e8cb07303847c0b7cd2a7e18dbeaad21175702759b82fad48b4fe6a792eb45eb614899628cd0dcacb95d23ca07f9a529517bb8494aa7c4a5501c402a5a4e99252b464791110ff1bfddd0af2fc4b6c0fd7492f4130fed2b7e3d8d040930701adc95bf7345d179a10da2e94709796ee7edad20bb30a8be8449c081b5b25e084b243479f24793e894bfd62d939df4cfb1b96627cdbc61a901ed84d33f6d3a0108e8815e3c345a126efbd7402329b343725165fdb77a72945153b43bd014f2d148a99a2d31834e5be7f42e6f76bb8f1df4069bf45407a0d89c2eb540b8b59020b590ef4af062a2f80e0b74146a3f40fba1208be96de8407f837d47610767808167298be8c90f403763bc1e74628e01ff44fd8c972f88237e85f50c36a24276f22e4e8a0d684f58f606748da51f54b8081a5ea975468d2544b02924bb5dec25737387d16fb4a909a81958730cfab145c458507e9442b7834f3415aeca3c3aaf916cd52efaa379030231ce524789afcd6665bdd4adbeaaecfc9e4e32a93af1b770c6fd8b6c546778d9ded955e8c2cafdced895a49de1825f652b2c95393950cd663453dbeeda5549364f87ac09b6bb7232af1f14a68d9d1e82bf761ceec3b24e37f881f7234560379121752091bb480a7531517d3d95c425b7806ede40aba8203f44124061fe23959c674bd23e1eb9569b06abd6c7945b45e51c6544583ac29af7836b5439b0f40c25b90ffff5a19d3155404c9dd651bd34cf215da96b48ed376043933e4e961af254fc4028fdaa1a4f412b7ed77f6d1ce27a9e5212713f72a171d54cc5658931d664b405998d5e4371c9be41eb007b74dad22dada71cfe05e1aed702d9f5b3b7e272daa9d7b4a091dbebcb8f84ef2874a2f85c03786ecb12b8b61c7ef90915d2ec4ca1760442767c4aa326e5e4806575219575190aba912a16729fa67f12227e3c6be0e77adec8722187eee7436781a782f82af9370e152222a24d7412af27111cf44f22dbf33d9285b8f09d0226d47e5b09f2e0340ded9e471357acbbd211c627da8dcdbd0e4ab93a74a552f1727e1f8e177a50bc102851ec460c477b4dfad51e97b0497f01e5874c56ef2a2acd8e5c5593f53ae4cdead4edaa8b2a353c9c58d38ede954c14b690e37014c67523532c8d3b99956f10a6875255d88a0bb157306d92ae8b681ed39f85aa27cea025467a568e948ee96027e920d4e47c5221290726fbb23a9ed5c66836ebb03baed36e85ca05eae406760bf0a3e8e3c3cd3aec8ac910040f4acd291e7104d671fcf02e816589853b07b8316bd2940935f9a6d11df0cba52431da8cdadb81b8fa8b8dfeb14d6b9d6b80be3aaa0fe460d22dc95a5ef937976618e81abac8a3c249fde7f64657f9ab58f55a1e712be3a77c3d20fa437faba9384d58e6f098df74fb84bc804584b856ba1bab7d189dc4dcbd06ee175d40164bd9dcf83407be972de4437f066ba07edfbf9edf40c6f512a5c02415550a5ca9cbcc8e5aa54e624ea3ae0a8eb80ca9758b5fee054e7e79071880a720af10a4978fc7621ae127578e33a7bca3c35e530cdcaf98eda1d8a9acbf36c73be1b6712b35ae45a36474cb8728e7b8b65ccc7d5ce69a89ddb3046e5bbc9e3ba5f59ed6f776978fe302b825986bb0d19da0095f220cde3088c77804ec25888871cc335e09ae62bd3d4d017880a081739675e041774c02e954bc8f316987c0bc9de0c00cbc2d65c24a416cb1fc752c156f5049dcf4a63abd6e159d4fa6a16b7152acf4491c423349f77d0f16857f2a8c36505152a43127d543bbc55f302db7caa1597963e8ac895d6c7716f28164f8003b3588c618e44ccb9b39d34e5835234af9c3d58dcbfc5ddbf6c4e717f34c356914a89df0d07ff1e9ac95728768216018789b97ca2bae29b09fb3c49894f98c0b6bad268259ca6b5f72e7c12fe2b732e47665b97230af89e47e91a8d36aa5b8f5733b02e55e9f8d5f0bf1f800aaf860aaf71382983025f570109841d9e2a153c2da5c1ff1e92fad14aabc151b5c3913803e168690e4775b91c29139d61f5b2aed484c7171f9ea0c08f80c78fc2637e8c1ad03e9d6fcce2739e322de173a9c3e752dba01cb5597c565b6aab419cb11835953f249aafb2fa9c8b3e3d94e966aeb12cc5dd02af782b907f5b96e2e63b9bcf77d2e7f91c424bc396750869d6967fb165737ee6fee65a95f23603c51f729cd67556c66325b935b52a27753f2cd96ead64bbee805be5bafd5244e45c935c9fe3b9e47e91f86e00ed1e88ef5eaae5fbe814fe2c2de10768393f48e720d3d9cc0fab732cb7f872ce71beca0359b5ec0b0cb4ac0b8ce510bb64986e78a932aec7981532cac8a7ab5b888a83144c678338ff62e7fcafd8e75f6d1faa5c12ed5a49b47126b9dff9f0544ef911c9dad5f48f6e9c78dabdf04d8fc137ed87677f1c5ee88bb4909f84bf798a56f09790675915ed397029a508a592318b3f5ced9c7bb573eed5ceb957dbe75e883dac732f4210cf9c1bb898957d62e693e979fbc4eda4296a336ac6e8635227967e5c742ad7e0196059b6f80d72f333348d0f80fd67b3ee4967d8cc313738642fb6c98672c93e429b1d60dd600f58b76963b47aa25dbd80fd5ec47edf0198bf0b707c2f6bcf90bda7ed7566aa539dc24bec805f01426274971d7dfba3e23aade88e90a5e64ee716735a482829f5da38a9c8c6897c1ca31b2746e81fe3383fc1717e8ae3fc0caee2e77406aacb567e99d6f02bb4815f45d6fe1b44ebd728c1afd33bf80f4e844e003969245ce620e1321b09ad74bad2ba466b68b1d2ba9570969277a642fb416ab0543f0b323a15899e757d9d14db572a42dd856394d919e4dc4cff131a3d49bbc7e8a674dc981824fe4ee5fc0fa8e6ef59097bc8e1306473682ba9064ab24b2d3e4de1e5f4b4c2e8932a1413ad12851ddbdd389f6eb6d4aaf8cd7589169bb3d48de54188fe1062d9613a1e9b9c821aaf4dd3b2585ee5b0bc2a8b659ddc905e40416ba9c3e905b6d8e62a680933a59fcc62c20a66134c470329ad808a3424cc5a61d6c65901d5de98b989cfb0b75a656fe5575bcdde43fe09be5e2b01dd522ad06664d1f43b34fd48e21f523497f172e7d7108b6661e6aae87ecaa9beb45959c40a1d628576e0c8d5e0590e9c56da848b24683a709a487b4116ed228776113dad0e9f4bbb19758745bbd9f62615564e7c0b935cd13e4ab70a3e6f9b503d6ab5597ea222eb371c3f5cfd4a10b6a8b770ab4dbd5e44241095127b22c3a76411f3e4fe2064136ae35579086913099d714c4267a3ae3a92d0e689c76b3926a1f6bc1cf9277274ee3109ad96157ceeff00504b03040a00000008006856645b421e3d2dc4020000c20500002f000000696f2f6e756c732f636f6e74726163742f6e657276652f656e746974792f4e524332304d696e7465722e636c6173738d537f531251143d0f1676c1351189d2cc3032975fae60e5cffc453ad30cea24e54cfad7023bb806bbb52c367d843e4e4d59d38c7d803e54d3dd5d4013b086e1bdfb0eef9e73eebd8f5fbf7ffc0490c37610c3480491444a403a880c66020841e631cb236be3b920e69013302ee05180c2c736f844405cc0148f791e0b0c42d9d02d53295b0c1305cd90f566ad21b731b95179236f542aa6da682c33f857345db3561926a5ebaf260e18b8bc515119860a9aaeee36eb25d57ca9946a84840b4659a91d28a6669f5b20671d6b0d865437afae9aa7aaacea96667d9077f7f3b9d91d4db75493fc700ae9d156278061fe1fa60a27caa922d715eb58ded4aacf89a34a2cb6558f6550714add68da3cd1de176d39b34a1e234747ee8d9aa257e5a2656a7ad5feb5d434758651a9bfcea0a9bead2965d52d8021a0abefdb71b06834cdb2baadd9dd085daa73c6a61311c1228f2511cb58210bba61c5da45c614b7401e4f45ac624d4418230c233d5d86ae6222d6b1c163930122f2888978862d86c47fcfe12fcebdd2896a3f25af64d73b7edd3ca864ad91ef3c3eca386418eb99f1cad26a749f37d5774dcda4fe44a5c3eee26c45c132dc13f5484af46a40a4d774687a875bfb7bb4d1cbac31bc90ba53bb915eefa0dff031497fcd61fadfd26bb3e7431147710437698dd2a948b887f691e437b0d4193c61ef7770c9d457f83e11ecc12d5ac394044cd32a6110093a27719b90a89b8a518c014e7487be8c3ee3b8db12f808bf939df59dc3bf9bf172e7e05f7b49492816339c7b4a9f21502c26bfc0170e8607329f219e61f0423e0a1fad32adb3449fa59a7214cd3916922e79c74216138e053bba871831f890a68cfbf0121ac78396ad3ad9f2d21e2707fe9df485adb6911be181f455236e1fe689728144168974c9311173a93a26e28e34a37b138eb487e2a94ecbfb4a0b2de9a1bed2ab44b946d2eb44bad147faa153ff65e9698745fa03504b03040a00000008006856645bcb576078ac020000700500002b000000696f2f6e756c732f636f6e74726163742f6e657276652f7574696c732f536166654d6174682e636c6173738d935b4f135110c7ffa7ad6c5b9672b1d45215ab88f4a2ac8278a1a8784d488a241649c4f870da2ee5c07617b7bb35f84d8c89afbea20f687cf003f8a18c7396edc54a23fb3073ce9c99f9cdcc39fbebf78f9f00e6f0308a614c457119d3525c0963268a0cb272938b90c8cbd55529ae85312bb516c675a96f28985330cf30b0244ce1dc670866b21b0ca1c7565567182e0a537feed6cbbabdcecb0659c68a56851b1bdc1672ef1b43ceb66830cc1485a599aed1d02a96e9d8bce268a66e3775cd7504194b7c4b5fe5ce768120bc5a65789229eef026d7ea64d41e89da8ae9e835dd2e1c6fcd1e6f66609c21d1f7b04cb4864b72a8e4f0caee2adff38b0ed65d83645534e5daa27aa225cbb52bfa33218f875ae5cecacc2a4630aae0a68a335850710bb719265b1e8b690278fd0acb4c5b4dddde32ac770aeea8b88b45150519b284948a7bb8afe2011618529d60aa40346464793ffd5eb72d15cbd223d9f1a0ea5cc3ea9ca7e5f9f48986cd30e24dc6e0664d5b2befe81587217edcb01866fbdc47dfc9472a567d8fdbfabac530d12f78859afda7d44675577b290b65506cfdad2b6c1a7922b359ec145b726c61d60af235865bf3a5a7b6f9f4c51a3d578ae1327a3c53ecedaf90dda410ba5d47ec19fbe42b075cd5711131fa4fe4370026ef93e418ed34d28cf4a9dc37b02fb408e0b4ef040c224e523d72c03812a423f408927ef0227907a4772e7f88c0414ff4a8179d38f2c004523efe2cad687c38d7cef3dacf939479821fa1843e23141c0b7da7b2c832203307bdccd1233f8a9ae8ca9e6c674ffad9cf7b1507d465099a6c835ef9a078ee2b9443843f40a1c58184443a901869d03b8b7a539bea02c5dba0781728081623cc8536e68d8f49e53d4cf053aba3a8dfd1606f47394a98ef02a5daa0d4df1dc5bc8ed2ff47a93e6aa817354798f993a2188d40deeaa53f504b03040a00000008006856645ba442a719620200004704000032000000696f2f6e756c732f636f6e74726163742f6e657276652f7574696c732f5265656e7472616e637947756172642e636c6173739592dd4e134114c7ffd3ddb2fdd842c152b02a05156d6b65fdc40488314a359ada26b472414cccb08c6561d9ea7696c457f105bc15f08378e103f850c633cbd212940bdbe49c99b3e7fcce7fceccafdf3f7e02b88307296430938489cbca5c51e66a0ab3b896c0f5144a2827695389e3e817539f6e18a81ab8c9906e34db6f6a8d766da5b6cc90af6ff15d6eed70b9693d763acf3d293ac25f6430fa29433dc965d0a3c592e339f22183562aaf32e84fba1b8261a4ee78a211ecac0bbfcdd75d8a8cd5bb367757b9efa87d14d4e5a6438cb9bad3b5bcc0ed5976d7933eb7a5e5097f5758817428b822848a7af6876701f7374887e975bde3a864c8b424b7b75ff2771136ed8b9e90ad4861b233584f96ca679d2db164bbd15152ad6ee0dbe2a9a360b953ede754bd89319c33318c1113a3ca64316260ce84855b0cc553250bd3feb1d8691a826be0b6493776d7c43d557b1ff30cd5ff190143363c85cbbd8ed55cdf12364d21f7af83d10589f70177e9ece3a5fae9a2c5f21a43e1afcebd8d6deb95ea4b37ee53b9e3d31cf2a5b513f52de93b5e67515db9d66cd4287197bb8168be65385f7a71c69031436f32438f4f4341cd8e56053539f51cd518c9c7c1d468c9e668b7407146deac7c07abec23f615da5e983d4e36451e484327465e651de5620293e449489ff33ae2142b5fa0ed43ff86f84718fa27e8dad8d0210c42eb115a0bd1c3e441d009fa4f116e802f46f842283636fa8851f842bfd37cd4297186da29188418e0127db5177129625860e1b7b852fbb90f180a83b3278ae3517182b0c702aa611b20bb8fc4016239240f913e80be17361908c9106f9822c5903ffd07504b03040a00000008006856645b3940d3a096020000610500002e000000696f2f6e756c732f636f6e74726163742f6e657276652f6f776e6572736869702f4f776e61626c652e636c6173738d546b4f1341143d435bb6acab94f290228f5601b78bb2be5f1012249a985449049bc8b7653b96c1655677a7a0ff4a1305a2893fc01f65bcb3ac15a53cbe4c67eede73eeb967eef4e7af6f3f00dcc2bc090b974d5cc1640fce61cac434aee6619ba8c231293263e09a893caeebc8ac01d7c00d86d2f28ee451bc21dead469e8cdff028e28d27db5c2a06eb99a46f4b8117c73c66c8853a9561bc264257b682d8f543a922cf576edc78eb2e361a118fe33986ee7921855a60c8d8d53a4376296c7086de9a90fc456b6b9d47abde7a4091622df4bda0ee45429fd360566d082ae61c2d42c5b7b91bfed1eb92720da182f92657cb07e2ca76f53479a5972da9c416af8b58107e51ca50794a8492ca4e77067bed1cb72ef80e91f48432f898d6ec53a9756d2f192af6c932b43179c977520a73256c453e7f2ab40556dad9eca6b7ed59e843d1c04d8beeb864a1170503b72ddcc15d7d7924a29c3852f63d59e61fb8df52bc2c94817b16eee381855114191e9fd5ccc963c741eb7868e111a879fbac740c05dd831b78b2e92eaf6f729fc66ab8a331cfe3264d4ecc6543fb317a927994c7dfb7bc80368376edff0273d53586918ef8574a689011115c44a46ec85e3b845f519190cde46a4487eb3b6efe4ebee8d3c720cbb704d93271ccc424ee53222af4882d7aeb84d06340bb2ced693a68eda7d302ba680758ce1e98b38faeafc87ca673170668bd800cad45c2f413cf000675e6413e867031e11d4689b235974b27fd2de77c41e6539ba43b090e1f02e752f048faf552226bf488a802e9d15cbbc81673fbe8fe2bcca45f10a2176387780b6d5163184fb9d6a89ace1d7176617c47feb5a31967f6d0b30fd399f9a75ddd28e8cf308b493a4f5163d309fbd00143caae7713548b51b49c602b6494d644af936c3a0ffc06504b03040a00000008006856645bdead4057f4030000b708000048000000696f2f6e756c732f636f6e74726163742f6e657276652f6f776e6572736869702f4f776e61626c65244f776e6572736869705472616e736665727265644576656e742e636c617373a5555b73db4414fed65224c7911d3b975e9290a6104096ed285068a171431af7428a93942674863e45b145acd6c84692d307869fc01fe01df292079821ee4c9961780a437f530738bb526eb61332c383cfee9e3d7bceb7df77b47ef5f7cbdf01bc8f47fd50703d810c6ef0d947dc7ccc9737551413b885796e3e51b190403f6ec4719b8f8bdc94e2b8c3c7bbdcdc53715fc5a70cc9a6676f3b8d96bffadcb53d86c9b2d330dd56dd372b0d37f0ac4a60fad567e6ed6ad5b37d7f8e21eedacfa35825a839fef42c83d17d8802b66db3c103fd9ad334e988b559b7298152745c27986770f4f31f3b1bd5d9bbd9c70c72a951b51906cb8e6bafb4bedeb4bd759e9761a8dca858f5c796e7f075e494f9c5182eaf1ee058f72cd7ffcaf63cbb7a77db7603066dc9a5bd52ddf27d9b42ef9cfb2ad3a726256ed25b76f0f0a420537af6bf2449fb5da7aef6e0b69393012ab67228e6807f7ca5d8dfb4ac3a5d6c542f3fb5b62db36eb95be6eae653bb12cc659f30b006e7ae6b4b7067113fc9b5c0aa3c5bb69a82526a4eea9c9ae5d7421d243dbb4445084aab4ec18c16f1a0b116788ebbc53042573eca1c7a297362add1f22af63d874ba44574cef0400d177051c3252c6918c68886516e1ee033156586c5ff2f8d8a650def42d7300393e16227bac59653af72def453537c7be243bba56105abdc3c24eaf353071f95f07faed1977e8d74eda49761aca7aa514f12ab246b9c64157dc9307c8248e1241ef5f3f2c130715613918056b369bb558682de2d58b786114b731df1075d7546fc845e3a7d1b53f4086640fd080931de00f454c6780f00e9346f0d5ac769ff122e931da3558df6651a478cdc1e98f1023123bf07c928ec41fe459c1e273b246266e9b97c0f29926418d730411e233c8b37a832c48cd76062c6abc7c48cd797c87b156f46554d1a79549ff12ba49f0fcb28c2795da4d6c2802835c35b988e0ecf53344fac70c8d211c884f0dea4337322c38530ea109c2220f1c26ff70422770299ef09e49dde40e44e208b74a6740a90d108087d4851aebf2846a271c3c8fd843e7937b78f94d1465f8e7e3fa24fdacdfd016599d3b54f5ad190a75f1bea0f18dc41222ffc14c5afb18f0c1fc82753c00e06f9ec4fa8f20e6469976a4802e518e100ee83fefca81f1e10ba328a58a65bad08d453219e43d41bc892de8cd625e4c817439ebc19f4ab29f61a132a0a0a1b492cf06bcd085ef9b5be8f282a84c89386401de7488ae92be3b5102f77cb917ba3387e84312530ac9170eb54f38b636c16225cc3546696ba9209349390330bec1fe2374678080acd11cd638c43a3e72482f688f27065f5dfd0ffe50b248606dad0427cc9a154382750c9f4776d0cb691eeec8e27c7ba438fd0c4f081b01fe28ae8037a18a81927817f01504b03040a00000008006856645b3472652cb9040000d10a000035000000696f2f6e756c732f636f6e74726163742f6e657276652f6576656e742f43726f73734f757446756e64734576656e742e636c6173739554df531b5514fe6eb29b0d31fc0a015aa010aa2d2109a4c5daaafc1048c152a05841b4562c4bb286b4218bd90d2f8e33bef84ff8d819e585079d917446671c9f70c67fc37fc351cfb9bb092559e83893dc7bf7dc73cff9bef39d7bfffce797df004cc008e112eeb640c3020f8b3cbccfc33dde58d2703f8465ac84b0cac3031e96b1c69f6bfcb9a6e18310da703788873c7fc8c37a101b3c7f14c466101ff3f2130d8f347c2aa07c5136f70406570a66ba54295ae9ac59b2cb7ad64e5bb967e9b95cae6c58d6a480cf3605222b4ff5033d5dd44bf9f4ba5d2e94f2b413d0f7cc4ac916e87176f7747b373d5fc82f956c236f94c94335cad9891be439552815ec19817cfce274cd69bc435f1c657493e865cc9c21d0be5228190f2a7b3b467943df291a4cc5cceac54dbd5ce06fd7a8d8bb054be06673dc92513e30d2c68151b2d399b269596b157bb152ca590b6c228e5adeb017652963f1d1571553b36acec3afa804735029f406553f4a813deaaf5ace7677bc79978fb7d0f13957a24bb510cd22b558a76e97e3de5e1c2e48e1161c3d83567d1930beace845ab01c5dace53236b4f8e529f8986f671b764cd754ad9ba6eebd967abfabe9482da9cc2efead6aea39f3f3eba4449a8249522390bfa08daa6435220b46e56ca5963b1c01af636cb33ce69c318c6e330fad01fc600ae843188a13062fcf919b604d2ff53730d9f87711b77343cd1b01dc634a8b17b1b1598af148a39a34c956f8ef0155fbde93074ecf0902582a9986d4e8ff0578e1449c59cab354d6c53317989c87d0e63021d8d9514e8f36c24994916d0d52e53d42dd2a9eb4c33492389317051339ec95aab7dd4ab51f851d8df374a4462ccab2b9b4c6e99261bfc6bfd7381ff403c73fe3649aed1ab490d0d053ed69ede581fcb2f67ea0039c7a43d4c7ec3b84ae3ebf4f50dd9559afb122f2012c963f812a963f81363c75012979563a83fc9b36fb00f0234462847175a10a5e7b59b563d94b517d768e7961309d73102c815231172c5587c72c568fc72c57814da8f63d44593a699fdd5c4cff0fd584f1c70835c73e193839b442081a47b7886bc394540d238851d92d6413a332423f4385e75980117a6400a631e40fc8d40ae7a021997879a80f81b815ca73323e700e12a71e21bb8e90144690492f004328137bd80288d40c6e94cfa1c202c1227bee5298dda0864c213c85bded2a88d406ed3993be70089b9d2d00be4c412dde4c3fdf33c91fc01aa72943c415ba28a4092fedf43f51f257f87b6ca0d7482284f29fa5711fc0eed8708a5a49dbc5858c7c14f367f152d75077fcd41711c14b2295584ea0e4acd413d41274f645329c521da79f50734e5108aff8850fa25cf41ba9fc0248d53744f6748e5591ae7f004f3740333927bcc6155e7fe1c6fe31de27c05dfe25db2f9e83ce8a6b56b6de26f0c50a880e895bf6868964b442fb35beebfdc726f3955684dc80abcc698a63a86fa771dee6c26de61366fd7ec8a6327baad67ecaa6357dd30db53fda7ec7ae4bdbf476fc112297e9ff82ce331565e5274cb65d545bbef117721b94c21d8392bfea557c4476c8802ade1ae7d426c5ef84931e6ead7d5a42cdc7b0bbfa2edd10bb4473aaa5218621d8974396ba2dad931524534d2ed1814deec71d6c42bd2f1356d56d1dbd8dc0f5f6aee857a73cf4bafcc7f504b03040a00000008006856645bf804967abf030000df07000035000000696f2f6e756c732f636f6e74726163742f6e657276652f6576656e742f5472616e7366657246756e64734576656e742e636c61737395545b73d35610fe8e645bb62a6cc70413923404e845be45e55228754893b8a44deb40211966e853145bb5058e944a725e187e027f80f7362f7968678a9981994e5f9acef43731b47b8e944b6d274cc7e33de77cdab3fbedb72bfdfdf6d5ef00aee09e8a1caea710c70d6e3ee3c79b0a3e5751c5ac8a5bdc5431c777730abe50a1e27a12f37c5de06631891a5fbfe4e6b68225055f314881cb3055b75dc3e9767ca3e13a81673602c36f3e36169a4dcff2fd2a43c2dc74bb4ec090af3f32b74d63d30cdac6a2dd5a7602ab6579dc63d676ec608ee1867e72b0e1010a0f186235b7693164eab663dde96e6e58de9ab9d1212457771b66e781e9d9fc1c81b1a06dfb0c9707b33996b76d19d6b6e504c69a673afe0f96b7d4759afe6d0e11d778cb0ad6a8ec69bdf0aec2e37ee87ae11d5571fe290abb10e93446a18f512ae51fba9dd38f972361fdd8353b54e299c8a9633a2de3eec623ab11540bdf3330974b33f048486352f053ab81d978bc626e09c5685218926dd36f8732cb7a61999210fb6e879c191d9281bb1a78b6d36218dde72f228728455657ddaed7b0966cde81b383e2cef03b1ac6f0b586519cd190c7590dcbf886c1f89f7d52f0ad868fa12ba86b988141f9fa092d76ed4ed3f2682a07af3f09dc5b1a5670879bbba47a793a9c61817ea7d10b759521dbaf1ec3f8d03e8b984234ea4c921a5deb983ef5e6f47f741220c93479d2ac90b8c37ace5fb2ad2dcb693254f441ed07db11555fedf3df1f9013fc27f5daf18f71813e2e39506990e8475da4af8fc41b496b92f0319c233b4ea78784cbb4668a2fc18aa517908ae517907f151726c8e610239b253b82149dd214749290e9f01adec71420763c0d133b9e48a2fd79f20ad318b4f267f1e26f907e39089e10605e04d442872820bdaeb8185d9e135590b7e077484d15e838dd991011f2a1d701a5444489e1123e184244ee27323594c887f8681811b99fc845ba73e918225c119e985e8628d69f91f0ebc5d2cf88c7764b7b48177b8895e8ff13e2f26ee90fc457b85c7b18e54b99fe3d249e23b303b52c70f2e265ec61842f84c93d283bc8f0dd5f50623b88c9bb9443162cf3c40fc440210e632812bb32555439d2cdf503c6eb289007a3730d25c224f2059f0025cdde60524125c146d5795ed28cd09497f42c92a712b23e55148c939cc56cf6fc443be4ca61e299e2f0faecc421bfb4e07085e6eb2ae5bc7644c94ac4eb34a5f90497295d59742b3632cffea1164bc487a8d01ed15e629c1a7d1f226af7c53c02fa6ba80f5fe2bd9cd6dbe797ce657afba4d2d9a73d647b18e99f8c9b4726433f988c6bc2ebd37f01504b03040a00000008006856645b60f971ccd20200008a05000040000000696f2f6e756c732f636f6e74726163742f6e657276652f6576656e742f54784d616e616765724368616e6765436f6d706c657465644576656e742e636c6173739d535b4f134114fea697dd52b7a5171050108a606fc02ade2982b19168007d8090e8dbd24eda85b2aded96608c3fc547e585074db4249a189f30f13719e399d9b5d2823c9866cecc9c39fdce77be73f6c7afcf5f01cc623e8810923df021254e69159920b29812665ac54c102a9201e862bf2acc356166555c577183c16fef2df3970cb1952d63d7d02b8655d2d7ecba6995720ccabc6999f602437feae4737a83c197af163943ef8a69f127cd9d4d5e5f37362b5cc0550b4665c3a89be2ee3a7d76d96c30ccaf9855dd6a561a7aa16ad975a360eb16afef729def72cbd6d7f7560dcb28f17abe4cd978beba53ab709b171f8a57221528717bdd21dd974a9f463bd0684728fc45d3a834ba2a78bab9c50b762efd9c81553b6b779f2459c36608add946617bd5a8c91a485c822f1b8db253b837957e4c0ebbeae46608ae559bf5025f3245bde367963223926a88e2a6865e4434dcc26d86b9ffd746c51d0d1731ac611c971906ba9579d0342b455e67983c13e6959c887b490d7731274c4ec304861822dd2a315c38c1b651dcd6258c1467c36957be6234a807f18e764967ae03f68f8a8a51ab71abc8307ddadc9d70b98511d6702affef6724e8230981214ccb2334a70f48a1731431b271ba2d91df437b30730896c97e82e703dd3ce8231b8697ac26317ae8d64fb7f34e34ed03803c09549a2a0c62c8c5d4e51df0673ec2f3be0da7486754c2684e800b43b2b6092db884942e3241e9ed97fff94b44691351da4468205cac3714234a58cc64dfc1ef3bc81e219c69c19ba5f5167eef41f61b7cab82e511a2629ba2d5827f1fbde2f41daa6f1f3eef014178258918690122ab5292418cd06f54921973d2b4c92cd2cb2522314283394a3e0f45083d1535cc7e62484522785f50a5b175a93e72358b3b6c4219c944e94cef2838714cc1b89b724caae9894ad48976279629b3084b7c81faec1081584f8b3a2da18391640be722afc9b4a07577297d2c47a2dda5491975e537504b03040a00000008006856645b7b4eab31ce020000720500003a000000696f2f6e756c732f636f6e74726163742f6e657276652f6576656e742f547855706772616465436f6d706c657465644576656e742e636c6173739d535b4f134114fea697dd52b7a517105010aa686fc02a225e8a686c241a401f40127d5bda495928bbb5dd128cf1a7f8a8bcf0a089964413e31326fe26633c33bb565ae0c5347366ce99d3ef7ce73bb33f7f7ff906601a73614490ee41001971caaac88591c78430932aa6c250910e4117fb5561ae0933ade2ba8a1986a0b3bbc85f312496368d1d43af1a56455f71eaa65529302873a6653af30cfd99e3d7d9358640d12e7386de25d3e24f9adbebbcbe6aac57b980b34b4675cda89bc2f7820167c36c30cc2e99b66e35ab0dbd645b4edd2839bac5eb3b5ce73bdc72f4d5dd67b54add28f3a2bd5dab7287971f8a38d10955b8b3ead2edcb644f221c6ab43314feb269541b5ddc9fae6ff29253c8be60607667d7de95a469380c9115c7286d2d1b35c99e6425f80da3b1e1b6eccf641f53c0b1ddda0ce115bb592ff10553743a7c4a1353a29c86386e68e8454cc32c6e32ccfc8f1e2a6e69388f610d17718961a05b8d074db35ae67586d153005ecbc9df4d6bb88d3bc214348c638821d6ad09c3b9630c1be52d5dc24829d6dce114ab4683144f760c47060b1db07f35538c5a8d5b6586c993ded7b190d712610d678aa75f23451f43040c515a3ea1337d280a9de348904d92b740711fede1dc01582eff19be8fe4f9d047360a3f594d62f490d74fde59379bf601409e042abd210c62c8c3d4a50f04739fe0fbd0865364302e613437c1832159db84e63d424a1799b08cf6cbfffc23a2b489286d22f4143cacb794235ab897cbbf4730b09f3f4434d7823f4feb1d82fefdfc77049605cb43c4c53641ab85e01e7ac5e907d4c01e02fe7d82f04b1209d2024456a5228318a1dfa82433e6966993b947371788c4083dc9518af92843e8a9a851f60b432a52e1fb822a3d588fea234fb3a4cb2692934c94cef2ae82e347144c7a25c7a49abeb8441d6f4f62912a8bb4d457a8cf0f104af4b468d2123a1c4bb77026f6864c0b5af794b2476aa4da53ba2cb3aefc01504b03040a00000008006856645bce7f8dc4cf020000760500003b000000696f2f6e756c732f636f6e74726163742f6e657276652f6576656e742f54785769746864726177436f6d706c657465644576656e742e636c6173739d535d4f1341143dd38fdd52b7a51f20a020a068bf805514518b606c241a401f20187d5bda095d28bbb5dd22c6f8537c545e78d0444ba289f109137f9331de995d2b2df0629ab933f7ceedb9e79e3bfbf3f7976f00a6301b4604a92e049016a78c8a6c18398c0b33a162320c15a91074b15f15e69a30532aaeabb8c110747617f92b86c4d2a6b163e815c3dad0579c9a696de4199459d3329d3986def4f1ebcc1a43a060973843f79269f1c78ded755e5b35d62b5cc0d945a3b266d44ce17bc1805336eb0c334ba6ad5b8d4a5d2fda9653338a8e6ef1da0ed7f90eb71c7d75f7a9e9944b35e365c1deae56b8c34b0fc405f1096d7067d5e5db93ce9cc438546f6528fc45c3a8d43bc83f59dfe445279f79cec0ecf6b6bd2bc9d37018222b8e51dc5a36aa923ee94af065a35e767bf6a7338f28e0d86e6d86f08adda815f982295a1d3aad8b49514f431cd31aba11d37013330cd3ffa5888a5b1ace6350c3455c62e8ebd4e37ec3ac94788d61e43484d772fa77531a6ee38e30790d6318608875cac270ee18c77a694b9730528d35773e858a5127d1936df391c17c1bec5fd914a35ae5568961e2a437762ce4f5445883e9c2e9d718a50f220286282d9f509a3e1685ce7124c826c95ba0b88ff670f6002c9bfb0cdf47f27ce8211b859fac2631bac8eb25efac9b4d7b1f204f02959e11fa31e061ead20782d94ff07d68c129321897309a9be0c190ac2d42731e21a5834c58467be57ffe11515a449416117a0b1ed65bca112dcc6773ef110cece70e11cd36e1cfd17a87a07f3ff71d8165c1f21071b18dd36a22b8876e71fa0135b087807f9f20fc924482b4009155a9483f86e8372cc98cb8655a64e6e9e6029118a237394c311f65083d1535ca7e6140c568f89ea04a2fd6a3fad0d32ce9b289642513a5bdbcabe0d81105935ec911a9a62f2e51c75a9358a4ca226df42bd467070825ba9a3469091d8ea59a38137b43a609ad734a992335465b53ba2cb3aefc01504b03040a00000008006756645b192278a182050000870d000037000000696f2f6e756c732f636f6e74726163742f6e657276652f6576656e742f43726f73734f7574494946756e64734576656e742e636c617373a5565b73535514fe76722e490c6de895d252caad4d9340802a0aa51528542a85222de552054e92431348939273c2838e33beabe3bb6f3e283ef0a03336cce88ce3f80033fe0e7e86a3aeb5f749da9e9e828ed366efb5d75e976f7f6bed9dfcf1d7cfbf02380e2786015c89228a391eaef2f0010fd77898e761814dae9b588ce1066ec6708b87db3cdcc0122f9778b964e2c31812b812c1473cdfe1e16e04f778b622c845908fa01081cd8afb26964d1405b4fbb5ea8ac0e06ca99aadd4cb4e365fadb8352bef669dc2c3ecd942a1663bceb840c8ad0a74cc3eb01e5bd9b25559cecebbb5526599760c6ba55aafb8023d6a77c5728bd973a5e5998a6b2fdb35b2d0ed5afef85181a8ed16cf7ac65ac1722d723e5daa94dc4981af92af46b0357370b67f13658bcf96d8a38b8470aa5ab005da674b15fb4a7d2567d716ac5cd96616aa79abbc68d54abcf6949a5b2c3902635bf357ecda633b6b3fb62b6e76aa56759cb9ba3b33335daf149c0bac2482cc65db9d9675184a8ebeae12a6d334def71acef8143a855ea0d27551e080e2e98edaee4e06931025f766c97635436cad70d45937eb4b065b71b80885bba09a21e2b4c4386bd75b23ee6c5a3239e765b3f0c99564d88fea56d9f1e19ecb3db0f3eef8e86d01e1eb566f4bd6c9a2a03be65d2bfff0b2b52acb47778b00152da7a86a1e4e8ece501222b15e2663418b885b55b408c4e6abf55ade9e2e71ddfb824a7a8413c73182521c83d81bc710f6c5b11f07e238c8cb432c0db3ee011e0a1cfbcf3d63a21cc7199c35b162a212c77bb828d0ebafe0b97aa95cb06b02bb83627cc2377f228e2a5679784407ce0cb9d589115e91533433a46ef6049d3e3324ef308971129bc5513b7c93d9eb12c604127ece297b60934a0c926aaf2fa6ca964315eddcd4a85249651b7855a36fcadaac52575013f26bb5ba6a570a0287833a7e8bcaa370dc67dfecb457d80f24a7b6dfc63e7ad70720b0070642dc23f46510e2369133758a9c0f7afa43de7a58ee27c86f04491a4769f53de94d9a8753cf2052e93584529935845387d7a0a5fab435e8a93e7d0d46aacf5883f9a38c93a2713f22347641433761e9411b7ad1895de8a3bfbdd84d39fb91268b8b2a3a32380c4889d10a2931de90941871584a8c599312a3d6a5c4b80df23982ac879a678ea1a77e42e8871628432a0765e2b832f0120b1cc531cf7992ac39ad218fbb7ea498d4ee279f0332428fb26a41373ce882be77c7028084fd40860381bc89b7828084fd4052e493de060833c7894fe0ed00209a1fc8914020efe0641010cd0fe438f98c6d03840bc7894f059646f703391108643cb834ba1fc829f219df06c841af34a7031931fc402603814c043362f8819c239fa96d801cf218990cec11d30f643a10c8bbc13d62fa81bc4f3e97b60132ecf508bdf32a96b0c9866fd9cb54fa3be8dad3f473b4a51a88a4e9f32df4f0d3f46f885ee62bf51c5d3c65e8d340ec6bb43f412c23f564c5adae0cc2a40b37f046cb20dc34d09481463aad8178cb406b1ae8ca40279dbe3185de34309481413a636304a369603ec74e9e48671286276867e9054ced09b4f0533a675832354cef133047efd0557a9faed19bb940ac5ec75d2ce233fa0dfc0d6ee277fa19cc2c0e297e5a2cbea4524fc977f605ce932e840ba4dd836eb34dfc890113d386e8ddf0df153bc394d3f7a947f949af7c5f2a5677a424a33b18e1e9c4defea2e292d5c4631babef35f59ad2137ded9bf4bad2eb5e9896de507ac36f6f2abdd98adfbfcecda07c9defd0cb7d97ce7f8fce6a61093938c8e373143674d6971e279df81833d4774232711bf19d67c4dff41d10222ee8e824c39343422cfe8f2565b8d4ba425f1006be21b95f90b8f50c3b3b3a1ae8545c7675742b9908ec4c8c34d0d3d1ab141a6fee52b2ce729f920d96772bd96c3a253ea5a1817efffd2c6db89fb9d6fd9c955697ff01504b03040a00000008006856645bddea92d2bf030000e307000034000000696f2f6e756c732f636f6e74726163742f6e657276652f6576656e742f4465706f73697446756e64734576656e742e636c61737395545d73db54103dd75fb2856a3b6eeaa64948d3960ff92b2a6d69294e4312b78180d302613a539ea2d8c256eb484192f3c2f013f803bc435ef20033d49d81198617c20cbf890176afe524d84e3a8cc77bef3ddabb7bf6ec4a7ffefdf3af006ee0131539dc4e218e3b6cdee1e35d05efaaa86251c53d36552cf16e49c17b2a54dc4e6299d71536ab49d478bdcfe681823505ef0bc4bef0dc1d81b9baed1a4eb7e31b0dd7093cb311187ef399b1d26c7a96ef570512e68edb7502817cfda9b9671a3b66d03656edd6ba13582dcb638f45dbb18325813bfad9c1c607283c263235b7690964eab6633decee6c5bde67e67687905cdd6d989dc7a667f339046341dbf605ae8f66732c6fcf32ac3dcb098cfbd6aeebdbc15ad769fa0f1821aa4acb0ad664ddf37ae165952bfec0f9ca4b0ae31252147a25946a8a829f2256ca3f76bba49fae48c2fab26b76a8ca0ba153c7745ac6a3eda75623a8163e17102eab33f248aa6352f0739b81d978b661ee4ad1685c04926dd36ff7958eea85754a42ecbb1d7216744806ee66e0d94e4b6072c05f46eea31459dd74bb5ec35ab3b909f9117d17f88a86297ca061121734e47151c33a3e1458f87f9d52f0918637a12ba86b588021707198ce6ad7ee342d8f9e8cdcfe8a27fb9e860d3c64f388442fcff7a758a21f6bf452dd14c80e8b27303db6cd32aad48c1a93a43ed73aa64fad39ff1f9924482acd9e352aa4edb896f36bb6bb6b394d818a3e2afd6837c2f2ab43fe83f938c37f56af9dfe1857e8039303958608fda88bf4058a7023694d123e854b64a7e9f484f028ad99e20b8862e93922c5f273447f941766c8e610239b253b81149dd214749690f9fe35bc8a3940ee388d903b4e14a1fd65f2eaa73168e567f1e24f88fc70143c21c1bc0ca8f51dc280f4b6e26a7879495641de92df313555a2d374674646c8f7bd8e2825424a02d7f0da1822d16122736389bc8e37c611890e13b94a77ae9d428415e1c4f43684b17e0f85df2a96be473c76503a44bad843ac44ffef108f1e947e437c83e53ac4242f65faf790f816997da865899317977188095e088bf6a0ec23c3bb3fa0c4f6118b1e508ea86499277e20060a71984291d895a9a2ca896e6e1d31de42813c049d6b281116215ff0042869f1176615541262525de69216a4a65cd237a13c953eeb7345c938c92c16b39767da7dae0c13cf14c35b8b33c7fcd292c30d9aaf9b94f3d609252b21aff394e63adea27465d9add8c4b2f8875a1c213e4485f608f711c1d4e8fb1052fb54ce23a0ff02f5c90bbc92d37a037ee95ca6372095ce7edd43b68789e1c9b87b6232f4a3c9b825bddefe17504b03040a00000000006956645b0000000000000000000000000f0000004d4554412d494e462f6d6176656e2f504b03040a00000000006956645b0000000000000000000000001b0000004d4554412d494e462f6d6176656e2f6f72672e6578616d706c652f504b03040a00000000006956645b0000000000000000000000002f0000004d4554412d494e462f6d6176656e2f6f72672e6578616d706c652f4e657276654d756c746953696757616c6c65742f504b03040a000000080087525e5b62dcc744940200004a090000360000004d4554412d494e462f6d6176656e2f6f72672e6578616d706c652f4e657276654d756c746953696757616c6c65742f706f6d2e786d6cad55596fdb300c7ecfaff082bd5a4ada612b0ad745516cd880f400d21daf9acdd84a65c990e424c5b0ff3e46b29dd33980252f22f991fa78888e6e17850866a00d57f2a63f2483fe6ddc8b4aada690d8008dd2dcf4736bcb6b4a0b36034958c9921c88d2197d7e7aa01fc8009d7a41f3732ed70bc35bb7f97c4ee697cee1623018d25f0fa331462858c8a5b14c26b0ee6ef8b571d6914a9875ac8e5ebf72c75f177a6152af0c9d0f41b91f3bcfa85029881fbe08b1b3467443d7f3b84cabaafc96c6188ec08215a58088364a0f61daf2094b2c2a1e41cfe0a112968f79f693090136a26b76ef50d73ec6d287e3c7bbe7f1d7a79788365a8f91ac80fde19ca5669742093205997030715b9295fa2ddea8539b0d574456c21093be6e65d342d758232a4c94b41ac57056ec66d43a35398cee5e3e8fb7737208ba8fdbe984671727f0559349680a54b4a459c9ff2feb358d2bbd57feaeb8580b1e95a2ca70e0b7aef3da4de5ceacd553ec47ba8ed391fa76fa7ee21355945c800ebd7377fa1b25b8249f962f61a7022d104b3ae159a5dd3bddb53b8c51954e00c7fb6344ebf37ea0653a03eb81f5793f10cbac522eb3f8fbcb97f02aa2adbc4b901e6018d17db53fad217821e4ac32a45053756227600149e8db7156178604ff87bab00c5c2df3335d056b00fbed3eed9c198871ce5e59864bcd8bddf04c31d171dd06269eb219c3022d8fddd1e89170a70c5a8b2d1897f78219d3ee89e6e593fbfa70579682fbaf0b2efa167f382e8e645580b447701bd8f8fd9ffa534adc3a2029d72828fdf677d9fd1a743cdebb300ccc72ffeba054da0661780e89e1d5e06a78f67df31c6c8e175a150856c9240f506c589c476082dd855309ac708726e2d0cb5e810e4cfe9a717b27ef2c8646639a7d5feff61e1a7c7be3de3f504b03040a000000080026b45f5b83fb8292770000007a0000003d0000004d4554412d494e462f6d6176656e2f6f72672e6578616d706c652f4e657276654d756c746953696757616c6c65742f706f6d2e70726f706572746965730dc8bd0ac2301000e03d4f71d0d9d224b8143a88e0cfd05648c1f96ccf10884939af41df5ebff1abce9488516881c7177a2c945475e200e32c603518d35adb6a0d47378169cc5e15e277c8a9d375b373c3e1e62ee3a43ce76dbd2e5d665fd3075f6b24852ce189b3fc7b202ed46f51820bfe8e3192a81f504b010214030a00000000006956645b000000000000000000000000090000000000000000001000ed41000000004d4554412d494e462f504b010214030a00000008006856645b85177e5f7200000087000000140000000000000000000000a481270000004d4554412d494e462f4d414e49464553542e4d46504b010214030a000000000025b45f5b000000000000000000000000030000000000000000001000ed41cb000000696f2f504b010214030a000000000025b45f5b000000000000000000000000080000000000000000001000ed41ec000000696f2f6e756c732f504b010214030a000000000025b45f5b000000000000000000000000110000000000000000001000ed4112010000696f2f6e756c732f636f6e74726163742f504b010214030a00000000006856645b000000000000000000000000170000000000000000001000ed4141010000696f2f6e756c732f636f6e74726163742f6e657276652f504b010214030a00000000006856645b0000000000000000000000001e0000000000000000001000ed4176010000696f2f6e756c732f636f6e74726163742f6e657276652f656e746974792f504b010214030a00000000006856645b0000000000000000000000001d0000000000000000001000ed41b2010000696f2f6e756c732f636f6e74726163742f6e657276652f7574696c732f504b010214030a00000000006856645b000000000000000000000000210000000000000000001000ed41ed010000696f2f6e756c732f636f6e74726163742f6e657276652f6f776e6572736869702f504b010214030a00000000006856645b0000000000000000000000001d0000000000000000001000ed412c020000696f2f6e756c732f636f6e74726163742f6e657276652f6576656e742f504b010214030a00000008006856645b85e8a2edc11c000038400000300000000000000000000000a48167020000696f2f6e756c732f636f6e74726163742f6e657276652f4e657276654d756c746953696757616c6c65742e636c617373504b010214030a00000008006856645b421e3d2dc4020000c20500002f0000000000000000000000a481761f0000696f2f6e756c732f636f6e74726163742f6e657276652f656e746974792f4e524332304d696e7465722e636c617373504b010214030a00000008006856645bcb576078ac020000700500002b0000000000000000000000a48187220000696f2f6e756c732f636f6e74726163742f6e657276652f7574696c732f536166654d6174682e636c617373504b010214030a00000008006856645ba442a7196202000047040000320000000000000000000000a4817c250000696f2f6e756c732f636f6e74726163742f6e657276652f7574696c732f5265656e7472616e637947756172642e636c617373504b010214030a00000008006856645b3940d3a096020000610500002e0000000000000000000000a4812e280000696f2f6e756c732f636f6e74726163742f6e657276652f6f776e6572736869702f4f776e61626c652e636c617373504b010214030a00000008006856645bdead4057f4030000b7080000480000000000000000000000a481102b0000696f2f6e756c732f636f6e74726163742f6e657276652f6f776e6572736869702f4f776e61626c65244f776e6572736869705472616e736665727265644576656e742e636c617373504b010214030a00000008006856645b3472652cb9040000d10a0000350000000000000000000000a4816a2f0000696f2f6e756c732f636f6e74726163742f6e657276652f6576656e742f43726f73734f757446756e64734576656e742e636c617373504b010214030a00000008006856645bf804967abf030000df070000350000000000000000000000a48176340000696f2f6e756c732f636f6e74726163742f6e657276652f6576656e742f5472616e7366657246756e64734576656e742e636c617373504b010214030a00000008006856645b60f971ccd20200008a050000400000000000000000000000a48188380000696f2f6e756c732f636f6e74726163742f6e657276652f6576656e742f54784d616e616765724368616e6765436f6d706c657465644576656e742e636c617373504b010214030a00000008006856645b7b4eab31ce020000720500003a0000000000000000000000a481b83b0000696f2f6e756c732f636f6e74726163742f6e657276652f6576656e742f547855706772616465436f6d706c657465644576656e742e636c617373504b010214030a00000008006856645bce7f8dc4cf020000760500003b0000000000000000000000a481de3e0000696f2f6e756c732f636f6e74726163742f6e657276652f6576656e742f54785769746864726177436f6d706c657465644576656e742e636c617373504b010214030a00000008006756645b192278a182050000870d0000370000000000000000000000a48106420000696f2f6e756c732f636f6e74726163742f6e657276652f6576656e742f43726f73734f7574494946756e64734576656e742e636c617373504b010214030a00000008006856645bddea92d2bf030000e3070000340000000000000000000000a481dd470000696f2f6e756c732f636f6e74726163742f6e657276652f6576656e742f4465706f73697446756e64734576656e742e636c617373504b010214030a00000000006956645b0000000000000000000000000f0000000000000000001000ffffee4b00004d4554412d494e462f6d6176656e2f504b010214030a00000000006956645b0000000000000000000000001b0000000000000000001000ffff1b4c00004d4554412d494e462f6d6176656e2f6f72672e6578616d706c652f504b010214030a00000000006956645b0000000000000000000000002f0000000000000000001000ffff544c00004d4554412d494e462f6d6176656e2f6f72672e6578616d706c652f4e657276654d756c746953696757616c6c65742f504b010214030a000000080087525e5b62dcc744940200004a090000360000000000000000000000a481a14c00004d4554412d494e462f6d6176656e2f6f72672e6578616d706c652f4e657276654d756c746953696757616c6c65742f706f6d2e786d6c504b010214030a000000080026b45f5b83fb8292770000007a0000003d0000000000000000000000a481894f00004d4554412d494e462f6d6176656e2f6f72672e6578616d706c652f4e657276654d756c746953696757616c6c65742f706f6d2e70726f70657274696573504b0506000000001c001c00590900005b5000000000',
+                description: 'Nerve多签合约，用于多方签名管理'
+            },
+            'NR20Minter': {
+                name: 'NR20Minter (NR20铸币合约)',
+                code: '504b03040a00000000006282635b000000000000000000000000090000004d4554412d494e462f504b03040a00000008006182635b85177e5f7200000087000000140000004d4554412d494e462f4d414e49464553542e4d46f34dcccb4c4b2d2ed10d4b2d2acecccfb35230d433e0e5722c4acec82c4b2d420807e4a45694162bc02478b99c4a33734a749d2aad140a32538b8a52734af379b99c8b52134b5253c0c28e0589c919a90abe8965a9790ac67aa62073419a5274bd52b241f658e819c41b9a98f072f1720100504b03040a00000000006182635b00000000000000000000000003000000696f2f504b03040a00000000006182635b00000000000000000000000008000000696f2f6e756c732f504b03040a00000000006182635b00000000000000000000000011000000696f2f6e756c732f636f6e74726163742f504b03040a00000000006182635b00000000000000000000000017000000696f2f6e756c732f636f6e74726163742f746f6b656e2f504b03040a00000008006182635b1b308737600b0000e91b000028000000696f2f6e756c732f636f6e74726163742f746f6b656e2f4d696e746572546f6b656e2e636c617373b558897f5c5515fede6492593a69d3699b26254da60b904e2699526881b494a6210991a685240d52d1f032f3920c9d25ccd2524014b5a02c2ab228a080caa6142c4b9296b2294b05056573415cff0e7eea77ee7bf36692cc24083f7fbff6befbeebbf73bdf39e7bbe7dec99bff7eee45009bf02f2fbe873b3c3813777a7117ee76e3fb5efc00f7c8c8bdd2dc27cd0fa5f9911767e17e0f6af1800b0f7ae1939733f163697ee2c64fbd7c3e24cdc3d23cb2082bf0a80b8fb9f03379ffb9348fbb71c48d27a4fba434bf70e1a817abf18cd87c569a49199e7263da4b3bc7dc382ecfe764f08434cf4bf3821b2fcaf32531f1b20bbff422241067e215375e95e76b6ebc2e0b4fbaf06b17de70e14d177ea3c199d4138606ffae2bf5037a38ae27c7c203d9742c39b6554355e650622415d7e08e1a9158428f673468bd1a166553593d3e909b98881fd2506b2e4de8d9f1f0ced8586f326b8c19692e5f1cc9a5d346323b9c88712cada171572c154ee6e299702495cca6f548369c89ee0f7744a3692393e10af7884e061183769698a8b96c2c1eeed327f8d133101b4bead95c9a74bb667edd363f706982db89e9d2e3f1d44123aa21fb29103fa37921e04d25e387faacf854346f1862463a53514302104b1abb738911233da88fc4558e52113d3ea4a763f26e0d3ab3e331866bfd5c0ad9d47e231936b107a54f73cb9b37944a747d7f2e998d258ca1582646d48e649209cec65249229f56da39dd9e131e8a1907b72af6d4465ddec25c3d546d8b2563d9ed1aba9be792983bd23b7f542554557965550f64f5c87ea642454529fcb72ebca561ed4ccf2ed6d3943b97cc7031b8a08bfdc655b958da88d20ba7d8d47076f3a749ba9076645364ae275239c1718ee4d24966a0b9fc82eab43111d723465e266b16302d6b3c49e3607ebe47895cf69586c18568cf8f5c2eb595a9834931e5ca4c18c9a8f47c6aa423bfbd2a0fe8f19c21c56286860f4d1856c6a42672156d2633a346ba3b9d4a68d8fb99d89689e83e067d54c1bbf3d63e753a89e5192ea0fc5ff88ace3356543d6916e2899821caf158c572cfa8862d0b49a25ce25c168894c2898974ea007b95c3a6c45d7a24628ab472d854694d2c19491b7ac6e85073751e0d5e3d1a35a24366766b784eccfabe24931b517cec49b2c2d6855b37199e51e86e2a5a5498376cd35b925f627f14c49d053fcccf4528f6b7cac8b811d9afa1a5cc6e9b5b8424fa1589cc98868e79d77c32a42ab50bcec877e8a97720954b478cee98d4f29aa262dd26002ebced4316bff3613bce673df3e1f77887c5be7068b407b89de2463a10cb0458ad02d9712360164517def5e13dbcefc3d938c78773a569c7561fb6e13c1ffad1e3c307384fc3d2c25176a19e19670df561073a7cb8001d3c30bafafbf7f4b707ba1213d943012bb43e74cbf26b70b90fd749f307fc91656ac699c8a5a502e3c337c0f569c8c9d2d5dfb969637b20bf7f02b22b950746b135fa3b7b623635779a0fdf122a37e17216f43287a18aecfa410ba6eb80da47d5b3de7dbd4956aeceb89ec9181989149b3fe1cf12cc0f7d382ccc031621897419327fc1473c7dac79b27bca78e7c35ff1910f3788959b71850f515009a7f42633b9d1d15844b67ac0927e34a0bc9079b7f9f037fc7d2147f3bb30efe88c771f0ee0a086d64132526a0c2472996c60c4088c710b6725cae37a32904a0778f6e9717173639bd8be8517b919f4ac1212488d9a0439eb1ff827bd5ff84a42cd1736ca9e912b8d0879ae2e59ca3aad170d0df3393d03d1dc7aa556141547de594a7eee935d1fe07566814b6b958a0f6156145f6b4c67d409b1aa24c05e6e142e72a5cdab058fc6e67da5ab86735f57ff1e96a13183ce9f56cac8dc21ae321231ce6f2a7332280d98f0cdfb5495a32035b495bb87943b40dcf9224b84891cdb734a10fc84943d915462424f1b83a9792e44bd58c35f3367c181cdd80217fc52dff8bbcd2f254e3d59e5f87448a1534fd64ef5645583869daadfc9ff1714bd77e11438a5ac71e4428e6ce798c667cd3168c167e1984285df790c954fa9d9bd6cbd7c82bfd396a0119f63cf67cec745d8c5276f14e8e30cc10af34dbe5512a8eaa80d50a506d7152daeb416efb6beee5140e7960472cd06dab020503b2e2e01e43e320b28bc20d0365c5202c8339bd1e60581fa3160017d880ace01ba83d3f0069fc6a249788227e0bb6c1ad593585ce82ea977be0e97f351382bfc4c4e65b0651255c1d0245cc1d5937007eb9d937048962a149320f304eac2c99fc58b50cfdfbfaba89f73b191d1d84c9db4d399f3a9932e665cd89e65b2b0d84a4fd4a5a99ee8cba17aa2b00ad51be46a27f6b25f07c77f68aed28521172ee53fcd85cf033b345cc6af2b9c04d9a79c2eb4f2fc022eb724770921057451700a4b832da169f80b6a5bac3e75d0d64e7ad4a9b806cce936d745f822d968aaf725fa240a1ec615167c2f670bfb6a054f59b74c63d96c03dd34d0c3945da80cd49a0b6c03d50a5632ae63c482ede61c99e535595bc12fc6bc8898bbe0a18a0b985e1bd38b8822adc9c1c7f982f912e7481ac254d59296e358eec0cb58b1bbf5245c54c6d1d6903554dbeeac779e849b83d213fd3995e146d605505d8ba92f3f73548b21acc5a5389d190931f4854c876d22618c5ad10b638c3d0757afc138635ec1b5d588d17527aeb4146d7eebe4b7bdca51c7c7a87561ffc758e1427c86ca25fbd58e59d94f2069097f84a04e295bc116e6a4751a2b997a3eea9c4766c5719831bc82054657f483e62a9bbe1f298bbe5fc9c0a17a42ba425158565142801a26709545a48f80a6fc441ba1990ccc62374a06630b4a2fa6a457c26d875cfb2cd99c64f4c581c1167b37d7733787ecb7556a6f3310a704251c0d27b0fa321598c663682a14e57bb13c6475ef61c59009cb0abb7f2ddc6cf73380713430e46b19a4667abc993cfa78b11ee01da810cc41db9d417e33dd1944ce0ae6a012bf996f0f2add3b34df0e6d2b27f11a65e9f6eb9c2871596f3b750c01b25b9cd7706d5fc8d4705fe8a84db25609f15ac85d7a15be4cf15e4fa25f2d8af37a9bd87a4ba4ab9891ab559cf7aa985790cec7a82ba53d976627e150f964af9993ecc3f4f2c632c91efb24c9bec6ae6c37d14381682b247bada4570e8dd014d649ad17122ac98a8e24f9a95911ba9969bc859edf4a42b7a115df2e22d766936b63244d726d5611940855c2c108f1e5baf948ad579a0b89e62c6aa7929a529e5686d4ed24750796e34e12b98ba4eefedf4969cc79d9bc9c36272f9439ee5d302fd797cb8b86afd8d6862c6b35415a3a3d6f72e59cca733fa93ec0fe8345666b6cb335b6d91aaab6ac1c6eb0f7fed70827b10b30d653686e77f2d016fbadd2b484ea9dadd40425593848cc583fc4ddfc30693c826578144d78aca88e076c3a01e29b7402dc90e6de0d5885d0cd533aaaeab8437e875a7caeb3f83416f169f56f984630cfe6d4196cfcaa5a3c4eb423588a2778077cb28849a3cda4d166d2683369b499d4da4c0edb4c3eb098f498b1283efdcca3aedeba0791a37cac771e474b052ead77865acdde0984cc32d96a89d55954089f22f8d314eb33bc083dcbb1491e75d3bcd61ce3297ebcc8851edb851edb851edb851ecb85e5bc86dfa8ae24f943d11ce9b42e446eb02485792872d54df6b6bbd63aefd6055ba6d0b63b18f287a7b131efefe296562908a62fb3f3ff3cebda0b3c895f64065e22fd978b6af73a9bf23a7cd3a2bcceaa4e55ccd0d58ab243fe466011c958449a2c22ad21ff1992f23c8953679330d3fe0ae15ea5085f632a5f2f22d0641368b20934d904ea6d0237db17b27dd6cd69250bd0d2161e0a53d8745fe1dc28541a73dfbfc128bc5974855a691b5ca9cc68f99ae257858ebfd32d3b86752ad595b013b27ed2141b7a8b806f17edf43adb509d65487ab7aacbf02c93b7d94976a8a034045b24af525d646bd9665b67983503fb0e81de2585f7f84becfda2c036d8e61b58f24df30df88e0aacf48448459e48ad22f25d95b3dba975017730fd5ba87d0faf7e5bf02b78fe0b504b03040a00000008006182635b68fe421cca0100005e04000022000000696f2f6e756c732f636f6e74726163742f746f6b656e2f546f6b656e2e636c617373a552d14e1341143d03b5cb16aa28a8a0284a08697970131ff481a76a24694282a19507dfa6bb431d989da933b325fc9a0f7e801f65bc534ba5b6a5896eb23b3be79e7bcebd33f7c7cf6fdf01bcc64e84e711b623bc60a8367a3d6bfa5c7de80bed19569a5a0bfb5e71e7848bf092186dcbb53b1376c828699e0b86f55afde89cf779a2b8ee262d6fa5ee1e306c9e14dacb5c9c4a273b4a34b4369e7b69b463d83b9226d18572496ab4b73cf589cb2e123ee224a7525c9248d95de51da318963291ca9c2b4a5eacd59b0ccb9ea8aa55f47aea8a61e3ba869cfb2fc93bd96d6a2fbac29244dce154582a8ecf18ded4a61b37b2cc0ae70e668aec8c37f3915b6add0b3bd6d5fedcae4ec4d7425a9191e2921f1e26c3db39554d2faafe99eee85ae4d09a9ce1d33ca17fb489f86034e8ae63ae94b90cc7c9d0fe2fb799475d6999c2a6e2502af2a8b4cd85d0af0295616b42d0876832e030acfe19c2e3ceb9486942f76fcbd8fd6be06f278fcd7e99816101e1894b749788695fa15d99d66580b0952958157727b07b589dc0eee301a9dfc0b0466f144cd70784877844ff01ac2efc0647a1c7d81886d6166f864684cdd9b94ff0748aef388d085b83ef33dca135141a7c4ad46e488a10ff02504b03040a00000008006182635bea7bbc798f040000e609000030000000696f2f6e756c732f636f6e74726163742f746f6b656e2f546f6b656e24417070726f76616c4576656e742e636c6173738d565b6f1b4514fec6bbde75b69bbb49d224b46929e05b6a2ee19a4b73218140d2943835b4406163af926d9cdd74771d90a0129540ea033c801020242e2f252f790089b80824c45390f82ffc03049c995dbb89e3243cf8ccd93367e67cdf7c6746fef39f5f7e03f018ae6988e34213148c7333c1cd248f4da998d63083e735bcc0cd0c66b937abe2450d2770218697f838c7cd7c0c176358e0ee256e5e56b1a822c71075deb64d97e1d49ce564ed72c9cb161cdb778d829ff58a6bd98962d1353d6f9841f5364cbbc853a39b46a96c3274cd5d37368decbae1af6627ad9559db37574c97529511cbb6fc3186cb89a3773d66b6e1f6c93c833ce5140940eb9c659b17cbebcba6bb642c9728d231e7148c52de702dfe1d06657fd5f2189a2736365c87b04f6f9ab6cfa0cfdac47caa64789e49d39983607c67cdb4b34bdc9edbb798389e5d2cdbbeb56ee62dcfa22a970cd758377dd39db06dc7377ccbb169cf546382462d27bb68de285bae59a41d632ba6bf10883190481e2747ccab659f39e694f98969b479ae2aa0e6edf9e065f381a03d54f6104979b930eb64e2706114a2639488f97d6152c9b057b20bcbd7cd823f9cbccac01c2ed28129219241a234e77ca3b0366f6c08eda8c1a9f4aae1ad06824b89e42c152156e5122533fa88f94ece772d7b85215e852f760ea2b4b39673ca6ec19cb1782f6842cdf33c4d471f967474a15b470f3727d1abe332f22a5e21e9fe7f37a87855c7237854c5151d4fe16986ee7a189365ab244e3bbe6fe5bbe2f28deab88ad7b8799d006606c28b364ae43203e2ae898c37740c6384a1adfef4187a1bea1ff6391d5a3e9059f43a43e7be7312413aa6fea308379aded362c4ab514b9054c60627c330983828cd41b5c2631aaecbaff6cf11f9fd89a9c3a771869ecc38a82b2121c215a78735c2451723e94ea346f37de8a7effbe9ab44a34c633c75172c95de412495d981941adc81fca358758a6c17a2646f50a68b267868818f4e94719aa2a9603d06f000203c5e97098f578e088fd796708efc4e89261f2467bf7d080f93e590b234f2e5d1d44f88fc50c3a088e03ba2a61e248435191248868bc7289b575404977b0c34117d8fd6dc143b74055935d44a889a2e444320523d90f71b0249370622d503f980d67c7808909e104806830d80c8f5406e3704725e2c3a0044ae07f211adf9f810205c335e98ae7cb8d75f9423d1782b95fe1e51793bbd8b965405d134fdee202a6da77f8732cf75dba58ea22143bf0ad4afd0ba45375ec4298b9f679020514cda9b205513e45db4f381627205b12db472ef0fa8f21664699b404882462f01053e818a4fe9e43e23989f13e52ff026be14b40602c0355ab7e89fc6e3824e1143148be009d1a0badac2fe46bf8a2715d6adb0b836cea9d32b1752ff393cc6e9805d734a306be26046da4ef7ad069c78580ac36f55e37210271a5a10efbb07bf43dc9eafe9367d43cdf32da6f0dd1e35a643d89d04fa193c4b5038d84128ede3ec5fbae511824b30c947e84718cbefffa445f49c862caed1b6bc51867ec5892b77a1773457484141a5b5a32df025eeb7073e616e6dbb594147059df58d77674fe30d8540231815760c67c3a746c173f42c35fd07504b03040a00000008006182635b826261e37e040000ca09000030000000696f2f6e756c732f636f6e74726163742f746f6b656e2f546f6b656e245472616e736665724576656e742e636c6173738d56df531b5514fe6e76b31bb60be19740015b5aab8624b06ad156c36f84160da5051a0bd5da25d9c296b08bbb1b5e1c1ffa6ff8aebcf0a033923a3ae3f88433fe2ffe078e7aeedd854212c0879c7bf6dc73eef9cef9cebd933ffff9e53700efe189864e4c3441c12417535c4c73db8c8a590d73b8a3e12e177398e7dabc8a4f345cc244029ff235cfc54202f71258e4ea7d2e1ea85852b1cc203ff3dc6d862b79db359c4ad9378aae1378663130fcd29631552a7996efe7186281cb10df35cb158ba12bffdcdc358d6d33d834a6ed8d7927b0362c8fbc9451dbb183718687a9f30fbc60b7e1f18305823be3960840326f3bd6bdcaf6bae5ad98eb65b2b4e7dda2592e989ecdbf23a31c6cda3e43f38a673afe33cb9bddb59c80419f771ccb9b299bbe6fd176b61e4ce06e598eb1c2e58d53c154e3f5a58a13d8db56c1f66dca72dff4cc6d2bb0bc29c7710333b05d87ce4c372ed03cf63196acaf2ab66795e84475c30ae6040d03a9c18b8850fd23e76b17f498f72b4e47af70e6fc704dd0772124b187729d4163c23ff6ba9c3a9b0c854a30cb54ed6b9153d974368cc5f5e75631c80dae3130971353b72588318988e6e5c02c6e2d983b822f1a674abd69fa9b21c9526a709e92502d95323933fa4804ee72e0d9ce0643e7117c717268a593b565b7e215ad399bf3af090687b99b8e3eace8e842b78e1e2e2ea357c74314547c4674fdff0950f148c73b7857c5aa8e5bb8cdd05d0b63ba62974b96c7d0712af26b7ed5c674ace131179f132bd981c01da3b2b203e26689cd2f74e430cad05adb3786de867c47534ded2a84048bc9a6eca73a248cd4a0fef34a6db47d62a4a8eb8d8681483277762ca7c43094aa27a59ea7a841b91affa3c939c7bf3f3573f636aed1d3d8099a47488871aee9018d71bac54a8cd3aad17e1ffae9fb75fa2ad32ad3da997e0996ce1c2096ce1e404a0f1d40fe51445d21d98538c92c790ea109c36881810e1a82ab644d87f118c01b80d0785e26349e3926349e5bc20dd293120986374fc8b7f036490ec7a09587c6d33f21f6c3717e45186f8a7c7ae810e5634861300a1e276f9e4d1175bc42af09eb2d8ab92d4ee80abd8e112b1162ba060d8148b540720d81641a03916a814c50cce419407a2220596a743d10b916c84c4320c322a80e885c0be40ec5dc3d0308e78b27a68b1e9df517f970ea5ea433df232eef670ed192ae229ea1df77884bfb99dfa12c70de0e699a68c9d2af0af55b24f7a065859dbc783f4307896cd24907e9c8413e441b5fc8265791d843926b7f4095f7204bfb04421265f41250200f150bd4b94582f9804a5ec2975816650d84808fcb7a41ff266e8a724a18215b0cef8be1d4d516f637fa557ca0b06e85756a93bc747adba2d27f8eda381b56d79c1695357130a3ad57fb36c39ab8598acc4f8fec7268a732b4d0def70a7ebbb8398fe826add2f0ac119b8f4fb0311bc1ee20d01fe22382c2c10e41699b64ffd20d8f115c82493a223dc658e1f42705d1531a55f1848ee58332f22b2eadbe84dede5c25064529c9f6d65097b8de16ea8439d9fa4d15ed5574d40eded313833712018d614cc8715c8f9e19051fd393d4f41f504b03040a00000000006282635b0000000000000000000000000f0000004d4554412d494e462f6d6176656e2f504b03040a00000000006282635b0000000000000000000000001b0000004d4554412d494e462f6d6176656e2f6f72672e6578616d706c652f504b03040a00000000006282635b000000000000000000000000270000004d4554412d494e462f6d6176656e2f6f72672e6578616d706c652f4e524332304d696e7465722f504b03040a00000008008e525e5be9204cfe79020000c40600002e0000004d4554412d494e462f6d6176656e2f6f72672e6578616d706c652f4e524332304d696e7465722f706f6d2e786d6ca554cb6edb30103c475fa11abd92b493a23502464110b46881bc50a745afac444b4c24522029db41d07fef8aa45e89dd1c6a5fb8b3bba3d9e14af47c5795f1866b23943c9b2df07c769e44b4d6ea81a73686a43467b3c2dafa94908a6db8c4ac6669c1b1d239b9bbbd261ff01c9aa2b8fbb996d39d117ddb76bbc5db13d7703c9f2fc8afebab1530540c09692c93291fb71b716a5cf64aa5cc3a556f3e7e6887dfa1ea9dc93c885c0f867896b84e5aa98c973fbd0989cb5232c1a2e888e65a35f5b72c012ecc77acaa4b4e49077a1ea6ad58b3d40270f3fdf2787e2da4e59a9211ee0b83e109f88d56371777abafb7f79474a8af91ace2531a87b452325e739971990a6e92e868043cb5e1a055282c9bd260933d8eb4b61523499044a99256438836d5546e5bdbe9babab8ffbc1aeb841c993efa4d259be3c342d47a8d4c0540af86d5e27fe48c42e71420bf1b513a1e5a974d0e0be8397de0ced39b0e0be4b729b44c27988ce0172c55552d4aae916f7835c230c309fed42edb680448c2f86b9137daadbfc78ea8518d4e396ccc474ac239642cd339b73e13ce210373ab4cc83cf971ff052d29e963ff1cf2fa41948c9c38ec0ad0f082350657ea41fdc30ebee329f29ebc69c502c3ffa5152d41d3aa33fd4c1d1200505930c313b8a74796c32be9c32e992b5676bd214c1ed88681e8f6d8959149ddde1b00b862425e96cc987e9dbb4dc597e17051d7a5f01f2ef886f4f53d05dc4f5371690768c092f7cfe1c38bdd9ae24c6808947efad3fa168a86be7708c5866b702cae95b63142fb4817cbf97271b07f5b705b00815571c91a991631841deb7ec23538c5f7100ed060e49e156bd117973802ccab35eccec6bdd0e1fd8d00f55625d15f504b03040a00000008006282635b9a4d0c057100000072000000350000004d4554412d494e462f6d6176656e2f6f72672e6578616d706c652f4e524332304d696e7465722f706f6d2e70726f7065727469657353764fcd4b2d4a2c494d5148aa54f04d2c4bcde352f6cdcf53f0cb2f533030563034b332b4b402329c8343148c0c8c4cb9ca528b8a33f3f36c0df50c7483fd1c03823dfc43b8d28bf24b0b3c536cf38bd2f5522b12730b7252b9128b4a32d312934b80c27e41ce4606be997925a9455c00504b010214030a00000000006282635b000000000000000000000000090000000000000000001000ed41000000004d4554412d494e462f504b010214030a00000008006182635b85177e5f7200000087000000140000000000000000000000a481270000004d4554412d494e462f4d414e49464553542e4d46504b010214030a00000000006182635b000000000000000000000000030000000000000000001000ed41cb000000696f2f504b010214030a00000000006182635b000000000000000000000000080000000000000000001000ed41ec000000696f2f6e756c732f504b010214030a00000000006182635b000000000000000000000000110000000000000000001000ed4112010000696f2f6e756c732f636f6e74726163742f504b010214030a00000000006182635b000000000000000000000000170000000000000000001000ed4141010000696f2f6e756c732f636f6e74726163742f746f6b656e2f504b010214030a00000008006182635b1b308737600b0000e91b0000280000000000000000000000a48176010000696f2f6e756c732f636f6e74726163742f746f6b656e2f4d696e746572546f6b656e2e636c617373504b010214030a00000008006182635b68fe421cca0100005e040000220000000000000000000000a4811c0d0000696f2f6e756c732f636f6e74726163742f746f6b656e2f546f6b656e2e636c617373504b010214030a00000008006182635bea7bbc798f040000e6090000300000000000000000000000a481260f0000696f2f6e756c732f636f6e74726163742f746f6b656e2f546f6b656e24417070726f76616c4576656e742e636c617373504b010214030a00000008006182635b826261e37e040000ca090000300000000000000000000000a48103140000696f2f6e756c732f636f6e74726163742f746f6b656e2f546f6b656e245472616e736665724576656e742e636c617373504b010214030a00000000006282635b0000000000000000000000000f0000000000000000001000ffffcf1800004d4554412d494e462f6d6176656e2f504b010214030a00000000006282635b0000000000000000000000001b0000000000000000001000fffffc1800004d4554412d494e462f6d6176656e2f6f72672e6578616d706c652f504b010214030a00000000006282635b000000000000000000000000270000000000000000001000ffff351900004d4554412d494e462f6d6176656e2f6f72672e6578616d706c652f4e524332304d696e7465722f504b010214030a00000008008e525e5be9204cfe79020000c40600002e0000000000000000000000a4817a1900004d4554412d494e462f6d6176656e2f6f72672e6578616d706c652f4e524332304d696e7465722f706f6d2e786d6c504b010214030a00000008006282635b9a4d0c057100000072000000350000000000000000000000a4813f1c00004d4554412d494e462f6d6176656e2f6f72672e6578616d706c652f4e524332304d696e7465722f706f6d2e70726f70657274696573504b0506000000000f000f0060040000031d00000000',
+                description: 'NR20代币铸币合约'
+            },
+            'NRC20': {
+                name: 'NRC20 (标准代币合约)',
+                code: '504b03040a0000080000a8949b4d00000000000000000000000003000400696f2ffeca0000504b03040a0000080000a8949b4d00000000000000000000000008000000696f2f6e756c732f504b03040a0000080000a8949b4d00000000000000000000000011000000696f2f6e756c732f636f6e74726163742f504b03040a0000080000a8949b4d00000000000000000000000017000000696f2f6e756c732f636f6e74726163742f746f6b656e2f504b0304140008080800a8949b4d00000000000000000000000028000000696f2f6e756c732f636f6e74726163742f746f6b656e2f53696d706c65546f6b656e2e636c617373b557f9771bd515fe469a58b232d94c6cbc04474edce068b14830101c9ae2a4a69812278d134342b7b134b627d186168794a52d015a0a2d5ba1652d4b4b5a08cdd2244e480bf49c9e724eff89fe239c9e7ef7cd68347624fb144e7fd09b3b6fb9f7bbdf5ddee85ffff9f81300dbf1f756c47042861fc9f0b00c8f4410c7a3ad68c76321fc388290bcc4f013197e2ad38f47389c94e189089ec4532bb11e3f0be1e711acc533113c8b5fcaccaf42782e84e7233cf5820c2fcaf0922cff5aa497437825821e3910c36f65785586d744edeb32bc11c69b32f396bcfc4ea4b7c378479eef86f19ee8f97d087f08e1fd104e85f0470d7adecc591adaee3d6ace99a9ac999f494d544a767e66a78696f289dc5421ab219cb1d276cecc963568631a56560a15333b512d16b3273474384773666536b5db9e19cb57ac19abc4e3e12993fad2164fad71f6542b7636b5d72c72b175c29ec99b956a89c64717aede71af5d48e5abd9722a5dc8574a66ba922a678ea546329992552eef6c6c6e177586cc6cb670dcca68a87c098d5fd1bc00583fb0b5118ffa9e42c61212ecbc355ecd4d59a583e65456b15e489bd949b364cbbb3ba957666d52d67f2d8c4ae198954f4dd8b922378b4cdd5d07aaf98a9db326edb2cde323f93c6353b10b79aad8d2d813d3db939ab4ade354121cd8cab076d6d05f1bca963becbc5dd9a561d7c0b50e369b59ac666ceba48655a2c836b323b902816bd8b410ff7eb3c47cac58a5058ec49675e480f560d52e5919c92c950592781a0e0e2c13cc25579bd2b1a2703c6f9534f42e7d9e19592e5af98c6c35d491915a82ae9833b3554b8a6741069c28d6b260d544c54c1f633aaa77a72b500b8de4cbd356e9ae5221a7e1d05772afb1775b8f3005a795fa40a5403add2ade37ade1d665ec35252ce42a6153a879a0e1b6e5d037c517328bc552618eead6daf974c932cbd6889a31d9ac2266266365261d7ed7b2732d5a5f53ae4e2963dea670215b13e5b017a4ff0bbdac81b0e96cd95617b7fb7079f62365abfeb2a676a8becc99dd355ebf24999342a6b3c587c0d3ba223d6ba58fb1cb0c343f9f6ab2d6fc448b4afe6d3581bec797d4e16f2d723e982bcf6818f99fec36d6149928544b69eb2e5b4a6eadafb30eca7603834819b849866dd86ee0660c1918c59f0c7c80210debeaf7c6dd667996c56ae016dc6ae076193e94cda7f191813fe34c08670d9cc379037fc10536b426bd5dd9ee3fe896c8e89c252d72d5a277632ccf56b2276b96cb5659f0b03d5c347009f3062ee30a0f2cb8cf782d3562c4c02c2c0379640d1c93e1635c3560c35a0e5dad926ae816bc1bc888d67bf06d0305908fbfe26f063ec1190d3d63f972757ada4edbdc17752b381355aa65f39c814f71c6c061b0c2930767ada8ca8e68ae5aae44a7ace80ceb981743b4326be6a38552941ddfccf278f4a641394e28bd0b2cb82d275a98766c0c8a8b9ff1c659fe5e652ed4d365dfd4512b4ded3734acaf3dee8b860d4bb1a6ee58269c7e64f4c03ebe1c1c1de7582c1c97da1a6bda37c3b96ab662abcfacc16625d8ec6c6743bc7ba5745acaeead14e595bfcc15162c56e9dc0effbdef30b2f3da99add74e69e86e68e010b3932d47b77236d56f6cd2bd544e39353f6371df9606301a1a0d959c0f025a183822e75bd3855cd12c31be4b74337e0405d90dc97bad13f2861e38d2a877a08fdfd471049040122d689356c13f076dd22dd4930d83cf80f40cf5646300dbb49277f077bbef7d981feb8c307652be833329be697cae885d8076566df93ac7163519c52e8e86b301dfc09d7c8eb8abbbf9d408a191a2c062455b9655b40d7b1a280a9e5ea428b1aca29bf1cd068af4c588b62fab681477b98afecd1d2bf8b462f354761e2d17a1c7ae2274781ee18b68ad8b9158fc22b458e22202b176fd2282b1e479ac6cd72fc1b8845572ea025a2f63b500ba823541dc77156b0f6beecc3cd65d46db390fe8205672bc053a3a2975a383ffc6fa18ca2d0c659c81ddc6c08e30a00718830c818a43430e50d7219106150f2249ba0494f42dee0b2a495247c7dd94bb746e1b539e5f3bb2c9f28070f129558889141147e257705d009f61fd78f2738448ccd964c29d6a1fd6bbf4cf11e6a44842bfaebceae5ff55a17a35696e63d03b48f426527d23512568aeee45caf322857bb1577991c238a5004ff7611fb908f2ec2aece7091ddf7103eaacede0da01ceac46e00b748430f105da4338b820c8e2f7aac0225f0f61d28dfb2384a1f3d91f8b3344c97974c4e21caf8f2538764ae8e22249d4f47aa27628f0e36825883584d64e609b08451c8b39fa3cc7fa719feb583fee578e89b45f8547c05d176c180ede5b6e384ef28844b23ffe4f84f453d08397d12559560b4dfbde84139abd098941d007f17ec80dd84d5dbd788010bfa720461d7d3e880ef7dd8870d710ed09ab2b110cdfa97d81ce469486340fe977a9d521d3a64dd1bc31462e13c2623ce1b2c8099117f1d8a6b89a4218690631831b98ae75801b3d801b15739a92f62b800dc3fa7d0fc90f5d24dd31d770f755f4d4406c580862b5da7994c13cc62accfa00747b00ba554e6a4a5a02c00f3c00332c0151d1570370430d809ab884de26388ac4f120dd2cf970f47938fa3c1c7df4b1290ed3c371813884e3d118316cacd91e4f242f21fa16d6a909660e093a05a386b56309ac415f85cf91e5e3c4fd10b3ed04b3e8615e5e8fb2de1ff315c2a8877dd4c33eca900fa90abf8d811f72abb855aab89fc9166ee454403e05298b538fbbcd3acafc22ba613dd6a58b774919e2892e9ddef5d1a57a9f75aae17126da495a7d02d7e14972fc94af13453d9c514cbb38a30ca353b051b760c3cc907b54270ac807af8be711174faf0f4fb26dd33c36d7d0f42f40e3a4fdd3d4f60bacc3334cfb677d487a3d24bd1e925e0f49af87a4c343627b48fec115d131ec70e1efdf4eb3ee722fb2615d2d76b97754979e483a92a0f477f1e7a8ef79acc70be8c28bec202fb13fbfcc5be9151fe2610ff1b08778d8433cec225ecf5bed28fb79bd8b3b333b3823f10f83cd26c52ece53fc0be17af43057852d5279095f1b8f25dab6cce3c69a7badf12419efab43f787fb5576acd77875bc4ec2df20f4377d69b9d983bc193917f266b7b45b18900714e480fca17181945d201b5d20c944db8044b806a27f310827ca6f53dd3bccb977c9e77b3e00fee6965bd4dc5ac8750d00fff6b8008ef04df8bc9ef7c03a295a96f0ebf51be19c579c11b5ed7db2704a19ec708e7906af57663445fa0a04daeed4949d075d3b45f7bee989c58564e91b92d68d6d394e7e403d1fd2ee69b6c78f7c8dabc7b3d9c38636a49cec2193b52b86d63b5ceb15d7bae55aef6ce065e232b62e76f32cdd39e733d9e999ec74dd14a9aabe8b16393ce7a5584079b1a189c3c905661d8f2f50113f06f937b907f3beb06ef0cc6ff03cdee07a2c9200092ef4fdb8ca9887d80b4479006bd9459f6637ece1f33768fd2f504b070859aeecdfce09000028180000504b0304140008080800a8949b4d00000000000000000000000022000000696f2f6e756c732f636f6e74726163742f746f6b656e2f546f6b656e2e636c617373a552d14e1341143d03b5cb16aa28a8a0284a08697970131ff481a76a24694282a19507dfa6bb431d989da933b325fc9a0f7e801f65bc534ba5b6a5896eb23b3be79e7bcebd33f7c7cf6fdf01bcc64e84e711b623bc60a8367a3d6bfa5c7de80bed19569a5a0bfb5e71e7848bf092186dcbb53b1376c828699e0b86f55afde89cf779a2b8ee262d6fa5ee1e306c9e14dacb5c9c4a273b4a34b4369e7b69b463d83b9226d18572496ab4b73cf589cb2e123ee224a7525c9248d95de51da318963291ca9c2b4a5eacd59b0ccb9ea8aa55f47aea8a61e3ba869cfb2fc93bd96d6a2fbac29244dce154582a8ecf18ded4a61b37b2cc0ae70e668aec8c37f3915b6add0b3bd6d5fedcae4ec4d7425a9191e2921f1e26c3db39554d2faafe99eee85ae4d09a9ce1d33ca17fb489f86034e8ae63ae94b90cc7c9d0fe2fb799475d6999c2a6e2502af2a8b4cd85d0af0295616b42d0876832e030acfe19c2e3ceb9486942f76fcbd8fd6be06f278fcd7e99816101e1894b749788695fa15d99d66580b0952958157727b07b589dc0eee301a9dfc0b0466f144cd70784877844ff01ac2efc0647a1c7d81886d6166f864684cdd9b94ff0748aef388d085b83ef33dca135141a7c4ad46e488a10ff02504b070868fe421cca0100005e040000504b0304140008080800a8949b4d00000000000000000000000030000000696f2f6e756c732f636f6e74726163742f746f6b656e2f546f6b656e24417070726f76616c4576656e742e636c6173738d56dd531b5514ffddec66376c17c247040ad8d25a3524a1f1033ff928104151281568b455ab4bb2035bc22eee6ee88c8e3af541677cd087761ced8b1f33ca0b0f3a23a9a3338e4f38e3ffe27fe0a8e7dedd501202f89073cf9e7bee3dbfdffd9d7b277ffef3cb6f001ec3350d095c688282716e26b899e4b19c8a290dd3785ec30bdc4c63867b332a5ed47002176278898fb3dcccc570318679ee5ee2e665150b2a1619a2ce0ddb74194ecd5a4ed62e97bc6cc1b17dd728f859afb8969d28165dd3f38619546fc3b48b3c35ba6994ca2643e7ec7563d3c8ae1bfe6a76d25a99b17d73c574295519b16ccb1f63b89c3c7ad763661b6e3f906790734e9100c4672ddbbc585e5f36dd2563b94491f659a76094f2866bf1ef3028fbab96c7d03cb1b1e13a847d6ad3b47d067dc626e6b992e179264d670e82f19d35d3ce2e717bae6631713cbb50b67d6bddcc5b9e45552e19aeb16efaa63b61db8e6ff89663d39ea9c6048dbd9cec82f976d972cd22ed185b31fdf9408cfee4c07172c4bcbdec33c79c323f318d365fac0aa879fb3e78d97c206837953d44525e2ecc3a993c5c1885e81825627e5f985432ec95ecfcf275b3e00f0f5c65600e17e9c09410c920519a177da3b036676c08eda8c1a9f4aae1ad06824bc981192a42acca254a66f411f39d45dfb5ec15864415bed83988d2cedaa253760be6b4c57b41136a9ee7693a7ab1a4a3135d3abab939891e1d979157f10a49f7ffbb41c5ab3a1ec1a32aaee8780a4f3374d5c3982c5b2571da899a95ef8acb37aae32a5ee3e6750298e90f2fda2891cbf48bbb2632ded0318c1186d6fad363e869a87fd8e77468f94066d1eb0c1d35e72482744c7d47116e34bdafc58857a39620a98c0d4e86613079509a836a85c7345c975fed9f23f2fb92b9c3a771869ecc04a82b2121c215a78735c2451723e94ea346f3bde8a3effbe9ab44a34c632275172c95de412495d981941adc81fca358758a6c27a2643dcaf4d184325ab0890edcc0698aa682f5e8c70380f0785d263c5e39223c5e5bc239f23b249a7c909c5afb101e26cb216569e4cba3a99f10f9610f832282ef889a7a9010d6644862205c3c46d9bca222b8dc63a089e8fbb4e603b1436790b5875a0951d385680844aa07f2614320e9c640a47a201fd19a8f0f01d21d02c960b00110b91ec8270d819c178b0e0091eb817c4a6b3e3b0408d78c17a62b1feef517e54834de4ca5bf4754de4eefa2255541344dbfef1095b6d3bf4399e3baed5247d190a15f05ea1dc4b7e8c68b3865f1f30c12248a49fb13a46a82bc8b363e504cae20b68538f7fe802a6f4196b609842468f41050e01654dca693fb9c607e4194bfc49bb82368f50780f768dda47f1a8f0b3a450c512c82274483ea6a0bfb1b7d2a9e545897c212da38a74eaf5c48fde7f018a70276cd29c1ac898319693dddbb1a70e261290cbf558dcb419c686841bcf71efc76717bbea2dbf43535cf37c8e1db7d6a4c85b03b08f4337896a070b08350dac6d9bf74cb23049760928fd08f3096affda445f49c862caed1b6bc51867ec5892b77a1b7375748414125dede1af812f7db029f30c75bdfaba0bd828efac6dbdad7784321d00846851dc3d9f0a951f01c3d4b4dff01504b0708f87fed3491040000e6090000504b0304140008080800a8949b4d00000000000000000000000030000000696f2f6e756c732f636f6e74726163742f746f6b656e2f546f6b656e245472616e736665724576656e742e636c6173738d545b531c5510fececeeccc3219586e02014c488cbaec2e8c51bc442ee122e8462e096c56432e3aec4e60c2328333b3bc583ee46ff8aebcf0a055b2b1b4caf209abfc2ffe034bed7366d82ccb023e4c9f9e3edda7bfeeafcff9f39f5f7e03f0369e68e8c6ed162898e662868b596e9b5331af61011f6bf8848b05e4b896537147c325dc4ee053be2e72b194c072022b5cbdcbc53d15ab2ad618e4a79ebbc37065d1760da752f68da2eb049e590c0cbfb46dcc944a9ee5fbe30cb1c06588ef99e58ac5d0b3f8ccdc338d1d33d83266edcd9c13589b96475eca84edd8c114c3fdd4f9075eb0dbf4f8e102c19d734b0420b9683bd6726567c3f2f2e646992c9d8b6ed12c174ccfe6ff91510eb66c9fa135ef998effd4f2e6f72c2760d0738e63797365d3f72ddace9e0613b8db9663e4b9bc7122986abcbe5a71027bc72ad8be4d59ee9a9eb963059637e3386e6006b6ebd099e9e6059a351f63d5faaa627b56894e5437ad6041d030941abe8808d53f76be76418f79bfe274749e33e7876b82fe0b21897d94eb0c1a137ecdeb72ea6c32142ac12c53b5af444e65d3d93456369e59c5607c789d81b99c98535b82189388685d0bcce2f692b92bf8a271a6d45ba6bf15922ca5867394846aa994c999d14f2270d702cf763619ba8fe18b93432b9dacadb915af682dd89c7f4d3038cadd740c20afa307bd3afab8b88c7e1df75150f119d1f5ff2740c5e73adec24d150f74bc8f0f187a1b61cc56ec72c9f218ba4e447ecdafdaa48e753ce4e211b1921d0adc492a2b3b246e96d87cac631c130ced8d7d63e86fca7734d5d4ae4248b0986cca7ea243c2480d1a3cafd466db7523455d6f360c4492b9bb6b39258691d469524ef3143568bcc1ff7872cef11f4ccd9dbd8d6bf4347683e61112629c6b7a40639c6eb112e3b46ab43f8041fa7f95fecab4cab476a75f80a5338788a5b38790d22387907f14515748f6204e72943c0db410f96db8892e7a9aaf92351dc66308af0142e37999d078e698d0786e0937484f4a24185eaf936fe04d921c8e412b0f8da77f42ec875a7e4518df15f9f4d021cac790c270143c45de3c9b22ea78895e13d65b14f3a138a127f4aa215622c4740d9a02911a814c360592690e446a04324331b36700e98b806431d20488dc0864be29905111740a88dc0824473177ce00c2f9e289e9a24767fd453e9cbae7e9ccf788cb079923b4a5ab8867e8fb0e71e920f33b9425cedb114d132d59faaa50bf45721f5a56d8c98bf7337490c826d53b48c70ef2113af84236b98ac43e925cfb03aabc0f593a20109228a39f8002cb50b1429dbb4730d7a8e43cbea0778d97351402ae95f59c46f61d514e0963648bd148f1e1d4d536f6370655bca7b05e85756bd3bc747adba2d27f8eda381f56d79a1695b5703013ed5707b6c29ab8598acc5f1edbe5d04e6568a17de025fc4e7173d6e9263da4e17984393cae63633e82cdefd92d9a5c26c08e40e99866ffd20d8f115c82493a223dc658e1e42f05d1531a55f1848ee58332f62b2e3d7801bdb3b54a0c8a52929deda12e71bd23d40973b2fd9b2a3aabe86a1cbc8dbac11b8b80c6e85e703985ebd133a3e0237a925afe03504b0708b45d159d7f040000ca090000504b01020a000a0000080000a8949b4d000000000000000000000000030004000000000000000000000000000000696f2ffeca0000504b01020a000a0000080000a8949b4d000000000000000000000000080000000000000000000000000025000000696f2f6e756c732f504b01020a000a0000080000a8949b4d00000000000000000000000011000000000000000000000000004b000000696f2f6e756c732f636f6e74726163742f504b01020a000a0000080000a8949b4d00000000000000000000000017000000000000000000000000007a000000696f2f6e756c732f636f6e74726163742f746f6b656e2f504b01021400140008080800a8949b4d59aeecdfce090000281800002800000000000000000000000000af000000696f2f6e756c732f636f6e74726163742f746f6b656e2f53696d706c65546f6b656e2e636c617373504b01021400140008080800a8949b4d68fe421cca0100005e0400002200000000000000000000000000d30a0000696f2f6e756c732f636f6e74726163742f746f6b656e2f546f6b656e2e636c617373504b01021400140008080800a8949b4df87fed3491040000e60900003000000000000000000000000000ed0c0000696f2f6e756c732f636f6e74726163742f746f6b656e2f546f6b656e24417070726f76616c4576656e742e636c617373504b01021400140008080800a8949b4db45d159d7f040000ca0900003000000000000000000000000000dc110000696f2f6e756c732f636f6e74726163742f746f6b656e2f546f6b656e245472616e736665724576656e742e636c617373504b0506000000000800080051020000b91600000000',
+                description: 'NRC20标准代币合约'
+            },
+            'MultiCallView': {
+                name: 'MultiCallView (批量调用视图方法合约)',
+                code: '504b03040a0000000000c8b1785a000000000000000000000000090000004d4554412d494e462f504b03040a0000000800c7b1785a85177e5f7200000087000000140000004d4554412d494e462f4d414e49464553542e4d46f34dcccb4c4b2d2ed10d4b2d2acecccfb35230d433e0e5722c4acec82c4b2d420807e4a45694162bc02478b99c4a33734a749d2aad140a32538b8a52734af379b99c8b52134b5253c0c28e0589c919a90abe8965a9790ac67aa62073419a5274bd52b241f658e819c41b9a98f072f1720100504b03040a0000000000bc522d5a00000000000000000000000003000000696f2f504b03040a0000000000bc522d5a00000000000000000000000008000000696f2f6e756c732f504b03040a0000000000c7b1785a00000000000000000000000011000000696f2f6e756c732f636f6e74726163742f504b03040a0000000800c7b1785aa8adfb8abc0700006d12000024000000696f2f6e756c732f636f6e74726163742f4d756c746943616c6c4e756c732e636c617373ed566d4f1cd7193dc3cececc0e835f30e3788c7162b7c5bc66f136ddd48b4303c469b07949588a0b8e630fcbec32669925bbb3c64ed2c695ecd67253a7765f63a9aac4875a6afac1cd071c1505f5532bf56ff44fa452657aeeecb28630246de34f55c532f7dee779eef3dc7bceb977e66f8ffeb40620811fe83888091d16bea36252c5091d119cd5f05dd14ea968d530ade29c0e1dafc7701e6f88de05151735d81a664454469866753a1dd1cb6ac8e998832b0697c4635e455ec5820a4f8272d2f55cbf4f42a4ad7d52823c58987524ec1e763d67b4bc30e31427ec993c2d8dc3858c9d9fb48bae18578db23fe796243c33ec16e25e395f8a670a9e5fb4337e7ca49cf7dd413b9f1fa5b95742cccee58a4ecef6396bb4eddcf025fbb21dcfdb5e2e9ef68bae97ebfdf74ced213626df28cbb5ec0b8d50171c7fae304bbf6c17736cacf1b2e7bb0bcea45b72b9957ecf2bf8b6ef163cfa12dbb7539a9d8fdbb598f8e9f4d868da211479f72d81042bb47ee1a449d75962e0ee1a126275195fc2d87f8fc77438209aeb794eb1bf9813bc85f8a579fe0f49889616f32e5710c93b420a45a744dae82249e6a679a7ae649c45b1074e8dd8226bf44205c6a673a1f52597d94ad5ed49d31cb040ce9f2311951a9cda90f6edccfc88bd1868295024e57e9100954b4e7134eb0fd84c9a71189a6afb12e288660aa49a0bf7b27cca22391b0e98f888184d14e61d6fa358bf372b14db7fd976f3158dab3315173379c54ca2879b095a4e6fd969fa0439cf4b381ae6ef2f951c7f537e2dc8362c08d0edd9d9e27015a9c33b4eae66d7d3857231e3bcec06c773cb817b56e060e0105a0c74a15bc29ecf0263a0804572d365f0ce79939d948443a10aeee79a9c5249642baa60eba36ce0329678d6422422013c9055ccc6b2065ec01503a771d5c05b78dbc03bb8ca6add2abe67e0fb7857b8ae09eb35eef8f36f912dbb189bb9e40871b584ae79b03a207b6ee9d4c2a27f35b8df28c46321520ad78d1916c91bb229b02ed8fe5c7cc0cd0d79be930b14357d6a7c4cc2fee13037d3ede3ed993febfa73e38e5f2e7a9376be4cda66428a84683d6481e175dac376c29df3ac1f686bdf696d9a5fa80473776da1290c5f686e60e324ec7d1c5203405bb48b2567481cb550e8b884836d43433b2c0247f8c63b48e934f32da8b1a576f93cccd1d7d9525588763c84f44776eaf0349f3a5ba0013276e319f68c4a10131d85d0e057f055468804afd12ab38d75747675cb2ba87b504ba204939a82041d95a06a02d1fb1a5a037f0cc7d8ab0b7a6dec45d05e5d4007dbcea01c8f59a55cdd10cbeda26db5732d1935a39f2092522249d554cde8327ed76daa899426fd19722a66697fc1a0a5ad207a0fbd96d6a8ac404de996be96ac37eb3f81968a4592866998f5cb3864e9a69148355831d3b01a1a638c4c5f37a4fbeb7f37e57b685f853ed5c9cc0f51dfc546b2621fc15841434abf8fd6547de36ed169d939ca524cd5d2d3d755669cb29407dcd03c6ee026371209807a034ff179901035a39ee498a4a799db3d42efb384ef79f64e12b841e23e42e42708de45f6b3846a9e10dd60d44d82748b30dd66ff0e7af021af9e8f98eb633c1710b08246ce33e88d93d79769ebc1718e9fe73841d87556e8a01c8e730537b8aee768d79951c63790a4ed76cdd68c5f05b334aeea0ebe891324ee43a855ef2efc1e296651054935ba576b74afd6e85eadd22d7abdac2ef3ef216fb4e3a4b81e0fd047af826fd13f01f51176492a34699da51b54bcc87ee527056615fd2ae460087c8aa76d1503da3f61d1bece4daadb6630eb76990de2a5aaaa3fa547c49ce95aeb6b1122932349c5545a9671a2cb5412a9a860db8a92ebc63d924c354d45f88c4c453ad3e92aedaa259b8a452129a4fdaf962cce4585eea341ea1447bd84ee0512d38703dc682f5ec400c7aff029281b675c2f813c45605546f490b638c13108968058110bac417c06dfa6570a7aaf041047d80a3823ac32407a5a09b080b319758f41e9afc0276e05fc83e5b6a332b4818a345d4525bb09151e3da23221249f8a5ad115ecbd87fdc159203814dd0af6a5149e932f064c2160aaa554cec91f3603d6c1bae066225c4b8cdb6bc430e1182148a354ecab982454e769cf502902b8d719d5c3e8d3044461e419fe09e026a9fc8acdc0d99a4ab33508b33508b3ac5081305383f0fc26085f852c20d4b64228a6ae3366ab99bd8ae3e876077f81608d10dc47be0cee4d4f0ef7698ece05fb6fe44d75001788f145e23e433c67693d4f8cb2ff43b88fd6707f444f3d6dcb9d84b7af6b2d299b02bc543492d44ccd949771b3cbd41244902f97bdc99819dbae7df53e26cd18a9eab694463378076d44587a24f131f65bba2c9a153c558daf70a67cfee512353571b968e46cc98a3ee66c9c2f5c204fd417889d873d58e49be54df253e4cd5be25bc22792655e2a97b9d325b27b0536ae92c925e4f81599c7dbfc7a7d0777f901f901e7fe16d7026eaf93c393556e55ce3c5c7d6be46bb663ac3046ce628c7f37605e619686aa771fde0b98173a5eae31bf5c637eb9ca7c14bf21cb15e63f083420730f77030d44030dcc21bace74b1c79c6e124127f4adf6400574c5850eb6fb841082890694cf260cd1c66b4f4a1b4dffa1360e3c396dfc9038fe88e8de24aeb7a88d1f93aff7c8de4fa88ddb44f87d6ae3a764f80eb57197daf819b57187daf839b9fe05b5f14b5a7f4d6e6e511bf7feaf8d9a36c6830fdff4bf00504b03040a0000000000c8b1785a0000000000000000000000000f0000004d4554412d494e462f6d6176656e2f504b03040a0000000000c8b1785a000000000000000000000000200000004d4554412d494e462f6d6176656e2f696f2e6e756c732e636f6e74726163742f504b03040a0000000000c8b1785a0000000000000000000000002e0000004d4554412d494e462f6d6176656e2f696f2e6e756c732e636f6e74726163742f4d756c746943616c6c4e756c732f504b03040a000000080021522d5a21d40d3975020000cd060000350000004d4554412d494e462f6d6176656e2f696f2e6e756c732e636f6e74726163742f4d756c746943616c6c4e756c732f706f6d2e786d6ca5545d6fdb20147dae7f8517ed1548da69ab2aea2aaa366d52d2564a36ed95d9c426c560014e524dfbefbb063b769a647d98fdc23df783730f17e8ddae94f1861b2bb4ba1d4df078749744b4327acd53178353d9db51e15c754348c9365c6156b1b4e0589b9c3c3dcec9073c86a428ee3e9f72b3b3629fb6dd6ef1f6ca275c8ec713f2733e5b40859221a1ac632ae5c3742b6eacf7ce74ca9c67f5e6f67d3a7ce7a277360b20f23918ec51e23369a9332e7f041112efa5e4008ba20b9a1b5d57dfb24468ac6a6971aa95332c7594749e508c192756800330afa513f74cca0748a064e009a1adee09c88e160fd3a7c5d7c725251d1a62142bf9eb421e6b3865bce22ae32a15dc26d1c5007869cc63d2367b1ef06d2206a4c089baaed0a63c24dcc476cc66d3e5e7c59029f8c8e1d66f32d95c9e27a2572b644b00f66c5825fe87cec0f44a01f2ab16d2d7a195ac7398c45033187edd7386f1e926298c559b72d8c1410b61d2525d5642728342c2510b7d0f57f85333758316c009edaf445e1b7f0f027641adae4dca61663e52d2ae5b8f6326e72e78da75eb81be7526549e7c5f7e41d794ecedb00f39de88928112e7558132bc60b5c5a55eeb7fc8c1773c45419337a59860f85f4bd114a81b7676df5387b400b02c98e5099cd333cb3934e0cdce996b26bbdcd64cd66cc38074b3ecc2c841dcc91300b86442dd4b66edd16b80efdbc5b4aaa4082f183c26fbf87d09389fbae4caf5508f25ef7fb72f30f6638a3361c0d0e6e54fa35b1bd4e7bd4328b6dc806271a58d8b113a5574723dbe9e9ccddf16dc1550c0e958b25aa5450c6657f574c11528c54f14eca15ec81323d6a0af0e7100d8a331ecd6d65fe8f6fe468006a992e82f504b03040a0000000800bc522d5a3f209bc077000000790000003c0000004d4554412d494e462f6d6176656e2f696f2e6e756c732e636f6e74726163742f4d756c746943616c6c4e756c732f706f6d2e70726f7065727469657353764fcd4b2d4a2c494d5148aa54f04d2c4bcde352f6cdcf53f04acc533034563034b03232b4323553700e0e5130323032e52a4b2d2acecccfb335d433d00df6730c08f6f00fe14a2fca2f2df04cb1cdccd7cb2bcd29d64bcecf2b294a4c2ee14a2c2ac94c03328072bea5392599ce8939397e40155c00504b010214030a0000000000c8b1785a000000000000000000000000090000000000000000001000ed41000000004d4554412d494e462f504b010214030a0000000800c7b1785a85177e5f7200000087000000140000000000000000000000a481270000004d4554412d494e462f4d414e49464553542e4d46504b010214030a0000000000bc522d5a000000000000000000000000030000000000000000001000ed41cb000000696f2f504b010214030a0000000000bc522d5a000000000000000000000000080000000000000000001000ed41ec000000696f2f6e756c732f504b010214030a0000000000c7b1785a000000000000000000000000110000000000000000001000ed4112010000696f2f6e756c732f636f6e74726163742f504b010214030a0000000800c7b1785aa8adfb8abc0700006d120000240000000000000000000000a48141010000696f2f6e756c732f636f6e74726163742f4d756c746943616c6c4e756c732e636c617373504b010214030a0000000000c8b1785a0000000000000000000000000f0000000000000000001000ffff3f0900004d4554412d494e462f6d6176656e2f504b010214030a0000000000c8b1785a000000000000000000000000200000000000000000001000ffff6c0900004d4554412d494e462f6d6176656e2f696f2e6e756c732e636f6e74726163742f504b010214030a0000000000c8b1785a0000000000000000000000002e0000000000000000001000ffffaa0900004d4554412d494e462f6d6176656e2f696f2e6e756c732e636f6e74726163742f4d756c746943616c6c4e756c732f504b010214030a000000080021522d5a21d40d3975020000cd060000350000000000000000000000a481f60900004d4554412d494e462f6d6176656e2f696f2e6e756c732e636f6e74726163742f4d756c746943616c6c4e756c732f706f6d2e786d6c504b010214030a0000000800bc522d5a3f209bc077000000790000003c0000000000000000000000a481be0c00004d4554412d494e462f6d6176656e2f696f2e6e756c732e636f6e74726163742f4d756c746943616c6c4e756c732f706f6d2e70726f70657274696573504b0506000000000b000b00250300008f0d00000000',
+                description: '批量调用合约视图方法的工具合约'
+            }
+        };
+        
+        // 网络配置
+        const NETWORKS = {
+            main: 'https://api.nuls.io/jsonrpc',
+            test: 'https://beta.api.nuls.io/jsonrpc',
+            dev: 'http://127.0.0.1:18004/jsonrpc',
+            custom: 'https://api.itac.club/jsonrpc'
+        };
+        
+        let currentNetwork = 'custom';
+        let currentRpcUrl = NETWORKS.custom;
+        let networkConfig = {
+            chainId: null,
+            assetId: null,
+            addressPrefix: null,
+            symbol: null,
+            decimals: 8  // 默认8位，从后端获取实际值
+        };
+        
+        // API调用辅助函数
+        async function apiCall(endpoint, data = {}) {
+            try {
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                console.log(response);
+                if (!result.success) {
+                    throw new Error(result.error || '请求失败');
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('API调用失败:', endpoint, error);
+                throw error;
+            }
+        }
+        
+        // RPC调用辅助函数
+        async function rpcCall(method, params = []) {
+            try {
+                const response = await fetch(currentRpcUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: method,
+                        params: params,
+                        id: Date.now()
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error.message || JSON.stringify(data.error));
+                }
+                
+                return data.result;
+            } catch (error) {
+                console.error('RPC调用失败:', method, error);
+                throw error;
+            }
+        }
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initNetwork();
+            initTabs();
+            initForms();
+            initNetworkSelector();
+            initContractTemplates();
+        });
+        
+        // 初始化网络
+        async function initNetwork() {
+            currentRpcUrl = NETWORKS[currentNetwork];
+            await loadNetworkInfo();
+        }
+        
+        // 加载网络信息
+        async function loadNetworkInfo() {
+            try {
+                // 调用RPC获取网络信息
+                const result = await rpcCall('info', []);
+                
+                if (result) {
+                    networkConfig.chainId = result.chainId;
+                    networkConfig.assetId = result.assetId;
+                    networkConfig.addressPrefix = result.addressPrefix;
+                    networkConfig.symbol = result.symbol;
+                    
+                    document.getElementById('chainId').textContent = networkConfig.chainId;
+                    document.getElementById('assetId').textContent = networkConfig.assetId;
+                    document.getElementById('addressPrefix').textContent = networkConfig.addressPrefix;
+                    document.getElementById('symbol').textContent = networkConfig.symbol;
+                    
+                    // 配置后端SDK并获取decimals
+                    try {
+                        await apiCall('/config-network', {
+                            network: currentNetwork,
+                            customUrl: currentRpcUrl,
+                            chainId: networkConfig.chainId
+                        });
+                        console.log('后端SDK配置成功');
+                        
+                        // 获取decimals
+                        try {
+                            const configResult = await fetch(`${API_BASE_URL}/network-config`);
+                            const configData = await configResult.json();
+                            if (configData.success && configData.data.decimals) {
+                                networkConfig.decimals = configData.data.decimals;
+                                console.log('资产精度:', networkConfig.decimals);
+                            }
+                        } catch (err) {
+                            console.warn('获取decimals失败，使用默认值8:', err.message);
+                        }
+                    } catch (error) {
+                        console.warn('后端SDK配置失败（可能服务未启动）:', error.message);
+                    }
+                } else {
+                    throw new Error('无法获取网络信息');
+                }
+            } catch (error) {
+                console.error('加载网络信息失败:', error);
+                alert('加载网络信息失败: ' + error.message + '\n请检查:\n1. RPC地址是否正确\n2. 后端服务是否已启动(node contract-tool-server.js)');
+                // 设置默认值
+                document.getElementById('chainId').textContent = '未连接';
+                document.getElementById('assetId').textContent = '未连接';
+                document.getElementById('addressPrefix').textContent = '未连接';
+                document.getElementById('symbol').textContent = '未连接';
+            }
+        }
+        
+        // 获取构造函数信息
+        async function getConstructorInfo(contractCode) {
+            try {
+                if (!contractCode || contractCode.length < 10) {
+                    return null;
+                }
+                
+                const response = await fetch(currentRpcUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'getContractConstructor',
+                        params: [networkConfig.chainId, contractCode],
+                        id: Date.now()
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.result && data.result.constructor) {
+                    return data.result.constructor;
+                }
+                
+                return null;
+            } catch (error) {
+                console.error('获取构造函数信息失败:', error);
+                return null;
+            }
+        }
+        
+        // 显示构造函数参数输入框
+        function displayConstructorParams(constructor, isLoading = false) {
+            const infoSection = document.getElementById('constructorInfoSection');
+            const descDiv = document.getElementById('constructorDesc');
+            const argsContainer = document.getElementById('constructorArgsContainer');
+            const argsGroup = document.getElementById('constructorArgsGroup');
+            
+            // 清空之前的内容
+            argsContainer.innerHTML = '';
+            
+            if (isLoading) {
+                infoSection.style.display = 'block';
+                descDiv.textContent = '正在获取构造函数信息...';
+                argsContainer.innerHTML = '<div style="padding: 20px; text-align: center; color: #909399;"><i>加载中...</i></div>';
+                return;
+            }
+            
+            if (!constructor) {
+                infoSection.style.display = 'none';
+                return;
+            }
+            
+            // 显示构造函数信息
+            infoSection.style.display = 'block';
+            descDiv.textContent = constructor.desc || '无描述';
+            
+            // 如果没有参数，显示提示
+            if (!constructor.args || constructor.args.length === 0) {
+                argsGroup.style.display = 'block';
+                argsContainer.innerHTML = '<div style="padding: 15px; background: #e6f7ff; color: #1890ff; border-radius: 6px; text-align: center; font-weight: 500;">✓ 此合约构造函数无需参数</div>';
+                return;
+            }
+            
+            // 显示参数组
+            argsGroup.style.display = 'block';
+            
+            // 为每个参数创建输入框
+            constructor.args.forEach((arg, index) => {
+                const argDiv = document.createElement('div');
+                argDiv.className = 'form-group';
+                argDiv.style.marginBottom = '15px';
+                
+                const label = document.createElement('label');
+                label.textContent = `${arg.name} (${arg.type})`;
+                if (arg.required) {
+                    label.innerHTML += ' <span style="color: #f56c6c;">*</span>';
+                }
+                
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.id = `constructorArg${index}`;
+                input.className = 'constructor-arg-input';
+                input.setAttribute('data-type', arg.type);
+                input.setAttribute('data-name', arg.name);
+                input.placeholder = `请输入 ${arg.name} (${arg.type})`;
+                if (arg.required) {
+                    input.required = true;
+                }
+                
+                const small = document.createElement('small');
+                small.textContent = `类型: ${arg.type}${arg.required ? ' (必填)' : ' (可选)'}`;
+                small.style.color = '#909399';
+                small.style.fontSize = '12px';
+                
+                argDiv.appendChild(label);
+                argDiv.appendChild(input);
+                argDiv.appendChild(small);
+                
+                argsContainer.appendChild(argDiv);
+            });
+        }
+        
+        // 初始化合约模板选择器
+        function initContractTemplates() {
+            const templateSelect = document.getElementById('contractTemplateSelect');
+            const codeTextarea = document.getElementById('createCode');
+            
+            console.log('初始化合约模板选择器');
+            console.log('templateSelect:', templateSelect);
+            console.log('codeTextarea:', codeTextarea);
+            console.log('CONTRACT_TEMPLATES:', CONTRACT_TEMPLATES);
+            
+            if (!templateSelect) {
+                console.error('找不到模板选择器元素！');
+                return;
+            }
+            
+            if (!codeTextarea) {
+                console.error('找不到合约代码输入框元素！');
+                return;
+            }
+            
+            templateSelect.addEventListener('change', async function() {
+                const selectedTemplate = this.value;
+                console.log('模板选择器值改变:', selectedTemplate);
+                
+                if (selectedTemplate && CONTRACT_TEMPLATES[selectedTemplate]) {
+                    const template = CONTRACT_TEMPLATES[selectedTemplate];
+                    console.log('找到模板:', template);
+                    
+                    // 填充合约代码
+                    codeTextarea.value = template.code;
+                    console.log('已设置合约代码，长度:', template.code.length);
+                    
+                    // 显示提示信息
+                    console.log('已选择模板:', template.name);
+                    console.log('描述:', template.description);
+                    
+                    // 显示toast提示
+                    showTemplateLoadedToast(template.name);
+                    
+                    // 获取并显示构造函数信息（需要已连接网络）
+                    if (networkConfig.chainId) {
+                        console.log('开始获取构造函数信息...');
+                        displayConstructorParams(null, true); // 显示加载状态
+                        const constructor = await getConstructorInfo(template.code);
+                        displayConstructorParams(constructor);
+                    } else {
+                        console.warn('尚未连接网络，无法获取构造函数信息');
+                    }
+                } else {
+                    console.log('未找到模板或值为空');
+                    // 清空代码框
+                    if (!selectedTemplate) {
+                        codeTextarea.value = '';
+                        document.getElementById('constructorInfoSection').style.display = 'none';
+                    }
+                }
+            });
+            
+            // 监听合约代码输入框失去焦点事件
+            let debounceTimer;
+            codeTextarea.addEventListener('blur', async function() {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(async () => {
+                    const code = this.value.trim();
+                    if (code && networkConfig.chainId) {
+                        displayConstructorParams(null, true); // 显示加载状态
+                        const constructor = await getConstructorInfo(code);
+                        displayConstructorParams(constructor);
+                    }
+                }, 500);
+            });
+        }
+        
+        // 显示模板加载提示
+        function showTemplateLoadedToast(templateName) {
+            // 创建临时提示元素
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(72, 187, 120, 0.4);
+                z-index: 10000;
+                animation: slideInRight 0.3s ease-out;
+                font-size: 14px;
+                font-weight: 600;
+            `;
+            toast.textContent = '✓ 已加载模板: ' + templateName;
+            
+            document.body.appendChild(toast);
+            
+            // 3秒后移除
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.3s ease-out';
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 3000);
+        }
+        
+        // 初始化网络选择器
+        function initNetworkSelector() {
+            const buttons = document.querySelectorAll('.network-btn');
+            const customUrlDiv = document.getElementById('customUrl');
+            const customUrlInput = document.getElementById('customUrlInput');
+            
+            buttons.forEach(button => {
+                button.addEventListener('click', async function() {
+                    buttons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    currentNetwork = this.dataset.network;
+                    
+                    if (currentNetwork === 'custom') {
+                        customUrlDiv.classList.add('show');
+                        if (customUrlInput.value) {
+                            currentRpcUrl = customUrlInput.value;
+                            await loadNetworkInfo();
+                        }
+                    } else {
+                        customUrlDiv.classList.remove('show');
+                        currentRpcUrl = NETWORKS[currentNetwork];
+                        await loadNetworkInfo();
+                    }
+                });
+            });
+            
+            customUrlInput.addEventListener('change', async function() {
+                if (this.value && currentNetwork === 'custom') {
+                    currentRpcUrl = this.value;
+                    await loadNetworkInfo();
+                }
+            });
+        }
+        
+        // 初始化标签页
+        function initTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabName = this.dataset.tab;
+                    
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(tc => tc.classList.remove('active'));
+                    
+                    this.classList.add('active');
+                    document.getElementById(tabName + 'Tab').classList.add('active');
+                });
+            });
+        }
+        
+        // 初始化表单
+        function initForms() {
+            // 转账表单
+            const transferForm = document.getElementById('transferForm');
+            transferForm.addEventListener('submit', handleTransfer);
+            
+            // 创建合约表单
+            const createForm = document.getElementById('createForm');
+            createForm.addEventListener('submit', handleCreateContract);
+            
+            // 调用合约表单
+            const callForm = document.getElementById('callForm');
+            callForm.addEventListener('submit', handleCallContract);
+            
+            // 添加参数按钮（仅用于调用合约）
+            // 创建合约的参数现在是动态生成的，不再需要手动添加
+            const addCallArgBtn = document.getElementById('addCallArg');
+            if (addCallArgBtn) {
+                addCallArgBtn.addEventListener('click', () => {
+                    addArgInput('callArgsContainer', 'call-arg-value');
+                });
+            }
+            
+            // 删除参数按钮
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-arg')) {
+                    const argItem = e.target.closest('.arg-item');
+                    const container = argItem.parentElement;
+                    if (container.children.length > 1) {
+                        argItem.remove();
+                    } else {
+                        alert('至少保留一个参数输入框');
+                    }
+                }
+            });
+            
+            // 监听私钥输入框，自动计算地址
+            const transferPriInput = document.getElementById('transferPri');
+            const createPriInput = document.getElementById('createPri');
+            const callPriInput = document.getElementById('callPri');
+            
+            let transferDebounceTimer = null;
+            transferPriInput.addEventListener('input', function() {
+                clearTimeout(transferDebounceTimer);
+                transferDebounceTimer = setTimeout(() => {
+                    calculateAddressAndBalance('transfer', this.value);
+                }, 500);
+            });
+            
+            let createDebounceTimer = null;
+            createPriInput.addEventListener('input', function() {
+                clearTimeout(createDebounceTimer);
+                createDebounceTimer = setTimeout(() => {
+                    calculateAddress('create', this.value);
+                }, 500); // 延迟500ms，避免频繁调用
+            });
+            
+            let callDebounceTimer = null;
+            callPriInput.addEventListener('input', function() {
+                clearTimeout(callDebounceTimer);
+                callDebounceTimer = setTimeout(() => {
+                    calculateAddress('call', this.value);
+                }, 500);
+            });
+        }
+        
+        // 计算地址
+        async function calculateAddress(type, privateKey) {
+            const displayDiv = document.getElementById(type + 'AddressDisplay');
+            const textDiv = document.getElementById(type + 'AddressText');
+            
+            // 清空之前的显示
+            if (!privateKey || privateKey.trim().length === 0) {
+                displayDiv.style.display = 'none';
+                return;
+            }
+            
+            // 验证私钥格式（64位十六进制）
+            const priTrimmed = privateKey.trim();
+            if (!/^[0-9a-fA-F]{64}$/.test(priTrimmed)) {
+                displayDiv.style.display = 'none';
+                return;
+            }
+            
+            if (!networkConfig.chainId) {
+                displayDiv.style.display = 'none';
+                return;
+            }
+            
+            try {
+                // 调用后端API获取地址
+                const result = await apiCall('/get-address', {
+                    privateKey: priTrimmed,
+                    chainId: networkConfig.chainId,
+                    addressPrefix: networkConfig.addressPrefix
+                });
+                
+                if (result.success && result.data.address) {
+                    textDiv.textContent = result.data.address;
+                    displayDiv.style.display = 'block';
+                } else {
+                    displayDiv.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('计算地址失败:', error);
+                displayDiv.style.display = 'none';
+            }
+        }
+        
+        // 计算地址和余额（用于转账页面）
+        async function calculateAddressAndBalance(type, privateKey) {
+            const addressDisplayDiv = document.getElementById(type + 'AddressDisplay');
+            const addressTextDiv = document.getElementById(type + 'AddressText');
+            const balanceDisplayDiv = document.getElementById(type + 'BalanceDisplay');
+            const balanceTextDiv = document.getElementById(type + 'BalanceText');
+            
+            // 清空之前的显示
+            if (!privateKey || privateKey.trim().length === 0) {
+                addressDisplayDiv.style.display = 'none';
+                balanceDisplayDiv.style.display = 'none';
+                return;
+            }
+            
+            // 验证私钥格式（64位十六进制）
+            const priTrimmed = privateKey.trim();
+            if (!/^[0-9a-fA-F]{64}$/.test(priTrimmed)) {
+                addressDisplayDiv.style.display = 'none';
+                balanceDisplayDiv.style.display = 'none';
+                return;
+            }
+            
+            if (!networkConfig.chainId) {
+                addressDisplayDiv.style.display = 'none';
+                balanceDisplayDiv.style.display = 'none';
+                return;
+            }
+            
+            try {
+                // 调用后端API获取地址
+                const result = await apiCall('/get-address', {
+                    privateKey: priTrimmed,
+                    chainId: networkConfig.chainId,
+                    addressPrefix: networkConfig.addressPrefix
+                });
+                
+                if (result.success && result.data.address) {
+                    addressTextDiv.textContent = result.data.address;
+                    addressDisplayDiv.style.display = 'block';
+                    
+                    // 获取余额
+                    try {
+                        const balanceResult = await rpcCall('getAccountBalance', [
+                            networkConfig.chainId,
+                            networkConfig.chainId,
+                            networkConfig.assetId,
+                            result.data.address
+                        ]);
+                        
+                        if (balanceResult && balanceResult.balance !== undefined) {
+                            const decimals = networkConfig.decimals || 8;
+                            const balance = (balanceResult.balance / Math.pow(10, decimals)).toFixed(decimals);
+                            balanceTextDiv.textContent = balance + ' ' + networkConfig.symbol;
+                            balanceDisplayDiv.style.display = 'block';
+                        } else {
+                            balanceDisplayDiv.style.display = 'none';
+                        }
+                    } catch (balanceError) {
+                        console.error('获取余额失败:', balanceError);
+                        balanceDisplayDiv.style.display = 'none';
+                    }
+                } else {
+                    addressDisplayDiv.style.display = 'none';
+                    balanceDisplayDiv.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('计算地址失败:', error);
+                addressDisplayDiv.style.display = 'none';
+                balanceDisplayDiv.style.display = 'none';
+            }
+        }
+        
+        // 添加参数输入框
+        function addArgInput(containerId, className) {
+            const container = document.getElementById(containerId);
+            const argItem = document.createElement('div');
+            argItem.className = 'arg-item';
+            argItem.innerHTML = `
+                <input type="text" placeholder="参数值" class="${className}">
+                <button type="button" class="remove-arg">删除</button>
+            `;
+            container.appendChild(argItem);
+        }
+        
+        // 获取参数数组
+        function getArgs(className) {
+            const inputs = document.querySelectorAll('.' + className);
+            const args = [];
+            inputs.forEach(input => {
+                const value = input.value.trim();
+                if (value) {
+                    // 尝试解析JSON数组
+                    try {
+                        const parsed = JSON.parse(value);
+                        args.push(parsed);
+                    } catch (e) {
+                        args.push(value);
+                    }
+                }
+            });
+            return args;
+        }
+        
+        // 获取构造函数参数值
+        function getConstructorArgs() {
+            const argInputs = document.querySelectorAll('.constructor-arg-input');
+            const args = [];
+            
+            argInputs.forEach(input => {
+                const value = input.value.trim();
+                const type = input.getAttribute('data-type');
+                
+                if (value) {
+                    // 尝试根据类型转换参数
+                    try {
+                        // 如果是数组类型，尝试解析JSON
+                        if (type && type.includes('[]')) {
+                            const parsed = JSON.parse(value);
+                            args.push(parsed);
+                        } else {
+                            args.push(value);
+                        }
+                    } catch (e) {
+                        // 如果解析失败，直接使用字符串值
+                        args.push(value);
+                    }
+                } else {
+                    // 如果没有值，也要添加到数组中（保持参数顺序）
+                    args.push('');
+                }
+            });
+            
+            return args;
+        }
+        
+        // 处理创建合约
+        async function handleCreateContract(e) {
+            e.preventDefault();
+            
+            if (!networkConfig.chainId) {
+                alert('请先连接到网络');
+                return;
+            }
+            
+            hideAllMessages('create');
+            showLoading('create', true);
+            
+            try {
+                const pri = document.getElementById('createPri').value.trim();
+                const alias = document.getElementById('createAlias').value.trim();
+                const code = document.getElementById('createCode').value.trim().replace(/\s/g, '');
+                const remark = document.getElementById('createRemark').value.trim();
+                
+                // 获取构造函数参数
+                const args = getConstructorArgs();
+                
+                if (!pri || !code) {
+                    throw new Error('请填写必填项');
+                }
+                
+                console.log('开始创建合约...');
+                console.log('合约代码长度:', code.length);
+                console.log('构造函数参数:', args);
+                
+                // 调用后端API创建合约
+                const result = await apiCall('/create-contract', {
+                    privateKey: pri,
+                    alias: alias,
+                    contractCode: code,
+                    args: args,
+                    remark: remark,
+                    chainId: networkConfig.chainId,
+                    assetId: networkConfig.assetId,
+                    addressPrefix: networkConfig.addressPrefix
+                });
+                
+                console.log('创建合约成功:', result);
+                
+                showSuccess('create', {
+                    message: '✅ 合约创建成功！',
+                    fromAddress: result.data.fromAddress,
+                    contractAddress: result.data.contractAddress,
+                    txHash: result.data.txHash,
+                    chainId: networkConfig.chainId,
+                    assetId: networkConfig.assetId,
+                    addressPrefix: networkConfig.addressPrefix
+                });
+                
+            } catch (error) {
+                console.error('创建合约失败:', error);
+                showError('create', error.message || error.toString());
+            } finally {
+                showLoading('create', false);
+            }
+        }
+        
+        // 处理调用合约
+        async function handleCallContract(e) {
+            e.preventDefault();
+            
+            if (!networkConfig.chainId) {
+                alert('请先连接到网络');
+                return;
+            }
+            
+            hideAllMessages('call');
+            showLoading('call', true);
+            
+            try {
+                const pri = document.getElementById('callPri').value.trim();
+                const contractAddress = document.getElementById('callContractAddress').value.trim();
+                const methodName = document.getElementById('callMethodName').value.trim();
+                const methodDesc = document.getElementById('callMethodDesc').value.trim();
+                const value = document.getElementById('callValue').value;
+                const remark = document.getElementById('callRemark').value.trim();
+                const args = getArgs('call-arg-value');
+                
+                if (!pri || !contractAddress || !methodName) {
+                    throw new Error('请填写必填项');
+                }
+                
+                // 转换NULS数量（乘以10^decimals）
+                const decimals = networkConfig.decimals || 8;
+                const nulsAmount = value ? Math.floor(parseFloat(value) * Math.pow(10, decimals)) : 0;
+                
+                console.log('开始调用合约...');
+                console.log('合约地址:', contractAddress);
+                console.log('方法名:', methodName);
+                console.log('参数数量:', args.length);
+                console.log('转入金额:', nulsAmount);
+                
+                // 调用后端API调用合约
+                const result = await apiCall('/call-contract', {
+                    privateKey: pri,
+                    contractAddress: contractAddress,
+                    methodName: methodName,
+                    methodDesc: methodDesc,
+                    value: nulsAmount,
+                    args: args,
+                    remark: remark,
+                    chainId: networkConfig.chainId,
+                    assetId: networkConfig.assetId,
+                    addressPrefix: networkConfig.addressPrefix
+                });
+                
+                console.log('调用合约成功:', result);
+                
+                showSuccess('call', {
+                    message: '✅ 合约调用成功！',
+                    fromAddress: result.data.fromAddress,
+                    contractAddress: result.data.contractAddress,
+                    methodName: result.data.methodName,
+                    txHash: result.data.txHash,
+                    chainId: networkConfig.chainId,
+                    assetId: networkConfig.assetId,
+                    addressPrefix: networkConfig.addressPrefix
+                });
+                
+            } catch (error) {
+                console.error('调用合约失败:', error);
+                showError('call', error.message || error.toString());
+            } finally {
+                showLoading('call', false);
+            }
+        }
+        
+        // 处理转账
+        async function handleTransfer(e) {
+            e.preventDefault();
+            
+            if (!networkConfig.chainId) {
+                alert('请先连接到网络');
+                return;
+            }
+            
+            hideAllMessages('transfer');
+            showLoading('transfer', true);
+            
+            try {
+                const pri = document.getElementById('transferPri').value.trim();
+                const toAddress = document.getElementById('transferToAddress').value.trim();
+                const amount = document.getElementById('transferAmount').value;
+                const remark = document.getElementById('transferRemark').value.trim();
+                
+                if (!pri || !toAddress || !amount) {
+                    throw new Error('请填写必填项');
+                }
+                
+                if (parseFloat(amount) <= 0) {
+                    throw new Error('转账金额必须大于0');
+                }
+                
+                console.log('开始转账...');
+                console.log('目标地址:', toAddress);
+                console.log('金额:', amount);
+                
+                // 调用后端API转账
+                const result = await apiCall('/transfer', {
+                    privateKey: pri,
+                    toAddress: toAddress,
+                    amount: amount,
+                    remark: remark,
+                    chainId: networkConfig.chainId,
+                    assetId: networkConfig.assetId,
+                    addressPrefix: networkConfig.addressPrefix
+                });
+                
+                console.log('转账成功:', result);
+                
+                showSuccess('transfer', {
+                    message: '✅ 转账成功！',
+                    fromAddress: result.data.fromAddress,
+                    toAddress: result.data.toAddress,
+                    amount: result.data.amount + ' ' + networkConfig.symbol,
+                    txHash: result.data.txHash,
+                    fee: result.data.fee + ' ' + networkConfig.symbol,
+                    chainId: networkConfig.chainId,
+                    addressPrefix: networkConfig.addressPrefix
+                });
+                
+                // 转账成功后，刷新余额
+                setTimeout(() => {
+                    calculateAddressAndBalance('transfer', pri);
+                }, 2000);
+                
+            } catch (error) {
+                console.error('转账失败:', error);
+                showError('transfer', error.message || error.toString());
+            } finally {
+                showLoading('transfer', false);
+            }
+        }
+        
+        // 显示加载状态
+        function showLoading(type, show) {
+            const loading = document.getElementById(type + 'Loading');
+            const submit = document.getElementById(type + 'Submit');
+            if (show) {
+                loading.classList.add('show');
+                submit.disabled = true;
+            } else {
+                loading.classList.remove('show');
+                submit.disabled = false;
+            }
+        }
+        
+        // 显示成功消息
+        function showSuccess(type, data) {
+            const result = document.getElementById(type + 'Result');
+            const resultText = document.getElementById(type + 'ResultText');
+            resultText.textContent = JSON.stringify(data, null, 2);
+            result.classList.add('show');
+        }
+        
+        // 显示错误消息
+        function showError(type, message) {
+            const error = document.getElementById(type + 'Error');
+            const errorText = document.getElementById(type + 'ErrorText');
+            errorText.textContent = message;
+            error.classList.add('show');
+        }
+        
+        // 隐藏所有消息
+        function hideAllMessages(type) {
+            document.getElementById(type + 'Result').classList.remove('show');
+            document.getElementById(type + 'Error').classList.remove('show');
+        }
+        
+        // 复制地址到剪贴板
+        function copyAddress(type) {
+            const addressText = document.getElementById(type + 'AddressText').textContent;
+            
+            if (!addressText) {
+                return;
+            }
+            
+            // 使用现代API复制
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(addressText).then(() => {
+                    showCopySuccess(type);
+                }).catch(err => {
+                    console.error('复制失败:', err);
+                    fallbackCopy(addressText, type);
+                });
+            } else {
+                fallbackCopy(addressText, type);
+            }
+        }
+        
+        // 备用复制方法（兼容旧浏览器）
+        function fallbackCopy(text, type) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showCopySuccess(type);
+            } catch (err) {
+                console.error('复制失败:', err);
+                alert('复制失败，请手动复制地址');
+            }
+            
+            document.body.removeChild(textArea);
+        }
+        
+        // 显示复制成功提示
+        function showCopySuccess(type) {
+            const copyBtn = event.target;
+            const originalText = copyBtn.textContent;
+            
+            copyBtn.textContent = '已复制!';
+            copyBtn.classList.add('copied');
+            
+            setTimeout(() => {
+                copyBtn.textContent = originalText;
+                copyBtn.classList.remove('copied');
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
+

@@ -6,18 +6,69 @@ const ContractData = require("./model/contractdata");
 const BufferReader = require("./utils/bufferreader");
 const TxSignatures = require("./model/signatures");
 const Hash = require("./utils/hash");
+const axios = require('axios').default;
+let API_CHAIN_ID;
+let DECIMALS = 8;
+let PREFIX;
 
 module.exports = {
+
+  mainnet() {
+    API_CHAIN_ID = 1;
+    axios.defaults.timeout = 9000;
+    axios.defaults.baseURL = 'https://api.nuls.io/jsonrpc';
+    DECIMALS = 8;
+    PREFIX = 'NULS';
+  },
+  testnet() {
+    API_CHAIN_ID = 2;
+    axios.defaults.timeout = 9000;
+    axios.defaults.baseURL = 'https://beta.api.nuls.io/jsonrpc';
+    DECIMALS = 8;
+    PREFIX = 'tNULS';
+  },
+  customnet(chainId, url, timeout, decimals, _prefix) {
+    API_CHAIN_ID = chainId;
+    axios.defaults.baseURL = url;
+    if (!timeout) {
+      axios.defaults.timeout = 9000;
+    } else {
+      axios.defaults.timeout = timeout;
+    }
+    if (decimals || chainId > 100) {
+      DECIMALS = decimals || 18;
+    } else {
+      DECIMALS = 8;
+    }
+    if (_prefix) {
+      PREFIX = _prefix;
+    }
+  },
+  prefix() {
+    return PREFIX;
+  },
+  decimals() {
+    return DECIMALS;
+  },
+  chainId() {
+    return API_CHAIN_ID;
+  },
+  getPubByPri(pri) {
+    return sdk.getPub(pri);
+  },
+  getAddressByPri(chainId, pri, PREFIX) {
+    return sdk.getStringAddress(chainId, pri, undefined, PREFIX);
+  },
 
   /**
    * 生成地址
    * @param chainId
    * @param passWord
-   * @param prefix
+   * @param PREFIX
    * @returns {{}}
    */
-  newAddress(chainId, passWord, prefix) {
-    let addressInfo = {"prefix": prefix};
+  newAddress(chainId, passWord, PREFIX) {
+    let addressInfo = {"PREFIX": PREFIX};
     if (passWord) {
       addressInfo = sdk.newEcKey(passWord);
       addressInfo.aesPri = sdk.encrypteByAES(addressInfo.pri, passWord);
@@ -25,7 +76,7 @@ module.exports = {
     } else {
       addressInfo = sdk.newEcKey(passWord);
     }
-    addressInfo.address = sdk.getStringAddress(chainId, addressInfo.pri, addressInfo.pub, prefix);
+    addressInfo.address = sdk.getStringAddress(chainId, addressInfo.pri, addressInfo.pub, PREFIX);
     return addressInfo
   },
 
@@ -44,11 +95,11 @@ module.exports = {
    * @param chainId
    * @param assetId
    * @param pub
-   * @param prefix
+   * @param PREFIX
    * @returns {*|string}
    */
-  getAddressByPub(chainId, assetId, pub, prefix) {
-    return sdk.getStringAddressBase(chainId, assetId, '', pub, prefix);
+  getAddressByPub(chainId, assetId, pub, PREFIX) {
+    return sdk.getStringAddressBase(chainId, assetId, '', pub, PREFIX);
   },
 
   /**
@@ -65,17 +116,17 @@ module.exports = {
    * @param chainId
    * @param pri
    * @param passWord
-   * @param prefix
+   * @param PREFIX
    * @returns {{}}
    */
-  importByKey(chainId, pri, passWord, prefix) {
+  importByKey(chainId, pri, passWord, PREFIX) {
     let addressInfo = {};
     const patrn = /^[A-Fa-f0-9]+$/;
     if (!patrn.exec(pri)) { //判断私钥是否为16进制
       return {success: false, data: 'Bad private key format'}
     }
     addressInfo.pri = pri;
-    addressInfo.address = sdk.getStringAddress(chainId, pri, null, prefix);
+    addressInfo.address = sdk.getStringAddress(chainId, pri, null, PREFIX);
     addressInfo.pub = sdk.getPub(pri);
     if (passWord) {
       addressInfo.aesPri = sdk.encrypteByAES(addressInfo.pri, passWord);

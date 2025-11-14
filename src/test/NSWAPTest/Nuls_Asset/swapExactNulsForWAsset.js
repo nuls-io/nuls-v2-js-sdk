@@ -22,10 +22,11 @@ call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     chainId: assetChainId,
     sender: fromAddress,
     contractAddress: mainContract,
-    value: new BigNumber("1").shiftedBy(8).toFixed(), //
+    value: new BigNumber("6").shiftedBy(8).toFixed(), //
     methodName: "swapExactNulsForWAsset",
     methodDesc: "",
     args: [
-        5, 1, 0, [process.env.wnuls, process.env.wnvt], fromAddress, nuls.currentTime() + 300, 'tNULSeBaN5nddf9WkQgRr3RNwARgryndv2Bzs6'
+        //Integer chainId, Integer assetId, BigInteger amountOutMin, String[] path, Address to, BigInteger deadline, Address ref
+        5, 163, 0, [process.env.wnuls, process.env._5_163], fromAddress, nuls.currentTime() + 300, 'tNULSeBaMtsAgkKKd2Qr5uVsMm5V7V3m8QN49K'
     ]
 }, 'swap nuls for nvt', []);

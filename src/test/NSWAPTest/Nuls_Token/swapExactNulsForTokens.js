@@ -17,18 +17,19 @@ const assetChainId = 2;
 const assetId = 1;
 const mainContract = process.env.router;
 
+// BigInteger amountOutMin, String[] path, Address to, BigInteger deadline, Address ref
 async function swapNulsForFark() {
     await call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
         chainId: assetChainId,
         sender: fromAddress,
         contractAddress: mainContract,
-        value: new BigNumber(100).shiftedBy(8).toFixed(), //
+        value: new BigNumber(5).shiftedBy(8).toFixed(), //
         methodName: "swapExactNulsForTokens",
         methodDesc: "",
         args: [
-            0, [process.env.wnuls, process.env.fark], fromAddress, nuls.currentTime() + 300, 'tNULSeBaN5nddf9WkQgRr3RNwARgryndv2Bzs6'
+            0, [process.env.wnuls, process.env.T1_JKRD], fromAddress, nuls.currentTime() + 300, 'tNULSeBaMtsAgkKKd2Qr5uVsMm5V7V3m8QN49K'
         ]
-    }, 'swap nuls(1) for fark', []);
+    }, 'swap nuls(5) for T1_JKRD', []);
 }
 
 

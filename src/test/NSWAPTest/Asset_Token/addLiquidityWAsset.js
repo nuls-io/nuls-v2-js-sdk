@@ -4,7 +4,7 @@ const nuls = require("../../../index");
 require('dotenv').config({ path: '../../../test/.env'});
 
 // 用户私钥
-const pri = process.env.xaf;
+const pri = process.env.l24;
 const importAddress = nuls.importByKey(2, pri, '', "tNULS");
 // 用户公钥
 const pub = importAddress.pub;
@@ -20,9 +20,9 @@ const mainContract = process.env.router;
 // 转入200个USDT
 let multyAssets = [
     {
-        value: new BigNumber("300").shiftedBy(18).toFixed(),
+        value: new BigNumber("200").shiftedBy(18).toFixed(),
         assetChainId: 5,
-        assetId: 74
+        assetId: 102
     }
 ];
 
@@ -35,6 +35,6 @@ call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     methodName: "addLiquidityWAsset",
     methodDesc: "",
     args: [
-        5, 74, process.env.qqq, new BigNumber("20000").shiftedBy(18).toFixed(), 0, 0, fromAddress, nuls.currentTime() + 300
+        5, 102, process.env.www, new BigNumber("20000").shiftedBy(18).toFixed(), 0, 0, fromAddress, nuls.currentTime() + 300
     ]
-}, 'add lp usdt(300) and qqq(20000)', multyAssets);
+}, 'add lp usdtn(200) and www(20000)', multyAssets);

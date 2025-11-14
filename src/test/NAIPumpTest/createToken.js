@@ -15,7 +15,7 @@ console.log('fromAddress', fromAddress);
 const assetChainId = 2;
 // 资产ID
 const assetId = 1;
-const mainContract = 'tNULSeBaN11T1Y6o9xJf8empYK8acJdykYr7kR';
+const mainContract = 'tNULSeBaN9TLXeHJguw9X1ueAGzjAtB6mR4ZLk';
 // 发布token时，项目方支付NULS购买token（可填0）
 const buyTokenPay = new BigNumber("50").shiftedBy(8).toFixed();
 // 发布token
@@ -28,6 +28,6 @@ call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
     methodName: "createToken",
     methodDesc: "",
     args: [
-        'T2_A6J2_name', 'T2_A6J2', 'uritest', 'extendUriTest'
+        'T1_4ZLK_name', 'T1_4ZLK', 'uritest', 'extendUriTest'
     ]
 }, 'call contract...', []);

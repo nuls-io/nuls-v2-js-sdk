@@ -1,17 +1,25 @@
 
 const create = require('./contractCreate.js');
+const nuls = require("../../index");
+nuls.customnet(101, "https://api.itac.club/jsonrpc");
+require('dotenv').config();
 
 /**
  * @disc: 创建合约 dome
  * @date: 2019-10-18 10:29
  * @author: Wave
  */
-let pri = '76b7beaa98db863fb680def099af872978209ed9422b7acab8ab57ad95ab218b';
-let pub = '02ec9e957823cd30d809f44830442562ca5bf42530251247b35d9209690f39be67';
-let fromAddress = "tNULSeBaMqywZjfSrKNQKBfuQtVxAHBQ8rB2Zn";
+// 用户私钥
+const pri = process.env.tdcDeployer;
+const importAddress = nuls.importByKey(nuls.chainId(), pri, '', "ITAC");
+// 用户公钥
+const pub = importAddress.pub;
+// 用户地址
+const fromAddress = importAddress.address;
+
 let alias = "test_alias";
 // 资产链ID
-let assetChainId = 2;
+let assetChainId = nuls.chainId();
 // 资产ID
 let assetId = 1;
 let remark = 'new contract...';

@@ -188,9 +188,9 @@ module.exports = {
      * @param chainId
      * @returns {*}
      */
-    getStringContractAddress: function (chainId) {
+    getStringContractAddress: function (chainId, prefix) {
         let addressInfo = this.newEcKey();
-        return this.getStringAddressBase(chainId, 2, addressInfo.pri, addressInfo.pub);
+        return this.getStringAddressBase(chainId, 2, addressInfo.pri, addressInfo.pub, prefix);
     },
 
     /**

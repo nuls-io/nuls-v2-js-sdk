@@ -1,6 +1,7 @@
 
 const call = require('./contractCall.js');
 const nuls = require("../../index");
+nuls.customnet(101, "https://api.itac.club/jsonrpc");
 require('dotenv').config();
 
 /**
@@ -10,18 +11,18 @@ require('dotenv').config();
  */
 // 用户私钥
 const pri = process.env.tdcDeployer;
-const importAddress = nuls.importByKey(1, pri, '', "NULS");
+const importAddress = nuls.importByKey(nuls.chainId(), pri, '', "ITAC");
 // 用户公钥
 const pub = importAddress.pub;
 // 用户地址
 const fromAddress = importAddress.address;
 console.log('fromAddress', fromAddress);
 // 业务合约地址
-let busContractAddress = "NULSd6Hgo2u3geoJ7opGi7VQyqY9ub2pvnfso";
+let busContractAddress = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 // 要转入的NULS数量，如果没有请填入0，如转入200个NULS，则填入20000000000，此处填入的值要乘以10的8次幂，如200个NULS，则`value = 200 * (10 ^ 8)`
 let nulsAmount = 0;
 // 资产链ID
-let assetChainId = 1;
+let assetChainId = nuls.chainId();
 // 资产ID
 let assetId = 1;
 // 交易备注

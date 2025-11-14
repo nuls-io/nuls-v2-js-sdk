@@ -17,6 +17,7 @@ const assetChainId = 2;
 const assetId = 1;
 const mainContract = process.env.router;
 
+// BigInteger amountIn, BigInteger amountOutMin, String[] path, Address to, BigInteger deadline, Address ref
 async function swapFarkForNuls() {
     await call.callContract(pri, pub, fromAddress, assetChainId, assetId, {
         chainId: assetChainId,
