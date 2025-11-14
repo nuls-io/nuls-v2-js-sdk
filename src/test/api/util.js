@@ -1,5 +1,5 @@
-const http = require('./https.js');
 const nuls = require('../../index');
+const http = require('./https.js');
 const BigNumber = require('bignumber.js');
 
 module.exports = {
@@ -398,6 +398,22 @@ module.exports = {
         }
       })
       .catch((error) => {
+        return {success: false, data: error};
+      });
+  },
+
+  async invokeView(contractAddress, methodName, methodDesc, args) {
+    return await http.post('/', 'invokeView', [contractAddress, methodName, methodDesc, args])
+      .then((response) => {
+        // console.log(response);
+        if (response.hasOwnProperty("result")) {
+          return {success: true, data: response.result};
+        } else {
+          return {success: false, data: response.error};
+        }
+      })
+      .catch((error) => {
+        console.log(error);
         return {success: false, data: error};
       });
   },

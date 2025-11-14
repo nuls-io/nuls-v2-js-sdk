@@ -507,6 +507,61 @@
         .copy-btn.copied {
             background: #48bb78;
         }
+
+        .secondary-btn {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 8px;
+            background: #edf2ff;
+            color: #4c51bf;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .secondary-btn:hover {
+            background: #dde3ff;
+        }
+
+        .token-info-panel {
+            background: #fffaf0;
+            border: 1px dashed #f6ad55;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 15px;
+        }
+
+        .token-info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            font-size: 14px;
+        }
+
+        .token-info-label {
+            color: #805ad5;
+            font-weight: 600;
+        }
+
+        .token-info-value {
+            font-family: 'Courier New', monospace;
+            color: #2d3748;
+        }
+
+        .token-info-status {
+            margin-top: 8px;
+            font-size: 13px;
+            color: #805ad5;
+        }
+
+        .token-info-status.error {
+            color: #e53e3e;
+        }
+
+        .token-info-status.success {
+            color: #38a169;
+        }
         
         .template-select {
             width: 100%;
@@ -592,6 +647,7 @@
         
         <div class="tabs">
             <button class="tab" data-tab="transfer">普通转账</button>
+            <button class="tab" data-tab="token">NRC20 转账</button>
             <button class="tab active" data-tab="create">创建合约</button>
             <button class="tab" data-tab="call">调用合约</button>
         </div>
@@ -650,6 +706,85 @@
             <div class="error-box" id="transferError">
                 <h3>转账失败</h3>
                 <pre id="transferErrorText"></pre>
+            </div>
+        </div>
+        
+        <div id="tokenTab" class="tab-content">
+            <form id="tokenTransferForm">
+                <div class="form-group">
+                    <label>私钥 *</label>
+                    <input type="text" id="tokenPri" required placeholder="请输入私钥">
+                    <small>用于签名NRC20代币转账的私钥</small>
+                    <div id="tokenAddressDisplay" class="address-display" style="display: none;">
+                        <div class="address-label">✓ 发送地址:</div>
+                        <div class="address-value">
+                            <span id="tokenAddressText"></span>
+                            <button type="button" class="copy-btn" onclick="copyAddress('token')">复制</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Token合约地址 *</label>
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <input type="text" id="tokenContractAddress" required placeholder="请输入NRC20代币合约地址" style="flex: 1;">
+                        <button type="button" class="secondary-btn" id="tokenRefreshBtn">查询</button>
+                    </div>
+                    <small>填入NRC20代币合约地址，自动查询名称 / 符号 / 精度</small>
+                </div>
+                
+                <div class="token-info-panel" id="tokenInfoPanel">
+                    <div class="token-info-row">
+                        <span class="token-info-label">代币名称</span>
+                        <span class="token-info-value" id="tokenName">-</span>
+                    </div>
+                    <div class="token-info-row">
+                        <span class="token-info-label">代币符号</span>
+                        <span class="token-info-value" id="tokenSymbol">-</span>
+                    </div>
+                    <div class="token-info-row">
+                        <span class="token-info-label">精度</span>
+                        <span class="token-info-value" id="tokenDecimals">-</span>
+                    </div>
+                    <div class="token-info-row" id="tokenBalanceRow" style="display: none;">
+                        <span class="token-info-label">当前余额</span>
+                        <span class="token-info-value" id="tokenBalance">-</span>
+                    </div>
+                    <div class="token-info-status" id="tokenInfoStatus">请输入Token合约地址查询信息</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>接收地址 *</label>
+                    <input type="text" id="tokenToAddress" required placeholder="请输入接收地址">
+                </div>
+                
+                <div class="form-group">
+                    <label>转账金额 *</label>
+                    <input type="number" id="tokenAmount" required min="0" step="0.00000001" placeholder="请输入代币数量">
+                    <small id="tokenAmountHint">金额将根据代币精度自动转换</small>
+                </div>
+                
+                <div class="form-group">
+                    <label>备注</label>
+                    <input type="text" id="tokenRemark" placeholder="交易备注（可选）">
+                </div>
+                
+                <button type="submit" class="submit-btn" id="tokenSubmit">发起NRC20转账</button>
+            </form>
+            
+            <div class="loading" id="tokenLoading">
+                <div class="spinner"></div>
+                <p>处理中，请稍候...</p>
+            </div>
+            
+            <div class="result-box" id="tokenResult">
+                <h3>转账成功</h3>
+                <pre id="tokenResultText"></pre>
+            </div>
+            
+            <div class="error-box" id="tokenError">
+                <h3>转账失败</h3>
+                <pre id="tokenErrorText"></pre>
             </div>
         </div>
         
@@ -861,6 +996,17 @@
             symbol: null,
             decimals: 8  // 默认8位，从后端获取实际值
         };
+
+        let tokenInfoState = {
+            contractAddress: '',
+            holderAddress: '',
+            name: '',
+            symbol: '',
+            decimals: null,
+            balanceFormatted: null,
+            balanceRaw: null
+        };
+        let tokenInfoTimer = null;
         
         // API调用辅助函数
         async function apiCall(endpoint, data = {}) {
@@ -914,6 +1060,181 @@
                 throw error;
             }
         }
+
+        function getTokenHolderAddress() {
+            const addressSpan = document.getElementById('tokenAddressText');
+            if (!addressSpan) return null;
+            const value = addressSpan.textContent.trim();
+            return value || null;
+        }
+
+        function updateTokenInfoStatus(message, state) {
+            const statusEl = document.getElementById('tokenInfoStatus');
+            if (!statusEl) return;
+            statusEl.textContent = message;
+            statusEl.classList.remove('error', 'success');
+            if (state === 'error') {
+                statusEl.classList.add('error');
+            } else if (state === 'success') {
+                statusEl.classList.add('success');
+            }
+        }
+
+        function resetTokenInfoDisplay(message = '请输入Token合约地址查询信息') {
+            const nameEl = document.getElementById('tokenName');
+            const symbolEl = document.getElementById('tokenSymbol');
+            const decimalsEl = document.getElementById('tokenDecimals');
+            const balanceRow = document.getElementById('tokenBalanceRow');
+            const balanceEl = document.getElementById('tokenBalance');
+            const hintEl = document.getElementById('tokenAmountHint');
+            if (nameEl) nameEl.textContent = '-';
+            if (symbolEl) symbolEl.textContent = '-';
+            if (decimalsEl) decimalsEl.textContent = '-';
+            if (balanceEl) balanceEl.textContent = '-';
+            if (balanceRow) balanceRow.style.display = 'none';
+            if (hintEl) hintEl.textContent = '金额将根据代币精度自动转换';
+            updateTokenInfoStatus(message, null);
+        }
+
+        function updateTokenInfoDisplay() {
+            const nameEl = document.getElementById('tokenName');
+            const symbolEl = document.getElementById('tokenSymbol');
+            const decimalsEl = document.getElementById('tokenDecimals');
+            const balanceRow = document.getElementById('tokenBalanceRow');
+            const balanceEl = document.getElementById('tokenBalance');
+            const hintEl = document.getElementById('tokenAmountHint');
+
+            if (nameEl) nameEl.textContent = tokenInfoState.name || '-';
+            if (symbolEl) symbolEl.textContent = tokenInfoState.symbol || '-';
+            if (decimalsEl) decimalsEl.textContent = tokenInfoState.decimals !== null ? tokenInfoState.decimals : '-';
+
+            const balanceDisplayValue = tokenInfoState.balanceFormatted ?? (tokenInfoState.balanceRaw != null ? formatTokenAmount(tokenInfoState.balanceRaw, tokenInfoState.decimals) : null);
+
+            if (balanceDisplayValue !== null && balanceDisplayValue !== undefined) {
+                if (balanceRow) balanceRow.style.display = 'flex';
+                if (balanceEl) {
+                    const symbolLabel = tokenInfoState.symbol ? ` ${tokenInfoState.symbol}` : '';
+                    balanceEl.textContent = `${balanceDisplayValue}${symbolLabel}`;
+                }
+            } else if (balanceRow) {
+                balanceRow.style.display = 'none';
+            }
+
+            if (hintEl) {
+                const decimalsText = tokenInfoState.decimals !== null ? tokenInfoState.decimals : '0';
+                const symbolText = tokenInfoState.symbol || 'Token';
+                hintEl.textContent = `输入${symbolText}数量，最多支持 ${decimalsText} 位小数`;
+            }
+
+            updateTokenInfoStatus('Token信息已更新', 'success');
+        }
+
+        function scheduleTokenInfoFetch(delay = 600) {
+            clearTimeout(tokenInfoTimer);
+            tokenInfoTimer = setTimeout(() => {
+                refreshTokenInfo(false);
+            }, delay);
+        }
+
+        async function refreshTokenInfo(forceRefresh) {
+            const contractInput = document.getElementById('tokenContractAddress');
+            if (!contractInput) return;
+            const contractAddress = contractInput.value.trim();
+
+            if (!contractAddress) {
+                resetTokenInfoDisplay('请输入Token合约地址查询信息');
+                return;
+            }
+
+            if (!networkConfig.chainId) {
+                resetTokenInfoDisplay('请先连接网络，再查询Token信息');
+                return;
+            }
+
+            const holderAddress = getTokenHolderAddress();
+            if (!forceRefresh &&
+                tokenInfoState.contractAddress === contractAddress &&
+                tokenInfoState.holderAddress === (holderAddress || '')) {
+                return;
+            }
+
+            updateTokenInfoStatus('正在查询Token信息...', null);
+            try {
+                const payload = { contractAddress };
+                if (holderAddress) {
+                    payload.holderAddress = holderAddress;
+                }
+                const response = await apiCall('/token-info', payload);
+                const data = response.data || {};
+                tokenInfoState = {
+                    contractAddress,
+                    holderAddress: data.holderAddress || holderAddress || '',
+                    name: data.name || '',
+                    symbol: data.symbol || '',
+                    decimals: typeof data.decimals === 'number' ? data.decimals : null,
+                    balanceFormatted: data.balanceFormatted ?? null,
+                    balanceRaw: data.balanceRaw ?? null
+                };
+                updateTokenInfoDisplay();
+            } catch (error) {
+                console.error('查询Token信息失败:', error);
+                updateTokenInfoStatus(error.message || '查询Token信息失败', 'error');
+            }
+        }
+
+        function formatTokenAmount(raw, decimals) {
+            if (raw === null || raw === undefined) return '-';
+            const decimalsInt = Number(decimals) || 0;
+            let rawStr = raw.toString();
+            if (!/^\d+$/.test(rawStr)) {
+                return rawStr;
+            }
+            if (decimalsInt === 0) {
+                return rawStr;
+            }
+            const isNegative = rawStr.startsWith('-');
+            if (isNegative) {
+                rawStr = rawStr.slice(1);
+            }
+            if (rawStr.length <= decimalsInt) {
+                rawStr = rawStr.padStart(decimalsInt + 1, '0');
+            }
+            const intPart = rawStr.slice(0, rawStr.length - decimalsInt) || '0';
+            let fracPart = rawStr.slice(-decimalsInt);
+            fracPart = fracPart.replace(/0+$/, '');
+            const formatted = fracPart ? `${intPart}.${fracPart}` : intPart;
+            return isNegative ? `-${formatted}` : formatted;
+        }
+
+        function convertToRawAmount(amountStr, decimals) {
+            if (amountStr === undefined || amountStr === null) {
+                throw new Error('请输入转账金额');
+            }
+            const trimmed = amountStr.toString().trim();
+            if (!trimmed) {
+                throw new Error('请输入转账金额');
+            }
+            if (Number(trimmed) <= 0) {
+                throw new Error('金额必须大于0');
+            }
+            const decimalsInt = Number(decimals) || 0;
+            const parts = trimmed.split('.');
+            if (parts.length > 2) {
+                throw new Error('金额格式不正确');
+            }
+            const whole = parts[0] || '0';
+            let fraction = parts[1] || '';
+            const numeric = (whole + fraction).replace(/^\+?/, '');
+            if (!/^\d+$/.test(numeric)) {
+                throw new Error('金额格式不正确');
+            }
+            if (fraction.length > decimalsInt) {
+                throw new Error(`该代币最多支持 ${decimalsInt} 位小数`);
+            }
+            fraction = fraction.padEnd(decimalsInt, '0');
+            const combined = `${whole}${fraction}`.replace(/^0+/, '') || '0';
+            return BigInt(combined).toString();
+        }
         
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
@@ -922,6 +1243,7 @@
             initForms();
             initNetworkSelector();
             initContractTemplates();
+            resetTokenInfoDisplay();
         });
         
         // 初始化网络
@@ -1252,6 +1574,12 @@
             const transferForm = document.getElementById('transferForm');
             transferForm.addEventListener('submit', handleTransfer);
             
+            // NRC20 转账表单
+            const tokenForm = document.getElementById('tokenTransferForm');
+            if (tokenForm) {
+                tokenForm.addEventListener('submit', handleTokenTransfer);
+            }
+            
             // 创建合约表单
             const createForm = document.getElementById('createForm');
             createForm.addEventListener('submit', handleCreateContract);
@@ -1267,6 +1595,11 @@
                 addCallArgBtn.addEventListener('click', () => {
                     addArgInput('callArgsContainer', 'call-arg-value');
                 });
+            }
+
+            const tokenRefreshBtn = document.getElementById('tokenRefreshBtn');
+            if (tokenRefreshBtn) {
+                tokenRefreshBtn.addEventListener('click', () => refreshTokenInfo(true));
             }
             
             // 删除参数按钮
@@ -1286,6 +1619,7 @@
             const transferPriInput = document.getElementById('transferPri');
             const createPriInput = document.getElementById('createPri');
             const callPriInput = document.getElementById('callPri');
+            const tokenPriInput = document.getElementById('tokenPri');
             
             let transferDebounceTimer = null;
             transferPriInput.addEventListener('input', function() {
@@ -1310,6 +1644,23 @@
                     calculateAddress('call', this.value);
                 }, 500);
             });
+
+            if (tokenPriInput) {
+                let tokenDebounceTimer = null;
+                tokenPriInput.addEventListener('input', function() {
+                    clearTimeout(tokenDebounceTimer);
+                    tokenDebounceTimer = setTimeout(async () => {
+                        await calculateAddress('token', this.value);
+                        refreshTokenInfo(false);
+                    }, 500);
+                });
+            }
+
+            const tokenContractInput = document.getElementById('tokenContractAddress');
+            if (tokenContractInput) {
+                tokenContractInput.addEventListener('input', () => scheduleTokenInfoFetch());
+                tokenContractInput.addEventListener('blur', () => refreshTokenInfo(false));
+            }
         }
         
         // 计算地址
@@ -1490,6 +1841,92 @@
             return args;
         }
         
+        // 处理NRC20转账
+        async function handleTokenTransfer(e) {
+            e.preventDefault();
+            
+            if (!networkConfig.chainId) {
+                alert('请先连接到网络');
+                return;
+            }
+
+            const pri = document.getElementById('tokenPri').value.trim();
+            const contractAddress = document.getElementById('tokenContractAddress').value.trim();
+            const toAddress = document.getElementById('tokenToAddress').value.trim();
+            const amount = document.getElementById('tokenAmount').value.trim();
+            const remark = document.getElementById('tokenRemark').value.trim();
+
+            hideAllMessages('token');
+
+            if (!/^[0-9a-fA-F]{64}$/.test(pri)) {
+                showError('token', '请输入64位十六进制私钥');
+                return;
+            }
+
+            if (!contractAddress) {
+                showError('token', '请输入Token合约地址');
+                return;
+            }
+
+            if (!toAddress) {
+                showError('token', '请输入接收地址');
+                return;
+            }
+
+            if (!amount || Number(amount) <= 0) {
+                showError('token', '请输入大于0的转账金额');
+                return;
+            }
+
+            if (!tokenInfoState.contractAddress || tokenInfoState.contractAddress !== contractAddress) {
+                await refreshTokenInfo(true);
+            }
+
+            const decimals = tokenInfoState.decimals !== null ? tokenInfoState.decimals : (networkConfig.decimals || 8);
+
+            let rawAmount;
+            try {
+                rawAmount = convertToRawAmount(amount, decimals);
+            } catch (error) {
+                showError('token', error.message);
+                return;
+            }
+
+            showLoading('token', true);
+
+            try {
+                const args = [toAddress, rawAmount];
+                const result = await apiCall('/call-contract', {
+                    privateKey: pri,
+                    contractAddress,
+                    methodName: 'transfer',
+                    methodDesc: '',
+                    value: 0,
+                    args,
+                    remark,
+                    chainId: networkConfig.chainId,
+                    assetId: networkConfig.assetId,
+                    addressPrefix: networkConfig.addressPrefix
+                });
+
+                showSuccess('token', {
+                    message: '✅ NRC20转账成功！',
+                    token: tokenInfoState.symbol || 'Token',
+                    toAddress,
+                    amount,
+                    rawAmount,
+                    txHash: result.data.txHash,
+                    chainId: networkConfig.chainId
+                });
+
+                await refreshTokenInfo(true);
+            } catch (error) {
+                showError('token', error.message || error.toString());
+            } finally {
+                showLoading('token', false);
+            }
+        }
+
         // 处理创建合约
         async function handleCreateContract(e) {
             e.preventDefault();

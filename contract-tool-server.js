@@ -14,6 +14,7 @@ const path = require('path');
 const nuls = require('./src/index');
 const contractCreate = require('./src/test/contractCreate');
 const contractCall = require('./src/test/contractCall');
+const contractMulticall = require('./src/test/contractMulticall');
 const BigNumber = require('bignumber.js');
 const app = express();
 const PORT = 3000;
@@ -447,6 +448,81 @@ app.post('/api/transfer', async (req, res) => {
             success: false,
             error: errorMessage,
             stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
+    }
+});
+
+/**
+ * 批量查询NRC20 Token信息
+ * POST /api/token-info
+ * Body: {
+ *   contractAddress: string,
+ *   holderAddress?: string
+ * }
+ */
+app.post('/api/token-info', async (req, res) => {
+    try {
+        const { contractAddress, holderAddress } = req.body;
+        if (!contractAddress || !contractAddress.trim()) {
+            return res.status(400).json({
+                success: false,
+                error: 'Token合约地址不能为空'
+            });
+        }
+
+        const normalizedContract = contractAddress.trim();
+        const contractAddressArray = [normalizedContract, normalizedContract, normalizedContract];
+        const methodNameArray = ['name', 'symbol', 'decimals'];
+        const argsArray = ['', '', ''];
+
+        const normalizedHolder = holderAddress && holderAddress.trim() ? holderAddress.trim() : null;
+        if (normalizedHolder) {
+            contractAddressArray.push(normalizedContract);
+            methodNameArray.push('balanceOf');
+            argsArray.push(normalizedHolder);
+        }
+
+        const result = await contractMulticall.multicall(contractAddressArray, methodNameArray, argsArray);
+        if (!result || typeof result.result !== 'string') {
+            throw new Error('批量查询返回结果异常');
+        }
+
+        let parsed;
+        try {
+            parsed = JSON.parse(result.result);
+        } catch (error) {
+            throw new Error('无法解析批量查询结果');
+        }
+
+        const responseData = {
+            contractAddress: normalizedContract,
+            name: parsed[0] || '',
+            symbol: parsed[1] || '',
+            decimals: Number(parsed[2]) || 0
+        };
+
+        if (normalizedHolder) {
+            const balanceRaw = parsed[3] || '0';
+            responseData.balanceRaw = balanceRaw;
+            responseData.holderAddress = normalizedHolder;
+            try {
+                responseData.balanceFormatted = new BigNumber(balanceRaw || 0)
+                    .shiftedBy(0 - (responseData.decimals || 0))
+                    .toFixed();
+            } catch (error) {
+                responseData.balanceFormatted = balanceRaw;
+            }
+        }
+
+        res.json({
+            success: true,
+            data: responseData
+        });
+    } catch (error) {
+        console.error('查询Token信息失败:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message || '查询Token信息失败'
         });
     }
 });

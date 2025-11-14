@@ -1,6 +1,6 @@
 
 const call = require('./contractCall.js');
-const nuls = require("../../index");
+const nuls = require("../index");
 nuls.customnet(101, "https://api.itac.club/jsonrpc");
 require('dotenv').config();
 
