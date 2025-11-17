@@ -528,6 +528,69 @@ app.post('/api/token-info', async (req, res) => {
 });
 
 /**
+ * 获取合约ABI信息
+ * POST /api/get-contract-abi
+ * Body: { contractAddress: string }
+ */
+app.post('/api/get-contract-abi', async (req, res) => {
+    try {
+        const { contractAddress } = req.body;
+        
+        if (!contractAddress || !contractAddress.trim()) {
+            return res.status(400).json({
+                success: false,
+                error: '合约地址不能为空'
+            });
+        }
+        
+        const chainId = nuls.chainId();
+        if (!chainId) {
+            return res.status(400).json({
+                success: false,
+                error: '请先配置网络'
+            });
+        }
+        
+        // 调用 getContract RPC
+        const axios = require('axios').default;
+        const rpcUrl = axios.defaults.baseURL || 'http://127.0.0.1:18004/jsonrpc';
+        const http = require('./src/test/api/https');
+        const response = await http.postComplete(rpcUrl, 'getContract', [chainId, contractAddress.trim()]);
+        
+        if (response.error) {
+            throw new Error(response.error.message || '获取合约信息失败');
+        }
+        
+        if (!response.result || !response.result.method) {
+            throw new Error('合约信息格式错误');
+        }
+        
+        // 提取可调用函数（view=false, event=false, name!="<init>"）
+        const callableMethods = response.result.method.filter(method => 
+            method.view === false && 
+            method.event === false && 
+            method.name !== '<init>'
+        );
+        
+        res.json({
+            success: true,
+            data: {
+                contractAddress: contractAddress.trim(),
+                contractInfo: response.result,
+                callableMethods: callableMethods
+            }
+        });
+        
+    } catch (error) {
+        console.error('获取合约ABI失败:', error);
+        res.status(500).json({
+            success: false,
+            error: error.message || '获取合约ABI失败'
+        });
+    }
+});
+
+/**
  * 获取网络配置信息
  * GET /api/network-config
  */

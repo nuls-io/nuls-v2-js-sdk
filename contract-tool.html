@@ -93,11 +93,14 @@
         }
         
         .network-info {
+            margin-top: 15px;
+            font-size: 13px;
+        }
+        
+        #networkInfoContent {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 10px;
-            margin-top: 15px;
-            font-size: 13px;
         }
         
         .network-info-item {
@@ -109,6 +112,15 @@
         .network-info-item span {
             font-weight: bold;
             display: block;
+        }
+        
+        #networkInfoLoading .spinner {
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
         }
         
         .tabs {
@@ -186,6 +198,31 @@
             border-radius: 8px;
             font-size: 14px;
             transition: border-color 0.3s;
+        }
+        
+        /* 合约地址输入框特殊样式 */
+        .contract-address-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: stretch;
+        }
+        
+        .contract-address-wrapper input {
+            flex: 1 1 auto;
+            min-width: 0;
+            width: 0 !important;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        
+        .contract-address-wrapper button {
+            flex-shrink: 0;
+            width: auto !important;
+            padding: 10px 20px;
+            white-space: nowrap;
         }
         
         .form-group input:focus,
@@ -621,25 +658,31 @@
                     <button class="network-btn" data-network="dev">开发网 (Dev)</button>
                     <button class="network-btn active" data-network="custom">自定义 (Custom)</button>
                 </div>
-                <div class="custom-url" id="customUrl" class="show">
+                <div class="custom-url show" id="customUrl">
                     <input type="text" id="customUrlInput" placeholder="请输入自定义RPC地址" value="https://api.itac.club/jsonrpc">
                 </div>
                 <div class="network-info" id="networkInfo">
-                    <div class="network-info-item">
-                        <span>Chain ID:</span>
-                        <div id="chainId">-</div>
+                    <div id="networkInfoLoading" style="display: none; text-align: center; padding: 20px; color: white;">
+                        <div class="spinner" style="margin: 0 auto 10px;"></div>
+                        <div>正在加载网络信息...</div>
                     </div>
-                    <div class="network-info-item">
-                        <span>Asset ID:</span>
-                        <div id="assetId">-</div>
-                    </div>
-                    <div class="network-info-item">
-                        <span>地址前缀:</span>
-                        <div id="addressPrefix">-</div>
-                    </div>
-                    <div class="network-info-item">
-                        <span>符号:</span>
-                        <div id="symbol">-</div>
+                    <div id="networkInfoContent">
+                        <div class="network-info-item">
+                            <span>Chain ID:</span>
+                            <div id="chainId">-</div>
+                        </div>
+                        <div class="network-info-item">
+                            <span>Asset ID:</span>
+                            <div id="assetId">-</div>
+                        </div>
+                        <div class="network-info-item">
+                            <span>地址前缀:</span>
+                            <div id="addressPrefix">-</div>
+                        </div>
+                        <div class="network-info-item">
+                            <span>符号:</span>
+                            <div id="symbol">-</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -650,6 +693,7 @@
             <button class="tab" data-tab="token">NRC20 转账</button>
             <button class="tab active" data-tab="create">创建合约</button>
             <button class="tab" data-tab="call">调用合约</button>
+            <button class="tab" data-tab="view">查询视图</button>
         </div>
         
         <div id="transferTab" class="tab-content">
@@ -885,38 +929,34 @@
                 
                 <div class="form-group">
                     <label>合约地址 *</label>
-                    <input type="text" id="callContractAddress" required placeholder="请输入合约地址">
-                    <small>要调用的合约地址</small>
-                </div>
-                
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label>方法名 *</label>
-                        <input type="text" id="callMethodName" required placeholder="请输入方法名">
+                    <div class="contract-address-wrapper">
+                        <input type="text" id="callContractAddress" required placeholder="请输入合约地址">
+                        <button type="button" id="fetchContractAbiBtn" class="submit-btn">获取ABI</button>
                     </div>
-                    
-                    <div class="form-group">
-                        <label>方法描述</label>
-                        <input type="text" id="callMethodDesc" placeholder="方法描述（可选）">
+                    <small>要调用的合约地址，点击"获取ABI"按钮获取合约函数列表</small>
+                    <div id="callAbiLoading" style="display: none; margin-top: 10px; color: #667eea;">
+                        <span>正在获取合约ABI...</span>
                     </div>
                 </div>
                 
-                <div class="form-group">
+                <div class="form-group" id="callMethodSelectGroup" style="display: none;">
+                    <label>选择函数 *</label>
+                    <select id="callMethodSelect" required style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 14px;">
+                        <option value="">请先获取合约ABI</option>
+                    </select>
+                    <small id="callMethodDescText" style="margin-top: 5px; display: block; color: #718096;"></small>
+                </div>
+                
+                <div class="form-group" id="callValueGroup" style="display: none;">
                     <label>转入NULS数量</label>
                     <input type="number" id="callValue" value="0" min="0" step="0.00000001" placeholder="0">
-                    <small>需要转入合约的NULS数量（实际值，如200个NULS则输入200）</small>
+                    <small id="callValueHint">需要转入合约的NULS数量（实际值，如200个NULS则输入200）</small>
                 </div>
                 
-                <div class="form-group">
+                <div class="form-group" id="callArgsGroup" style="display: none;">
                     <label>方法参数</label>
-                    <div class="args-container">
-                        <div id="callArgsContainer">
-                            <div class="arg-item">
-                                <input type="text" placeholder="参数值" class="call-arg-value">
-                                <button type="button" class="remove-arg">删除</button>
-                            </div>
-                        </div>
-                        <button type="button" class="add-arg-btn" id="addCallArg">添加参数</button>
+                    <div class="args-container" id="callArgsContainer">
+                        <!-- 动态生成的参数输入框 -->
                     </div>
                     <small>按顺序输入方法的参数值。数组参数请使用JSON格式，如：["value1","value2"]</small>
                 </div>
@@ -942,6 +982,55 @@
             <div class="error-box" id="callError">
                 <h3>调用失败</h3>
                 <pre id="callErrorText"></pre>
+            </div>
+        </div>
+        
+        <div id="viewTab" class="tab-content">
+            <form id="viewForm">
+                <div class="form-group">
+                    <label>合约地址 *</label>
+                    <div class="contract-address-wrapper">
+                        <input type="text" id="viewContractAddress" required placeholder="请输入合约地址">
+                        <button type="button" id="fetchViewAbiBtn" class="submit-btn">加载ABI</button>
+                    </div>
+                    <small>要查询的合约地址，点击"加载ABI"按钮获取合约视图方法列表</small>
+                    <div id="viewAbiLoading" style="display: none; margin-top: 10px; color: #667eea;">
+                        <span>正在加载合约ABI...</span>
+                    </div>
+                </div>
+                
+                <div class="form-group" id="viewMethodSelectGroup" style="display: none;">
+                    <label>选择视图方法 *</label>
+                    <select id="viewMethodSelect" required style="width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 6px; font-size: 14px;">
+                        <option value="">请先加载合约ABI</option>
+                    </select>
+                    <small id="viewMethodDescText" style="margin-top: 5px; display: block; color: #718096;"></small>
+                </div>
+                
+                <div class="form-group" id="viewArgsGroup" style="display: none;">
+                    <label>方法参数</label>
+                    <div class="args-container" id="viewArgsContainer">
+                        <!-- 动态生成的参数输入框 -->
+                    </div>
+                    <small>按顺序输入方法的参数值。数组参数请使用JSON格式，如：["value1","value2"]</small>
+                </div>
+                
+                <button type="button" class="submit-btn" id="viewSubmit" style="display: none;">查询视图方法</button>
+            </form>
+            
+            <div class="loading" id="viewLoading">
+                <div class="spinner"></div>
+                <p>查询中，请稍候...</p>
+            </div>
+            
+            <div class="result-box" id="viewResult">
+                <h3>查询成功</h3>
+                <pre id="viewResultText"></pre>
+            </div>
+            
+            <div class="error-box" id="viewError">
+                <h3>查询失败</h3>
+                <pre id="viewErrorText"></pre>
             </div>
         </div>
     </div>
@@ -1254,6 +1343,13 @@
         
         // 加载网络信息
         async function loadNetworkInfo() {
+            const loadingEl = document.getElementById('networkInfoLoading');
+            const contentEl = document.getElementById('networkInfoContent');
+            
+            // 显示加载状态
+            if (loadingEl) loadingEl.style.display = 'block';
+            if (contentEl) contentEl.style.display = 'none';
+            
             try {
                 // 调用RPC获取网络信息
                 const result = await rpcCall('info', []);
@@ -1303,6 +1399,10 @@
                 document.getElementById('assetId').textContent = '未连接';
                 document.getElementById('addressPrefix').textContent = '未连接';
                 document.getElementById('symbol').textContent = '未连接';
+            } finally {
+                // 隐藏加载状态，显示内容
+                if (loadingEl) loadingEl.style.display = 'none';
+                if (contentEl) contentEl.style.display = 'grid';
             }
         }
         
@@ -1521,6 +1621,14 @@
             const customUrlDiv = document.getElementById('customUrl');
             const customUrlInput = document.getElementById('customUrlInput');
             
+            // 初始化时，如果默认是 custom 网络，确保显示 custom-url
+            if (currentNetwork === 'custom') {
+                customUrlDiv.classList.add('show');
+                if (customUrlInput.value) {
+                    currentRpcUrl = customUrlInput.value;
+                }
+            }
+            
             buttons.forEach(button => {
                 button.addEventListener('click', async function() {
                     buttons.forEach(btn => btn.classList.remove('active'));
@@ -1588,13 +1696,32 @@
             const callForm = document.getElementById('callForm');
             callForm.addEventListener('submit', handleCallContract);
             
-            // 添加参数按钮（仅用于调用合约）
-            // 创建合约的参数现在是动态生成的，不再需要手动添加
-            const addCallArgBtn = document.getElementById('addCallArg');
-            if (addCallArgBtn) {
-                addCallArgBtn.addEventListener('click', () => {
-                    addArgInput('callArgsContainer', 'call-arg-value');
-                });
+            // 获取合约ABI按钮
+            const fetchContractAbiBtn = document.getElementById('fetchContractAbiBtn');
+            if (fetchContractAbiBtn) {
+                fetchContractAbiBtn.addEventListener('click', handleFetchContractAbi);
+            }
+            
+            // 函数选择下拉菜单变化事件
+            const callMethodSelect = document.getElementById('callMethodSelect');
+            if (callMethodSelect) {
+                callMethodSelect.addEventListener('change', handleMethodSelectChange);
+            }
+            
+            // 查询视图相关事件
+            const fetchViewAbiBtn = document.getElementById('fetchViewAbiBtn');
+            if (fetchViewAbiBtn) {
+                fetchViewAbiBtn.addEventListener('click', handleFetchViewAbi);
+            }
+            
+            const viewMethodSelect = document.getElementById('viewMethodSelect');
+            if (viewMethodSelect) {
+                viewMethodSelect.addEventListener('change', handleViewMethodSelectChange);
+            }
+            
+            const viewSubmit = document.getElementById('viewSubmit');
+            if (viewSubmit) {
+                viewSubmit.addEventListener('click', handleInvokeView);
             }
 
             const tokenRefreshBtn = document.getElementById('tokenRefreshBtn');
@@ -1988,6 +2115,129 @@
             }
         }
         
+        // 存储当前合约的ABI信息
+        let currentContractAbi = null;
+        let currentCallableMethods = [];
+        
+        // 获取合约ABI
+        async function handleFetchContractAbi() {
+            const contractAddress = document.getElementById('callContractAddress').value.trim();
+            if (!contractAddress) {
+                alert('请先输入合约地址');
+                return;
+            }
+            
+            if (!networkConfig.chainId) {
+                alert('请先连接到网络');
+                return;
+            }
+            
+            const loadingEl = document.getElementById('callAbiLoading');
+            const fetchBtn = document.getElementById('fetchContractAbiBtn');
+            
+            try {
+                loadingEl.style.display = 'block';
+                fetchBtn.disabled = true;
+                
+                const result = await apiCall('/get-contract-abi', {
+                    contractAddress: contractAddress
+                });
+                
+                currentContractAbi = result.data.contractInfo;
+                currentCallableMethods = result.data.callableMethods;
+                
+                // 填充函数选择下拉菜单
+                const methodSelect = document.getElementById('callMethodSelect');
+                methodSelect.innerHTML = '<option value="">请选择函数</option>';
+                
+                if (currentCallableMethods.length === 0) {
+                    methodSelect.innerHTML = '<option value="">该合约没有可调用的函数</option>';
+                    alert('该合约没有可调用的函数（view=false, event=false, name!="<init>"）');
+                } else {
+                    currentCallableMethods.forEach((method, index) => {
+                        const option = document.createElement('option');
+                        option.value = index;
+                        option.textContent = `${method.name}${method.desc ? ' - ' + method.desc : ''}`;
+                        methodSelect.appendChild(option);
+                    });
+                }
+                
+                // 显示函数选择组
+                document.getElementById('callMethodSelectGroup').style.display = 'block';
+                
+            } catch (error) {
+                console.error('获取合约ABI失败:', error);
+                alert('获取合约ABI失败: ' + (error.message || error.toString()));
+            } finally {
+                loadingEl.style.display = 'none';
+                fetchBtn.disabled = false;
+            }
+        }
+        
+        // 处理函数选择变化
+        function handleMethodSelectChange() {
+            const methodSelect = document.getElementById('callMethodSelect');
+            const selectedIndex = methodSelect.value;
+            
+            if (!selectedIndex || selectedIndex === '') {
+                document.getElementById('callValueGroup').style.display = 'none';
+                document.getElementById('callArgsGroup').style.display = 'none';
+                return;
+            }
+            
+            const method = currentCallableMethods[parseInt(selectedIndex)];
+            if (!method) return;
+            
+            // 显示方法描述
+            const descText = document.getElementById('callMethodDescText');
+            descText.textContent = method.desc || '无描述';
+            
+            // 处理payable字段
+            const valueGroup = document.getElementById('callValueGroup');
+            const valueInput = document.getElementById('callValue');
+            const valueHint = document.getElementById('callValueHint');
+            
+            if (method.payable === true) {
+                valueGroup.style.display = 'block';
+                valueInput.disabled = false;
+                valueInput.value = '0';
+                valueHint.textContent = '该函数支持接收NULS，可以输入转账数量（实际值，如200个NULS则输入200）';
+            } else {
+                valueGroup.style.display = 'block';
+                valueInput.disabled = true;
+                valueInput.value = '0';
+                valueHint.textContent = '该函数不支持接收NULS（payable=false），转账数量必须为0';
+            }
+            
+            // 生成参数输入框
+            const argsContainer = document.getElementById('callArgsContainer');
+            argsContainer.innerHTML = '';
+            
+            if (method.args && method.args.length > 0) {
+                method.args.forEach((arg, index) => {
+                    const argItem = document.createElement('div');
+                    argItem.className = 'arg-item';
+                    argItem.innerHTML = `
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #4a5568;">
+                            ${arg.name || `参数${index + 1}`} 
+                            <span style="color: #718096; font-weight: normal;">(${arg.type || '未知类型'})</span>
+                            ${arg.required === false ? '<span style="color: #a0aec0;">(可选)</span>' : '<span style="color: #e53e3e;">*</span>'}
+                        </label>
+                        <input type="text" 
+                               class="call-arg-value" 
+                               data-arg-index="${index}"
+                               data-arg-type="${arg.type || ''}"
+                               placeholder="请输入${arg.name || `参数${index + 1}`} (${arg.type || '未知类型'})"
+                               style="width: 100%; padding: 8px; border: 2px solid #e2e8f0; border-radius: 6px; margin-bottom: 10px;">
+                    `;
+                    argsContainer.appendChild(argItem);
+                });
+                document.getElementById('callArgsGroup').style.display = 'block';
+            } else {
+                document.getElementById('callArgsGroup').style.display = 'none';
+            }
+        }
+        
         // 处理调用合约
         async function handleCallContract(e) {
             e.preventDefault();
@@ -2003,15 +2253,42 @@
             try {
                 const pri = document.getElementById('callPri').value.trim();
                 const contractAddress = document.getElementById('callContractAddress').value.trim();
-                const methodName = document.getElementById('callMethodName').value.trim();
-                const methodDesc = document.getElementById('callMethodDesc').value.trim();
+                const methodSelect = document.getElementById('callMethodSelect');
+                const selectedIndex = methodSelect.value;
                 const value = document.getElementById('callValue').value;
                 const remark = document.getElementById('callRemark').value.trim();
-                const args = getArgs('call-arg-value');
                 
-                if (!pri || !contractAddress || !methodName) {
-                    throw new Error('请填写必填项');
+                if (!pri || !contractAddress || !selectedIndex || selectedIndex === '') {
+                    throw new Error('请填写必填项并选择函数');
                 }
+                
+                const method = currentCallableMethods[parseInt(selectedIndex)];
+                if (!method) {
+                    throw new Error('选择的函数无效');
+                }
+                
+                // 验证payable
+                if (method.payable !== true && parseFloat(value) > 0) {
+                    throw new Error('该函数不支持接收NULS（payable=false），转账数量必须为0');
+                }
+                
+                // 获取参数值
+                const args = [];
+                const argInputs = document.querySelectorAll('#callArgsContainer .call-arg-value');
+                argInputs.forEach((input, index) => {
+                    const value = input.value.trim();
+                    if (value) {
+                        // 尝试解析JSON（如果是数组或对象）
+                        try {
+                            args.push(JSON.parse(value));
+                        } catch (e) {
+                            // 如果不是JSON，直接使用字符串值
+                            args.push(value);
+                        }
+                    } else {
+                        args.push('');
+                    }
+                });
                 
                 // 转换NULS数量（乘以10^decimals）
                 const decimals = networkConfig.decimals || 8;
@@ -2019,16 +2296,17 @@
                 
                 console.log('开始调用合约...');
                 console.log('合约地址:', contractAddress);
-                console.log('方法名:', methodName);
-                console.log('参数数量:', args.length);
+                console.log('方法名:', method.name);
+                console.log('方法描述:', method.desc);
+                console.log('参数:', args);
                 console.log('转入金额:', nulsAmount);
                 
                 // 调用后端API调用合约
                 const result = await apiCall('/call-contract', {
                     privateKey: pri,
                     contractAddress: contractAddress,
-                    methodName: methodName,
-                    methodDesc: methodDesc,
+                    methodName: method.name,
+                    methodDesc: method.desc || '',
                     value: nulsAmount,
                     args: args,
                     remark: remark,
@@ -2055,6 +2333,219 @@
                 showError('call', error.message || error.toString());
             } finally {
                 showLoading('call', false);
+            }
+        }
+        
+        // 存储当前视图方法的ABI信息
+        let currentViewAbi = null;
+        let currentViewMethods = [];
+        
+        // 获取视图方法ABI
+        async function handleFetchViewAbi() {
+            const contractAddress = document.getElementById('viewContractAddress').value.trim();
+            if (!contractAddress) {
+                alert('请先输入合约地址');
+                return;
+            }
+            
+            if (!networkConfig.chainId) {
+                alert('请先连接到网络');
+                return;
+            }
+            
+            const loadingEl = document.getElementById('viewAbiLoading');
+            const fetchBtn = document.getElementById('fetchViewAbiBtn');
+            
+            try {
+                loadingEl.style.display = 'block';
+                fetchBtn.disabled = true;
+                
+                const result = await apiCall('/get-contract-abi', {
+                    contractAddress: contractAddress
+                });
+                
+                currentViewAbi = result.data.contractInfo;
+                // 过滤出 view 方法（view=true, name!="<init>"）
+                currentViewMethods = result.data.contractInfo.method.filter(method => 
+                    method.view === true && 
+                    method.name !== '<init>'
+                );
+                
+                // 填充视图方法选择下拉菜单
+                const methodSelect = document.getElementById('viewMethodSelect');
+                methodSelect.innerHTML = '<option value="">请选择视图方法</option>';
+                
+                if (currentViewMethods.length === 0) {
+                    methodSelect.innerHTML = '<option value="">该合约没有视图方法</option>';
+                    alert('该合约没有视图方法（view=true, name!="<init>"）');
+                } else {
+                    currentViewMethods.forEach((method, index) => {
+                        const option = document.createElement('option');
+                        option.value = index;
+                        const argsDesc = method.args.map(a => a.type).join(', ');
+                        option.textContent = `${method.name}(${argsDesc}) → ${method.returnArg || 'void'}`;
+                        methodSelect.appendChild(option);
+                    });
+                }
+                
+                // 显示方法选择组
+                document.getElementById('viewMethodSelectGroup').style.display = 'block';
+                
+            } catch (error) {
+                console.error('获取合约ABI失败:', error);
+                alert('获取合约ABI失败: ' + (error.message || error.toString()));
+            } finally {
+                loadingEl.style.display = 'none';
+                fetchBtn.disabled = false;
+            }
+        }
+        
+        // 处理视图方法选择变化
+        function handleViewMethodSelectChange() {
+            const methodSelect = document.getElementById('viewMethodSelect');
+            const selectedIndex = methodSelect.value;
+            
+            if (!selectedIndex || selectedIndex === '') {
+                document.getElementById('viewArgsGroup').style.display = 'none';
+                document.getElementById('viewSubmit').style.display = 'none';
+                return;
+            }
+            
+            const method = currentViewMethods[parseInt(selectedIndex)];
+            if (!method) return;
+            
+            // 显示方法描述
+            const descText = document.getElementById('viewMethodDescText');
+            descText.textContent = method.desc || '无描述';
+            
+            // 生成参数输入框
+            const argsContainer = document.getElementById('viewArgsContainer');
+            argsContainer.innerHTML = '';
+            
+            if (method.args && method.args.length > 0) {
+                method.args.forEach((arg, index) => {
+                    const argItem = document.createElement('div');
+                    argItem.className = 'arg-item';
+                    argItem.innerHTML = `
+                        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #4a5568;">
+                            ${arg.name || `参数${index + 1}`} 
+                            <span style="color: #718096; font-weight: normal;">(${arg.type || '未知类型'})</span>
+                            ${arg.required === false ? '<span style="color: #a0aec0;">(可选)</span>' : '<span style="color: #e53e3e;">*</span>'}
+                        </label>
+                        <input type="text" 
+                               class="view-arg-value" 
+                               data-arg-index="${index}"
+                               data-arg-type="${arg.type || ''}"
+                               placeholder="请输入${arg.name || `参数${index + 1}`} (${arg.type || '未知类型'})"
+                               style="width: 100%; padding: 8px; border: 2px solid #e2e8f0; border-radius: 6px; margin-bottom: 10px;">
+                    `;
+                    argsContainer.appendChild(argItem);
+                });
+                document.getElementById('viewArgsGroup').style.display = 'block';
+            } else {
+                document.getElementById('viewArgsGroup').style.display = 'none';
+            }
+            
+            document.getElementById('viewSubmit').style.display = 'block';
+        }
+        
+        // 调用视图方法
+        async function handleInvokeView() {
+            if (!networkConfig.chainId) {
+                alert('请先连接到网络');
+                return;
+            }
+            
+            hideAllMessages('view');
+            showLoading('view', true);
+            
+            try {
+                const contractAddress = document.getElementById('viewContractAddress').value.trim();
+                const methodSelect = document.getElementById('viewMethodSelect');
+                const selectedIndex = methodSelect.value;
+                
+                if (!contractAddress || !selectedIndex || selectedIndex === '') {
+                    throw new Error('请填写必填项并选择视图方法');
+                }
+                
+                const method = currentViewMethods[parseInt(selectedIndex)];
+                if (!method) {
+                    throw new Error('选择的视图方法无效');
+                }
+                
+                // 获取参数值
+                const args = [];
+                const argInputs = document.querySelectorAll('#viewArgsContainer .view-arg-value');
+                argInputs.forEach((input) => {
+                    const value = input.value.trim();
+                    if (value) {
+                        // 尝试解析JSON（如果是数组或对象）
+                        try {
+                            args.push(JSON.parse(value));
+                        } catch (e) {
+                            // 如果不是JSON，直接使用字符串值
+                            args.push(value);
+                        }
+                    } else {
+                        args.push('');
+                    }
+                });
+                
+                console.log('开始查询视图方法...');
+                console.log('合约地址:', contractAddress);
+                console.log('方法名:', method.name);
+                console.log('方法描述:', method.desc);
+                console.log('参数:', args);
+                
+                // 调用 invokeView RPC
+                const response = await fetch(currentRpcUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json;charset=UTF-8',
+                    },
+                    body: JSON.stringify({
+                        jsonrpc: '2.0',
+                        method: 'invokeView',
+                        params: [
+                            networkConfig.chainId,
+                            contractAddress,
+                            method.name,
+                            method.desc || '',
+                            args
+                        ],
+                        id: Date.now()
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.error) {
+                    throw new Error(result.error.message || JSON.stringify(result.error));
+                }
+                
+                console.log('查询视图方法成功:', result);
+                
+                // 格式化显示结果
+                let resultText = '';
+                if (result.result && result.result.result !== undefined) {
+                    resultText = `返回值类型: ${method.returnArg || '未知'}\n返回值:\n${JSON.stringify(result.result.result, null, 2)}`;
+                } else {
+                    resultText = JSON.stringify(result.result, null, 2);
+                }
+                
+                showSuccess('view', {
+                    message: '✅ 查询视图方法成功！',
+                    contractAddress: contractAddress,
+                    methodName: method.name,
+                    returnType: method.returnArg || '未知',
+                    result: resultText
+                });
+                
+            } catch (error) {
+                console.error('查询视图方法失败:', error);
+                showError('view', error.message || error.toString());
+            } finally {
+                showLoading('view', false);
             }
         }
         
@@ -2131,10 +2622,10 @@
             const submit = document.getElementById(type + 'Submit');
             if (show) {
                 loading.classList.add('show');
-                submit.disabled = true;
+                if (submit) submit.disabled = true;
             } else {
                 loading.classList.remove('show');
-                submit.disabled = false;
+                if (submit) submit.disabled = false;
             }
         }
         
